@@ -16,22 +16,10 @@ class StudentManager(BaseUserManager):
             nickname = nickname,
         )
         student.save(using=self.db)
-        return user
-    #관리자 user 생성
-class UserManager(BaseUserManager):
-    def create_superuser(self, username, password, email):
-        user = self.model(
-            username = username,
-            password = password,
-            email = email,
-        )
-        user.is_staff = True
-        user.is_superuser = True
-        user.save(using=self.db)
-        return user
+        return student
 
 class Student(AbstractBaseUser):
-    user = models.OneToOneField(User, ondelete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(default='', max_length=20, null = False, blank=False)
     nickname = models.CharField(default='', max_length = 10, null = False, blank = False, unique = True)
     points = models.IntegerField(default = 0)
@@ -40,7 +28,7 @@ class Student(AbstractBaseUser):
     permission = models.BooleanField(default = False)
 
     #헬퍼 클래스 사용
-    objects = UserManager()
+    objects = StudentManager()
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['password', 'email']

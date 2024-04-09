@@ -1,17 +1,23 @@
-from .models import User
+from . import models
+from django.contrib.auth.models import User
 from rest_framework import serializers
 
-class UserSerializer(serializers.ModelSerializer):
+class StudentSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(
-            user_id = validated_data['user_id'],
+            username= validated_data['username'],
             password = validated_data['password'],
-            username = validated_data['username'],
-            nickname = validated_data['nickname'],
+            
             email = validated_data['email'],
         )
-        return user
+        student = models.Student(
+            user = user,
+            name = validated_data['name'],
+            nickname = validated_data['nickname'],
+        )
+        return student
+    
     class Meta:
-        model = User
-        fields = ['user_id', 'password', 'username', 'nickname', 'email']
+        model = models.Student
+        fields = ['username', 'password', 'name', 'nickname', 'email']
 
