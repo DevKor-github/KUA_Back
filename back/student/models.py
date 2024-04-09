@@ -2,26 +2,27 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, User
 # Create your models here.
 
-class UserManager(BaseUserManager):
+class StudentManager(BaseUserManager):
     #일반 유저 생성
-    def create_user(self, username, password, name, nickname, email):       
+    def create_student(self, username, password, name, nickname, email):       
         user = self.model(
             username = username,
-            name = name,
-            nickname = nickname,
             email = self.normalize_email(email),
         )
         user.set_password(password)
-        user.save(using=self.db)
+        student = self.model(
+            user = user,
+            name = name, 
+            nickname = nickname,
+        )
+        student.save(using=self.db)
         return user
-    
     #관리자 user 생성
-    def create_superuser(self, username, password, name, nickname, email):
-        user = self.create_user(
+class UserManager(BaseUserManager):
+    def create_superuser(self, username, password, email):
+        user = self.model(
             username = username,
             password = password,
-            nickname = nickname,
-            name = name,
             email = email,
         )
         user.is_staff = True
