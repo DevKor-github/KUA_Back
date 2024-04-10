@@ -13,11 +13,9 @@ class StudentSerializer(serializers.ModelSerializer):
         student = models.Student(
             user = user,
             name = validated_data['name'],
-            nickname = validated_data['nickname'],
         )
         return student
     
     class Meta:
         model = models.Student
         fields = ['username', 'password', 'name', 'nickname', 'email']
-

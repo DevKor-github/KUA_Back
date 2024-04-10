@@ -36,10 +36,10 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "django.contrib.staticfiles",
+    "django.contrib.staticfiles",\
+    "student",
     "rest_framework",
     "rest_framework.authtoken",
-    "student",
 ]
 
 MIDDLEWARE = [
@@ -103,18 +103,9 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_RENDERER_CLASSES': [ #API 응답이 어떤 형식으로 직렬화될 것인지 결정
-        'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [ #API 뷰에 적용되는 인증 메커니즘 형식 저장
-        'rest_framework.permissions.IsAuthenticated',
-    ],
     'DEFAULT_AUTHENTICATION_CLASSES':[ #API 뷰에 적용되는 접근 제어 규칙 결정
         'rest_framework.authentication.TokenAuthentication',
     ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination', #API 결과가 페이지에 나누어 표시되는 방법 제어
-    'PAGE_SIZE':10
 }
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/

@@ -1,11 +1,11 @@
 from django.shortcuts import render
-from .serializers import StudentSerializer
 from . import models
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from . import serializers
 
 # class UserDestroy(generics.DestroyAPIView):
 #     queryset = User.objects.all()
@@ -21,10 +21,12 @@ class SignupView(APIView):
         student = models.Student(
             user = user,
             name = request.data['name'],
-            nickname = request.data['nickname'],
         )
+        user.save()
+        serializer = serializers.StudentSerializer(student)
+        if serializer.is_valid():
+            serializer.save()
 
-        serializer = StudentSerializer(student)
         token = Token.objects.create(user=user)
 
         return Response({"Token": token.key})
