@@ -19,3 +19,6 @@ class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Student
         fields = ['username', 'password', 'name', 'nickname', 'email']
+    
+    def read(self, validated_data):
+        user = User.objects.get
