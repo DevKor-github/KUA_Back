@@ -6,8 +6,7 @@ class StudentSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(
             username= validated_data['username'],
-            password = validated_data['password'],
-            
+            password = validated_data['password'],   
             email = validated_data['email'],
         )
         student = models.Student(
@@ -18,7 +17,4 @@ class StudentSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = models.Student
-        fields = ['username', 'password', 'name', 'nickname', 'email']
-    
-    def read(self, validated_data):
-        user = User.objects.get
+        fields = ['username', 'password', 'name', 'email']

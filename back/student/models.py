@@ -21,7 +21,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, User
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(default='', max_length=20, null = False, blank=False, unique=False)
-    nickname = models.CharField(default='', max_length = 10, null = False, blank = False, unique = True)
+    # nickname = models.CharField(default='', max_length = 10, null = False, blank = False, unique = True)
     points = models.IntegerField(default = 0)
     is_active = models.BooleanField(default = True)
     role = models.BooleanField(default = False)

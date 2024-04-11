@@ -23,7 +23,8 @@ class SignupView(APIView):
             name = request.data['name'],
         )
         user.save()
-        serializer = serializers.StudentSerializer(student)
+        
+        serializer = serializers.StudentSerializer(data = student)
         if serializer.is_valid():
             serializer.save()
 
