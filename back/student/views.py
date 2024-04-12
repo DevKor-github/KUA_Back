@@ -7,15 +7,17 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from . import serializers
 
-# class UserDestroy(generics.DestroyAPIView):
-#     queryset = User.objects.all()
-#     serializer_class = UserSerializer
+
 class SignupView(APIView):
     def post(self, request):
+        username = request.data['id']
+        password = request.data['password']
+        email = request.data['email']
+
         user = User.objects.create_user(
             username = request.data['id'], 
             password = request.data['password'],
-            email = request.data['email'],
+            email = email,
         )
     
         student = models.Student(
