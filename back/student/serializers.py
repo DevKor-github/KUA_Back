@@ -13,3 +13,15 @@ class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Student
         fields = ['user', 'name']
+
+class EmailSerializer(serializers.ModelSerializer):
+    def create(self, validated_data):
+        email = models.Email(
+            email = validated_data['email'],
+            permission_code = validated_data['permission_code'],
+        )
+        return email
+    
+    class Meta:
+        model = models.Email
+        filed = ['email', 'permission_code']

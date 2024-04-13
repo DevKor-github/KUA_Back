@@ -16,4 +16,9 @@ class Student(models.Model):
     def __str__(self):
         return self.nickname
 
+class Email(models.Model):
+    email = models.CharField(null = False, blank = False, unique = True)
+    permission_code = models.CharField(default='', max_length = 8, null = False, blank = False)
     
+    def __str__(self):
+        return self.email

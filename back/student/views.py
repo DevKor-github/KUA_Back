@@ -6,7 +6,29 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from . import serializers
+import string
+import random
 
+class PermissionCodeSendView(APIView):
+    def post(self, request):
+        letters_set = string.ascii_letters
+        random_code_list = random.sample(letters_set,8)
+        random_code = ''.join(random_code_list)
+
+        email = request.data['email']
+
+        if not email:
+            return Response({'error': 'Not Valid Email'})
+        
+        if email not in models.Email:
+        else:
+            email_db = models.Email.objects.get(email=email)
+            permission_code_db = random_code
+
+
+class PermissionCodeCheckView(APIView):
+    def post(self, request):
+        if
 
 class SignupView(APIView):
     def post(self, request):
