@@ -24,4 +24,4 @@ class EmailSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = models.Email
-        filed = ['email', 'permission_code']
+        fields = ['email', 'permission_code']

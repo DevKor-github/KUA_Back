@@ -8,6 +8,8 @@ from django.contrib.auth.models import User
 from . import serializers
 import string
 import random
+from django.core.mail import EmailMessage
+
 
 class PermissionCodeSendView(APIView):
     def post(self, request):
@@ -20,15 +22,47 @@ class PermissionCodeSendView(APIView):
         if not email:
             return Response({'error': 'Not Valid Email'})
         
-        if email not in models.Email:
+        if User.objects.filter(email=email).exists():
+            return Response({'error': 'Already Sign Up'})
+        
+        email_message = EmailMessage(
+            subject='AKSU Permission Code',
+            body= f'물어보라KU 인증 번호는 {random_code}입니다.',
+            to=[email],
+        )
+        email_message.send()
+        
+        if models.Email.objects.filter(email=email).exists():
+            email_obj = models.Email.objects.get(email=email)
         else:
-            email_db = models.Email.objects.get(email=email)
-            permission_code_db = random_code
+            email_obj = models.Email(email=email)
+
+        email_obj.permission_code = random_code
+        serializer = serializers.EmailSerializer(data = email_obj)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'permission_code': random_code})
+        else:
+            return Response({'error': 'Invalid'})
 
 
 class PermissionCodeCheckView(APIView):
     def post(self, request):
-        if
+        email = request.data['email']
+        
+        if not email:
+            return Response({'error': 'Invalid Email Address'})
+        
+        if models.Email.objects.filter(email=email).exists():
+            email_obj = models.Email.objects.get(email=email)
+            if request.data['permission_code'] == email_obj.permission_code:
+                return Response({'Permission': True})
+            else:
+                return Response({'Permission': False})
+        
+        else:
+            return Response({'error': 'Invalid Email Address'})
 
 class SignupView(APIView):
     def post(self, request):
