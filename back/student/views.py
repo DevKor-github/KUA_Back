@@ -23,7 +23,7 @@ class PermissionCodeSendView(APIView):
             return Response({'error': 'Not Valid Email'})
         
         if User.objects.filter(email=email).exists():
-            return Response({'error': 'Already Sign Up'})
+            return Response({'error': 'This email is already used.'})
         
         email_message = EmailMessage(
             subject='AKSU Permission Code',
@@ -38,14 +38,10 @@ class PermissionCodeSendView(APIView):
             email_obj = models.Email(email=email)
 
         email_obj.permission_code = random_code
-        serializer = serializers.EmailSerializer(data = email_obj)
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response({'permission_code': random_code})
-        else:
-            return Response({'error': 'Invalid'})
+        email_obj.save()
 
+        return Response({'Permission Code Update' : True})
 
 class PermissionCodeCheckView(APIView):
     def post(self, request):
@@ -67,12 +63,15 @@ class PermissionCodeCheckView(APIView):
 class SignupView(APIView):
     def post(self, request):
         username = request.data['id']
+        if User.objects.filter(username = username).exists():
+            return Response({'error': 'This ID is already used'})
+        
         password = request.data['password']
         email = request.data['email']
 
         user = User.objects.create_user(
-            username = request.data['id'], 
-            password = request.data['password'],
+            username = username,
+            password = password,
             email = email,
         )
     
