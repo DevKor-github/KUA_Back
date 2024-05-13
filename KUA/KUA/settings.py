@@ -54,7 +54,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "ASKU.urls"
+ROOT_URLCONF = "KUA.urls"
 
 TEMPLATES = [
     {
@@ -72,7 +72,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "back.wsgi.application"
+WSGI_APPLICATION = "KUA.wsgi.application"
 
 
 # Database
@@ -80,8 +80,12 @@ WSGI_APPLICATION = "back.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "kua",
+        "USER": "postgres",
+        "PASSWORD": "postgres",
+        "HOST": 'localhost',
+        'PORT': '',
     }
 }
 

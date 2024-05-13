@@ -26,8 +26,8 @@ class PermissionCodeSendView(APIView):
             return Response({'error': 'This email is already used.'})
         
         email_message = EmailMessage(
-            subject='AKSU Permission Code',
-            body= f'물어보라KU 인증 번호는 {random_code}입니다.',
+            subject='KU&A Permission Code',
+            body= f'KU&A 인증 번호는 {random_code}입니다.',
             to=[email],
         )
         email_message.send()
@@ -97,3 +97,19 @@ class LoginView(APIView):
             return Response({"Token": token.key})
         else:
             return Response(status = 401)
+        
+class SubmitTimeTableView(APIView):
+    def post(self, request):
+        username = request.data['id']
+        course_id = request.data['course_id']
+        year_semester = request.data['year_semester']
+        timetable = models.TimeTable(
+            username = username,
+            course_id = course_id,
+            year_semester = year_semester,
+        )
+        serializer = serializers.TimeTableSerializer(data = timetable)
+        if serializer.is_valid():
+            serializer.save()
+            return {'response': 'Time Table Saved'}
+        return {'response': 'Time Table Rejected'}
