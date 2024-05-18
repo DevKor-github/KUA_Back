@@ -8,7 +8,7 @@ class Student(models.Model):
     points = models.IntegerField(default = 0)
     is_active = models.BooleanField(default = True)
     role = models.BooleanField(default = False)
-    permission = models.BooleanField(default = False)
+    permission_date = models.DateField(null = True)
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['password', 'email']
