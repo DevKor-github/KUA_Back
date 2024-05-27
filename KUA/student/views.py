@@ -1,15 +1,6 @@
-import json
-from django.shortcuts import render
 from . import models
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.authtoken.models import Token
-from django.contrib.auth import authenticate
-from django.contrib.auth.models import User
-from . import serializers
-import string
-import random
-from django.core.mail import EmailMessage
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
