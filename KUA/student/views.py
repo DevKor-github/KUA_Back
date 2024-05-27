@@ -4,14 +4,15 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from . import serializers
 import string
 import random
 from django.core.mail import EmailMessage
+from django.utils import timezone
 
 
-class PermissionCodeSendView(APIView):
+class EmailCodeSendView(APIView):
     def post(self, request):
         letters_set = string.ascii_letters
         random_code_list = random.sample(letters_set,8)
@@ -32,27 +33,29 @@ class PermissionCodeSendView(APIView):
         )
         email_message.send()
         
-        if models.Email.objects.filter(email=email).exists():
-            email_obj = models.Email.objects.get(email=email)
+        if models.CertificationCode.objects.filter(email=email).exists():
+            email_object = models.CertificationCode.objects.get(email=email)
         else:
-            email_obj = models.Email(email=email)
+            email_object = models.CertificationCode(email=email)
 
-        email_obj.permission_code = random_code
+        email_object.certification_code = random_code
 
-        email_obj.save()
+        email_object.save()
 
         return Response({'Permission Code Update' : True})
 
-class PermissionCodeCheckView(APIView):
+class EmailCodeCheckView(APIView):
     def post(self, request):
         email = request.data['email']
+        code = request.data['code']
         
         if not email:
             return Response({'error': 'Invalid Email Address'})
         
-        if models.Email.objects.filter(email=email).exists():
-            email_obj = models.Email.objects.get(email=email)
-            if request.data['permission_code'] == email_obj.permission_code:
+        if models.CertificationCode.objects.filter(email=email).exists():
+            email_object = models.CertificationCode.objects.get(email=email)
+            if code == email_object.certification_code:
+                email_object.certification_check = True
                 return Response({'Permission': True})
             else:
                 return Response({'Permission': False})
@@ -60,38 +63,53 @@ class PermissionCodeCheckView(APIView):
         else:
             return Response({'error': 'Invalid Email Address'})
 
+class CreateGroupView(APIView):
+    def post(self, request):
+        group = Group.objects.create(name=request.data['group_name'])
+        return Response('Success to create goup')
+    
 class SignupView(APIView):
     def post(self, request):
-        username = request.data['id']
-        if User.objects.filter(username = username).exists():
-            return Response({'error': 'This ID is already used'})
+        user_data = {
+            'username' : request.data['username'],
+            'first_name' : request.data['first_name'],
+            'last_name' : request.data['last_name'],
+            'email' : request.data['email'],
+            'password' : request.data['password'],
+            'group': request.data['group'],
+            'is_staff' : False,
+            'is_active' : True,
+            'is_superuser' : False,
+            'date_joined' : timezone.now(),
+        }
         
-        password = request.data['password']
-        email = request.data['email']
-
-        user = User.objects.create_user(
-            username = username,
-            password = password,
-            email = email,
-        )
-    
-        student = models.Student(
-            user = user,
-            name = request.data['name'],
-        )
-        user.save()
+        user_serializer = serializers.UserSerializer(data = user_data)
+        if not user_serializer.is_valid():
+            return Response({'Invalid User Infomation'})
         
-        serializer = serializers.StudentSerializer(data = student)
-        if serializer.is_valid():
-            serializer.save()
+        user = user_serializer.save()
+        
+        student = {
+            'user': user.id, #이 부분 수정해야 할 듯 
+            'nickname': 'hi',
+            'points': 0,
+            'permission_type':  '7',
+            'permission_date': timezone.now(),
+        }
 
-        token = Token.objects.create(user=user)
+        student_serializer = serializers.StudentSerializer(data = student)
 
+        if not student_serializer.is_valid():   
+            return Response(student_serializer.errors)
+            
+        student_serializer.save()
+        token = Token.objects.create(user = user)
         return Response({"Token": token.key})
+        
         
 class LoginView(APIView):
     def post(self, request):
-        user = authenticate(username = request.data['id'], password = request.data['password'])
+        user = authenticate(username = request.data['username'], password = request.data['password'])
         if user is not None:
             token = Token.objects.get(user=user)
             return Response({"Token": token.key})
