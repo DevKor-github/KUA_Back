@@ -90,7 +90,7 @@ class SignupView(APIView):
         user = user_serializer.save()
         
         student = {
-            'user': user.id, #이 부분 수정해야 할 듯 
+            'user': user.id,
             'nickname': 'hi',
             'points': 0,
             'permission_type':  '7',
