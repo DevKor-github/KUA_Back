@@ -4,15 +4,13 @@ from django.core.exceptions import ValidationError
     
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    nickname = models.CharField(default='', max_length = 10, null = False, blank = False, unique = True)
+    nickname = models.CharField(max_length = 10, null = False, blank = False)
     points = models.IntegerField(default = 0)
-    is_active = models.BooleanField(default = True)
-    role = models.BooleanField(default = False)
-    permission_date = models.DateField(null = True)
-    permission_type = models.CharField(max_length = 10, validators=[permission_type_check])
+    permission_date = models.DateTimeField(null = True)
+    permission_type = models.CharField(max_length = 10)
 
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['password', 'email']
+    USERNAME_FIELD = 'user'
+    REQUIRED_FIELDS = ['nickname']
 
     def __str__(self):
         return self.nickname
