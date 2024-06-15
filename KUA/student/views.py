@@ -66,7 +66,7 @@ class EmailCodeCheckView(APIView):
 class CreateGroupView(APIView):
     def post(self, request):
         group = Group.objects.create(name=request.data['group_name'])
-        return Response('Success to create goup')
+        return Response('Success to create group')
     
 class SignupView(APIView):
     def post(self, request):
