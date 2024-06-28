@@ -1,12 +1,10 @@
 from rest_framework import serializers
-from .models import Today_Poll, Briefing
+from .models import TodayPoll, Briefing
 
-
-class Today_PollSerializer(serializers.ModelSerializer):
+class TodayPollSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Today_Poll
+        model = TodayPoll
         fields = '__all__'
-
 
 class BriefingSerializer(serializers.ModelSerializer):
     class Meta:

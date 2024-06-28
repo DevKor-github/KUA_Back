@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import TodayPoll, Briefing
 
-# Register your models here.
+admin.site.register(TodayPoll)
+admin.site.register(Briefing)

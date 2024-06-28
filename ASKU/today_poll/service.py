@@ -1,9 +1,6 @@
-# today_poll/services.py
-
 from .models import TodayPoll, Briefing
 from django.utils import timezone
-from course.models import Course
-
+from courses.models import Course
 
 def create_briefing(course_id):
     course = Course.objects.get(id=course_id)
@@ -13,9 +10,9 @@ def create_briefing(course_id):
         return None
 
     total_polls = polls.count()
-    attendance_count = polls.filter(attendance=True).count()
-    assignment_count = polls.filter(assignment=True).count()
-    exam_count = polls.filter(exam=True).count()
+    attendance_count = polls.filter(check_attention=True).count()
+    assignment_count = polls.filter(check_homework=True).count()
+    exam_count = polls.filter(check_test=True).count()
 
     attendance_percentage = (attendance_count / total_polls) * 100
     assignment_percentage = (assignment_count / total_polls) * 100
