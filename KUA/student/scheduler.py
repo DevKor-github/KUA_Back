@@ -63,5 +63,5 @@ def start_scheduler():
     start_time = datetime(2024, 7, 4, 0, 0, 0)
     if not scheduler.running:
         # 2024년 7월 4일 오전 12시 이후 1분마다 실행되도록 설정
-        scheduler.add_job(update_data, 'interval', minutes=1, start_date=start_time)
+        scheduler.add_job(update_data, 'interval', hours=24, start_date=start_time)
         scheduler.start()
