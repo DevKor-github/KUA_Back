@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "student",
     "rest_framework",
     "rest_framework.authtoken",
+    "django_apscheduler",
 ]
 
 MIDDLEWARE = [
@@ -146,3 +147,7 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 SERVER_EMAIL = EMAIL_HOST_USER
 DEFAULT_FROM_MAIL = EMAIL_HOST_USER
+
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"  # Default
+
+SCHEDULER_DEFAULT = True
