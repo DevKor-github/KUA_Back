@@ -1,6 +1,6 @@
 from .models import TodayPoll, Briefing
 from django.utils import timezone
-from courses.models import Course
+from course.models import Course
 
 def create_briefing(course_id):
     course = Course.objects.get(id=course_id)
@@ -33,7 +33,7 @@ def create_briefing(course_id):
     if not created:
         # 기존 브리핑이 있으면 업데이트
         briefing.content = content
-        briefing.created_at = timezone.now()
+        briefing.updated_at = timezone.now()
         briefing.save()
 
     return briefing

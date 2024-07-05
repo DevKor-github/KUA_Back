@@ -17,14 +17,20 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from course import views
+from course import views as course_views
+from today_poll import views as poll_views
 
 router = DefaultRouter()
-router.register(r'courses', views.CourseViewSet)
-router.register(r'posts', views.PostViewSet)
-router.register(r'comments', views.CommentViewSet)
+router.register(r'courses', course_views.CourseViewSet)
+router.register(r'posts', course_views.PostViewSet)
+router.register(r'comments', course_views.CommentViewSet)
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
+    path('tp/', poll_views.TodayPollListCreateView.as_view(), name='TodayPollList'),
+    path('tp/<int:pk>/', poll_views.TodayPollDetailView.as_view(), name='TodayPollDetail'),
+    path('br/', poll_views.BriefingListCreateView.as_view(), name='BriefingList'),
+    path('br/<int:pk>/', poll_views.BriefingDetailView.as_view(), name='BriefingDetail'),
 ]
