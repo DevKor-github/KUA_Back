@@ -49,6 +49,10 @@ def update_data():
             SET nickname = %s, nickname_change_time = %s 
             WHERE id = %s;
         ''', (nickname, nickname_change_time, student_id))
+        cur.execute('''
+            INSERT INTO student_nicknamehistory
+            VALUES ( %s, %s, %s);
+        ''', (student_id, nickname, nickname_change_time))
     
     conn.commit()
     conn.close()
