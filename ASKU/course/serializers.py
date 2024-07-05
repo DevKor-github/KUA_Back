@@ -1,10 +1,16 @@
 from rest_framework import serializers
-from .models import Course, Post, Comment
+from .models import Course, Tag, Post, Comment
 
 
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
+        fields = '__all__'
+
+
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
         fields = '__all__'
 
 

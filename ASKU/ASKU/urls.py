@@ -24,13 +24,11 @@ router = DefaultRouter()
 router.register(r'courses', course_views.CourseViewSet)
 router.register(r'posts', course_views.PostViewSet)
 router.register(r'comments', course_views.CommentViewSet)
-
+router.register(r'tags', course_views.TagViewSet)
+router.register(r'tp', poll_views.TodayPollListCreateView)
+router.register(r'br', poll_views.BriefingListCreateView)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
-    path('tp/', poll_views.TodayPollListCreateView.as_view(), name='TodayPollList'),
-    path('tp/<int:pk>/', poll_views.TodayPollDetailView.as_view(), name='TodayPollDetail'),
-    path('br/', poll_views.BriefingListCreateView.as_view(), name='BriefingList'),
-    path('br/<int:pk>/', poll_views.BriefingDetailView.as_view(), name='BriefingDetail'),
 ]
