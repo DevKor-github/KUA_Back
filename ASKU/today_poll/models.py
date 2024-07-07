@@ -18,3 +18,6 @@ class Briefing(models.Model):
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Briefing for {self.course.course_name} on {self.created_at.date()}"
