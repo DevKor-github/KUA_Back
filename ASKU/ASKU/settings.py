@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'course',
     'today_poll',
+    'django_apscheduler',
 ]
 
 MIDDLEWARE = [
@@ -90,7 +91,6 @@ DATABASES = {
         'PORT': os.environ.get("DB_PORT"),
     }
 }
-
 
 
 # Password validation

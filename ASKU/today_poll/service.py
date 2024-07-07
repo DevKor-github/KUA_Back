@@ -29,7 +29,7 @@ def create_briefing(course_id, target_date):
         # 기존 브리핑이 있는지 확인
         briefing, created = Briefing.objects.get_or_create(
             course=course,
-            create_at__date=target_date,
+            created_at__date=target_date,
             defaults={'content': content, 'created_at': timezone.now()}
         )
 

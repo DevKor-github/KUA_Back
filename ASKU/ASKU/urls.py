@@ -28,6 +28,4 @@ urlpatterns = [
          name='todaypoll-answer'),
     path('courses/<int:course_id>/briefings/',
          poll_views.CourseBriefingListView.as_view(), name='course-briefings'),
-    path('courses/<int:course_id>/create-briefing/',
-         poll_views.CreateBriefingView.as_view(), name='create-briefing'),
 ]
