@@ -33,10 +33,7 @@ class EmailCodeSendView(APIView):
         )
         email_message.send()
         
-        if models.CertificationCode.objects.filter(email=email).exists():
-            email_object = models.CertificationCode.objects.get(email=email)
-        else:
-            email_object = models.CertificationCode(email=email)
+        email_object, created = models.CertificationCode.objects.get_or_create(email=email)
 
         email_object.certification_code = random_code
 
@@ -65,7 +62,7 @@ class EmailCodeCheckView(APIView):
 
 class CreateGroupView(APIView):
     def post(self, request):
-        group = Group.objects.create(name=request.data['group_name'])
+        group = Group.objects.get_or_create(name=request.data['group_name'])
         return Response('Success to create group')
     
 class SignupView(APIView):
@@ -85,7 +82,7 @@ class SignupView(APIView):
         
         user_serializer = serializers.UserSerializer(data = user_data)
         if not user_serializer.is_valid():
-            return Response({'Invalid User Infomation'})
+            return Response({'Invalid User Information'})
         
         user = user_serializer.save()
         
