@@ -4,10 +4,17 @@ from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
-    
-class PointGetView(APIView): #포인트 값과 user를 받아 해당 포인트 값만큼 유저가 포인트를 얻는 view
+
+
+class PointGetView(APIView):  # 포인트 값과 user를 받아 해당 포인트 값만큼 유저가 포인트를 얻는 view
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
+
+    point_reward = {
+        'answer': 5,
+        'chosen': 20,
+        'survey': 10
+    }
 
     def post(self, request):
         user = request.user
@@ -17,69 +24,46 @@ class PointGetView(APIView): #포인트 값과 user를 받아 해당 포인트 �
         except models.Student.DoesNotExist:
             return Response("Student not found", status=400)
 
-        if point_type == 'answer':
-            student.points += 5
+        reward = self.point_reward.get(point_type)
+
+        if reward:
+            student.points += reward
             student.save()
-            return Response("Get 5 Points")
-        elif point_type == 'chosen':
-            student.points += 20
-            student.save()
-            return Response("Get 20 Points")
-        elif point_type == 'survey':
-            student.points += 10
-            student.save()
-            return Response("Get 10 Points")
+            return Response(f"Get {reward} Points")
+
         else:
             return Response({'error': ' invalid getting points type'})
-    
-class PointUseView(APIView): #포인트를 이용하여 이용권을 구매하는 view
+
+
+class PointUseView(APIView):  # 포인트를 이용하여 이용권을 구매하는 view
     authentication_classes = [TokenAuthentication]
-    permission_classes =[IsAuthenticated]
-    
+    permission_classes = [IsAuthenticated]
+
+    point_costs = {
+        '1': 80,
+        '7': 160,
+        '14': 240,
+        '30': 300
+    }
+
     def post(self, request):
         user = request.user
         point_type = request.data['point_type']
         try:
             student = user.student
         except models.Student.DoesNotExist:
-            return Response("Student not found", status = 400)
-        
-        if point_type == '1':
-            if student.points <80:
-                return Response('Not enough points')
-            student.points -= 80
+            return Response("Student not found", status=400)
+
+        cost = self.point_costs.get(point_type)
+
+        if cost:
+            if student.points < cost:
+                return Response('Not Enough Points')
+            student.points -= cost
             student.permission_date = timezone.now()
             student.permission_type = '1'
             student.save()
-            return Response("Get 1 day permission")
-        
-        elif point_type == '7':
-            if student.points <160:
-                return Response('Not enough points')
-            student.points -= 160
-            student.permission_date = timezone.now()
-            student.permission_type = '7'
-            student.save()
-            return Response("Get 7 day permission")
-        
-        elif point_type == '14':
-            if student.points <240:
-                return Response('Not enough points')
-            student.points -= 240
-            student.permission_date = timezone.now()
-            student.permission_type = '14'
-            student.save()
-            return Response("Get 14 day permission")
-        
-        elif point_type == '30':
-            if student.points <300:
-                return Response('Not enough points')
-            student.points -= 300
-            student.permission_date = timezone.now()
-            student.permission_type = '30'
-            student.save()
-            return Response("Get 30 day permission")
-        
+            return Response(f"Get {point_type} day permission")
+
         else:
             return Response({'error': ' invalid using points type'})
-
