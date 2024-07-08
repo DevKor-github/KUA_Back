@@ -87,6 +87,9 @@ class SignupView(generics.CreateAPIView):
         
         user = user_serializer.save()
         
+        student_number = models.Student.objects.count()
+        
+        
         student = {
             'user': user.id,
             'nickname': 'hi',
