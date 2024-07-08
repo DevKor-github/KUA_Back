@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
-
+from datetime import timedelta
 
 class PointGetView(generics.UpdateAPIView):  # 포인트 값과 user를 받아 해당 포인트 값만큼 유저가 포인트를 얻는 view
     authentication_classes = [TokenAuthentication]
@@ -68,3 +68,20 @@ class PointUseView(generics.UpdateAPIView):  # 포인트를 이용하여 이용�
 
         else:
             return Response({'error': ' invalid using points type'})
+        
+class IsPermissionView(generics.RetrieveAPIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        
+        try:
+            student = user.student
+        except models.Student.DoesNotExist:
+            return Response("Student not found", status=400)
+        
+        if timezone.now() - student.permission_date > timedelta(days=int(student.permission_type)):
+            return Response("You Need to Buy")
+        else:
+            return Response("Success")

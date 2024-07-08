@@ -7,4 +7,5 @@ urlpatterns = [
     path('api-token-auth/', obtain_auth_token),
     path('pointGet/', views.PointGetView().as_view()),
     path('pointUse/', views.PointUseView().as_view()),
+    path('permissionCheck/', views.IsPermissionView().as_view()),
 ]
