@@ -1,4 +1,5 @@
 from . import models
+from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
@@ -6,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
 
 
-class PointGetView(APIView):  # 포인트 값과 user를 받아 해당 포인트 값만큼 유저가 포인트를 얻는 view
+class PointGetView(generics.UpdateAPIView):  # 포인트 값과 user를 받아 해당 포인트 값만큼 유저가 포인트를 얻는 view
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
@@ -35,7 +36,7 @@ class PointGetView(APIView):  # 포인트 값과 user를 받아 해당 포인트
             return Response({'error': ' invalid getting points type'})
 
 
-class PointUseView(APIView):  # 포인트를 이용하여 이용권을 구매하는 view
+class PointUseView(generics.UpdateAPIView):  # 포인트를 이용하여 이용권을 구매하는 view
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
