@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from . import models
+from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
@@ -12,7 +13,7 @@ from django.core.mail import EmailMessage
 from django.utils import timezone
 
 
-class EmailCodeSendView(APIView):
+class EmailCodeSendView(generics.CreateAPIView):
     def post(self, request):
         letters_set = string.ascii_letters
         random_code_list = random.sample(letters_set,8)
@@ -41,8 +42,8 @@ class EmailCodeSendView(APIView):
 
         return Response({'Permission Code Update' : True})
 
-class EmailCodeCheckView(APIView):
-    def post(self, request):
+class EmailCodeCheckView(generics.RetrieveAPIView):
+    def get(self, request):
         email = request.data['email']
         code = request.data['code']
         
@@ -60,12 +61,12 @@ class EmailCodeCheckView(APIView):
         else:
             return Response({'error': 'Invalid Email Address'})
 
-class CreateGroupView(APIView):
+class CreateGroupView(generics.CreateAPIView):
     def post(self, request):
         group = Group.objects.get_or_create(name=request.data['group_name'])
         return Response('Success to create group')
     
-class SignupView(APIView):
+class SignupView(generics.CreateAPIView):
     def post(self, request):
         user_data = {
             'username' : request.data['username'],
@@ -104,8 +105,8 @@ class SignupView(APIView):
         return Response({"Token": token.key})
         
         
-class LoginView(APIView):
-    def post(self, request):
+class LoginView(generics.RetrieveAPIView):
+    def get(self, request):
         user = authenticate(username = request.data['username'], password = request.data['password'])
         if user is not None:
             token = Token.objects.get(user=user)
