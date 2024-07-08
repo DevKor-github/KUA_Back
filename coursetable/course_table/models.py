@@ -9,6 +9,7 @@ class Course(models.Model):
     credits = models.IntegerField()
     classification = models.CharField(max_length=100)
     course_week = models.TextField()
+    course_period = models.TextField()
     course_room = models.TextField()
 
 
