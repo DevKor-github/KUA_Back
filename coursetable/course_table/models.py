@@ -13,5 +13,6 @@ class Course(models.Model):
     course_room = models.TextField()
 
 
+
     def __str__(self):
         return f"{self.course_name} ({self.year})"
