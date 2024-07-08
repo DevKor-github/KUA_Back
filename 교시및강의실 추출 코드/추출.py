@@ -1,3 +1,5 @@
+# 강의교시 및 강의실 분리 코드
+
 import pandas as pd
 import re
 
