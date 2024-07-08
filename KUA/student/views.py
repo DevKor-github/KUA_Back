@@ -49,7 +49,7 @@ class PointUseView(generics.UpdateAPIView):  # 포인트를 이용하여 이용�
 
     def post(self, request):
         user = request.user
-        point_type = request.data['point_type']
+        point_type = request.data['point_costs']
         try:
             student = user.student
         except models.Student.DoesNotExist:

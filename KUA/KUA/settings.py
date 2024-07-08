@@ -112,6 +112,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES':[ #API 뷰에 적용되는 접근 제어 규칙 결정
         'rest_framework.authentication.TokenAuthentication',
     ],
+    'DEFAULT_PERMISSION_CLASSES':[
+        'rest_framework.permissions.IsAuthenticated',
+    ]
 }
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
