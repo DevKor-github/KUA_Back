@@ -49,13 +49,13 @@ class PointUseView(generics.UpdateAPIView):  # 포인트를 이용하여 이용�
 
     def post(self, request):
         user = request.user
-        point_type = request.data['point_costs']
+        permission_type = request.data['point_costs']
         try:
             student = user.student
         except models.Student.DoesNotExist:
             return Response("Student not found", status=400)
 
-        cost = self.point_costs.get(point_type)
+        cost = self.point_costs.get(permission_type)
 
         if cost:
             if student.points < cost:
@@ -64,7 +64,7 @@ class PointUseView(generics.UpdateAPIView):  # 포인트를 이용하여 이용�
             student.permission_date = timezone.now()
             student.permission_type = '1'
             student.save()
-            return Response(f"Get {point_type} day permission")
+            return Response(f"Get {permission_type} day permission")
 
         else:
             return Response({'error': ' invalid using points type'})
