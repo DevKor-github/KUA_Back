@@ -15,4 +15,4 @@ class Course(models.Model):
 
 
     def __str__(self):
-        return f"{self.course_name} ({self.year})"
+        return self.course_name
