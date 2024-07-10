@@ -4,8 +4,7 @@ from rest_framework import urls
 from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
-    path('api-token-auth/', obtain_auth_token),
-    path('pointGet/', views.PointGetView().as_view()),
-    path('pointUse/', views.PointUseView().as_view()),
-    path('permissionCheck/', views.IsPermissionView().as_view()),
+    path('get-points/', views.PointGetView().as_view()),
+    path('use-points/', views.PointUseView().as_view()),
+    path('check-permission/', views.IsPermissionView().as_view()),
 ]
