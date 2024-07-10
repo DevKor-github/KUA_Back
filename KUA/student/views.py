@@ -3,8 +3,9 @@ from rest_framework.response import Response
 from . import serializers
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import generics
         
-class SubmitTimeTableView(APIView): #id, 학수번호, 개설년도와 학기 정보를 통해 시간표를 등록하는 view
+class SubmitTimeTableView(generics.CreateAPIView): #id, 학수번호, 개설년도와 학기 정보를 통해 시간표를 등록하는 view
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
