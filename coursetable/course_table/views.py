@@ -6,16 +6,12 @@ import os
 from django.conf import settings
 
 def handle_uploaded_file(f):
-    for index, row in df.iterrows():
-        Course.objects.create(
-            course_id=row['학수번호-분반'],
-            course_name=row['과목명'],
-            instructor=row['교수명'],
-            credits=row['학점'],
-            classification=row['이수구분'],
-            course_week=row['요일'],
-            course_period=row['교시'],
-            course_room=row['장소'],
+    file_path = os.path.join(settings.MEDIA_ROOT, f.name)
+    with open(file_path, 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
+    return file_path
+
 def is_excel_file(file_name):
     # 엑셀 파일 확장자 확인
     valid_extensions = ['.xlsx', '.xls']
