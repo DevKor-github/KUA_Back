@@ -44,7 +44,7 @@ def upload_file(request):
                             course_period=row['교시'],
                             course_room=row['장소'],
                         )
-                    return redirect('success')
+                    return redirect('upload_success')
                 except pd.errors.ParserError as e:
                     return render(request, 'course_table/upload.html', {
                         'form': form,
