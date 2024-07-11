@@ -16,9 +16,20 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+# from django.http import HttpResponse
+from django.conf import settings
+from django.conf.urls.static import static
+
+# 간단한 루트 뷰 함수 정의
+# def home(request):
+#     return HttpResponse("Welcome to the Home Page!")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('course_table/', include('course_table.urls')),
+    path('', include('course_table.urls')),
+    # path('course_table/', include('course_table.urls')),
+    # path('', home, name='home'),  # 루트 URL에 대한 뷰 연결
     
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS)

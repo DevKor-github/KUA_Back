@@ -3,6 +3,9 @@ from django.shortcuts import render, redirect
 from .models import Course
 from .forms import UploadFileForm
 
+def home(request):
+    return render(request, 'course_table/home.html')
+
 def handle_uploaded_file(f):
     df = pd.read_excel(f)
     for index, row in df.iterrows():
