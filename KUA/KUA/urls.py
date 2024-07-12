@@ -5,13 +5,13 @@ from course import views as course_views
 from today_poll import views as poll_views
 
 router = DefaultRouter()
-router.register(r'courses', course_views.CourseViewSet)
-router.register(r'tags', course_views.TagViewSet)
-router.register(r'posts', course_views.PostViewSet)
-router.register(r'comments', course_views.CommentViewSet)
-router.register(r'todaypolls', poll_views.TodayPollViewSet,
-                basename='todaypolls')
-router.register(r'briefings', poll_views.BriefingViewSet, basename='briefings')
+router.register(r'course', course_views.CourseViewSet)
+router.register(r'tag', course_views.TagViewSet)
+router.register(r'post', course_views.PostViewSet)
+router.register(r'comment', course_views.CommentViewSet)
+router.register(r'todaypoll', poll_views.TodayPollViewSet,
+                basename='todaypoll')
+router.register(r'briefing', poll_views.BriefingViewSet, basename='briefing')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

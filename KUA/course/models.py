@@ -15,7 +15,7 @@ class Course(models.Model):
     # 학수번호
     course_id = models.CharField(max_length=20, unique=True)
     course_name = models.CharField(max_length=50)
-    year = models.DateField().year()
+    year = models.IntegerField()
     semester = models.IntegerField()
     instructor = models.CharField(max_length=30)
     credits = models.IntegerField()
@@ -45,6 +45,8 @@ class Course(models.Model):
         default=list,
         null=True
     )
+    
+    
     
     def __str__(self):  
         return f"{self.year} 년도, {self.semester}학기 {self.instructor} 교수님 {self.course_name} ({self.course_id})"
