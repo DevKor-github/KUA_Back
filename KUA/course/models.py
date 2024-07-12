@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.util import timezone
 
 
 class Course(models.Model):
@@ -11,7 +12,7 @@ class Course(models.Model):
         ('금', 'Friday'),
         ('토', 'Saturday'),
     ]
-    
+
     # 학수번호
     course_id = models.CharField(max_length=20, unique=True)
     course_name = models.CharField(max_length=50)
@@ -27,7 +28,7 @@ class Course(models.Model):
         size=7,
         default=list
     )
-    
+
     # 수업 교시 이차원 배열
     course_period = ArrayField(
         ArrayField(
@@ -37,7 +38,7 @@ class Course(models.Model):
         size=7,
         default=list
     )
-    
+
     # 강의실 리스트(Nullable)
     course_room = ArrayField(
         models.CharField(max_length=100),
@@ -45,10 +46,19 @@ class Course(models.Model):
         default=list,
         null=True
     )
-    
-    
-    
-    def __str__(self):  
+
+    # year와 semester를 크롤링 시점에 따라 결정
+    def save(self, *args, **kwargs):
+        if not self.id:  # 객체가 처음 생성될 때만 설정
+            now = timezone.now()
+            self.year = now.year
+            if now.month < 6:
+                self.semester = '1'
+            else:
+                self.semester = '2'
+        super(Course, self).save(*args, **kwargs)
+
+    def __str__(self):
         return f"{self.year} 년도, {self.semester}학기 {self.instructor} 교수님 {self.course_name} ({self.course_id})"
 
 # 태그 모델
@@ -61,6 +71,7 @@ class Tag(models.Model):
         return self.name
 
 # 게시글 (각 강의에 대한)
+
 
 class Post(models.Model):
     course = models.ForeignKey(
