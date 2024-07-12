@@ -1,5 +1,5 @@
 """
-WSGI config for ASKU project.
+WSGI config for KUA project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -12,7 +12,7 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ASKU.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'KUA.settings')
 
 application = get_wsgi_application()
 
