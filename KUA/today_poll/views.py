@@ -4,26 +4,20 @@ from .serializers import TodayPollSerializer, BriefingSerializer, TodayPollAnswe
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
-from django.utils import timezone
 from django.shortcuts import get_object_or_404
+
+# 모든 오늘의 설문 전체 뷰
 
 
 class TodayPollViewSet(viewsets.ModelViewSet):
     queryset = TodayPoll.objects.all()
     serializer_class = TodayPollSerializer
-    permission_classes = [permissions.AllowAny]
 
-    def get_queryset(self):
-        user_id = self.kwargs.get('user_id')
-        if user_id:
-            user = get_object_or_404(User, id=user_id)
-            return TodayPoll.objects.filter(user=user)
-        return TodayPoll.objects.none()
+# 특정 유저의 오늘의 설문 뷰
 
 
 class UserTodayPollListCreateView(generics.ListCreateAPIView):
     serializer_class = TodayPollSerializer
-    permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
         user_id = self.kwargs.get('user_id')
@@ -31,12 +25,13 @@ class UserTodayPollListCreateView(generics.ListCreateAPIView):
             user = get_object_or_404(User, id=user_id)
             return TodayPoll.objects.filter(user=user)
         return TodayPoll.objects.none()
+
+# 오늘의 설문 상세 뷰
 
 
 class TodayPollDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = TodayPoll.objects.all()
     serializer_class = TodayPollSerializer
-    permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
         user_id = self.kwargs.get('user_id')
@@ -45,9 +40,10 @@ class TodayPollDetailView(generics.RetrieveUpdateDestroyAPIView):
             return TodayPoll.objects.filter(user=user)
         return TodayPoll.objects.none()
 
+# 오늘의 설문 응답을 위한 뷰
+
 
 class TodayPollAnswerView(APIView):
-    permission_classes = [permissions.AllowAny]
 
     def post(self, request, pk):
         today_poll = get_object_or_404(TodayPoll, pk=pk)
@@ -58,16 +54,18 @@ class TodayPollAnswerView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
 
+# 브리핑 전체 뷰
+
 
 class BriefingViewSet(viewsets.ModelViewSet):
     queryset = Briefing.objects.all()
     serializer_class = BriefingSerializer
-    permission_classes = [permissions.AllowAny]
+
+# 특정 강의의 브리핑 뷰
 
 
 class CourseBriefingListView(generics.ListAPIView):
     serializer_class = BriefingSerializer
-    permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
         course_id = self.kwargs['course_id']
