@@ -1,6 +1,6 @@
 from rest_framework import viewsets, generics, permissions
 from .models import TodayPoll, Briefing
-from .serializers import TodayPollSerializer, BriefingSerializer
+from .serializers import TodayPollSerializer, BriefingSerializer, TodayPollAnswerSerializer
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
@@ -20,13 +20,6 @@ class TodayPollViewSet(viewsets.ModelViewSet):
             return TodayPoll.objects.filter(user=user)
         return TodayPoll.objects.none()
 
-    def perform_create(self, serializer):
-        if self.request.user.is_authenticated:
-            serializer.save(user=self.request.user)
-        else:
-            default_user = get_object_or_404(User, pk=1)
-            serializer.save(user=default_user)
-
 
 class UserTodayPollListCreateView(generics.ListCreateAPIView):
     serializer_class = TodayPollSerializer
@@ -38,13 +31,6 @@ class UserTodayPollListCreateView(generics.ListCreateAPIView):
             user = get_object_or_404(User, id=user_id)
             return TodayPoll.objects.filter(user=user)
         return TodayPoll.objects.none()
-
-    def perform_create(self, serializer):
-        if self.request.user.is_authenticated:
-            serializer.save(user=self.request.user)
-        else:
-            default_user = get_object_or_404(User, pk=1)
-            serializer.save(user=default_user)
 
 
 class TodayPollDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -64,29 +50,13 @@ class TodayPollAnswerView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, pk):
-        user_id = request.data.get('user_id')
-        if user_id:
-            user = get_object_or_404(User, id=user_id)
-        else:
-            user = request.user if request.user.is_authenticated else get_object_or_404(
-                User, pk=1)
-
-        try:
-            today_poll = TodayPoll.objects.get(pk=pk, user=user)
-        except TodayPoll.DoesNotExist:
-            return Response({'error': 'TodayPoll not found'}, status=404)
-
-        data = request.data
-        today_poll.check_attention = data.get(
-            'check_attention', today_poll.check_attention)
-        today_poll.check_test = data.get('check_test', today_poll.check_test)
-        today_poll.check_homework = data.get(
-            'check_homework', today_poll.check_homework)
-        today_poll.created_at = data.get('created_at', today_poll.created_at)
-        today_poll.answered_at = timezone.now()
-        today_poll.save()
-
-        return Response(TodayPollSerializer(today_poll).data)
+        today_poll = get_object_or_404(TodayPoll, pk=pk)
+        serializer = TodayPollAnswerSerializer(
+            today_poll, data=request.data, partial=True, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
 
 
 class BriefingViewSet(viewsets.ModelViewSet):
