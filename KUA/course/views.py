@@ -41,3 +41,11 @@ class PostCommentListView(generics.ListAPIView):
     def get_queryset(self):
         post_id = self.kwargs['post_id']
         return Comment.objects.filter(post_id=post_id)
+
+# 특정 태그의 게시글 리스트를 보는 뷰
+class TagPostListView(generics.ListAPIView):
+    serializer_class = PostSerializer
+    
+    def get_queryset(self):
+        tag = self.kwargs['tag']
+        return Post.objects.filter(tags__name=tag)

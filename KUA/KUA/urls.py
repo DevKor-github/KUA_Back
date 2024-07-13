@@ -28,6 +28,9 @@ urlpatterns = [
     # 특정 게시글의 댓글
     path('posts/<int:post_id>/comments/',
          course_views.PostCommentListView.as_view(), name='post-comments'),
+    
+    # 특정 태그의 게시글
+    path('posts/<int:tag_id>/', course_views.TagListView.as_view(), name='post-tags')
 
     # 특정 사용자의 오늘의 설문 목록
     path('student/<int:user_id>/todaypolls/', poll_views.UserTodayPollListCreateView.as_view(),
