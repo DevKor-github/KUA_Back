@@ -15,6 +15,21 @@ import os
 
 os.environ.get("KU&A")
 
+# 교시 -> 시간 데이터
+
+CLASS_TIMES = {
+    1: "09:00",
+    2: "10:30",
+    3: "12:00",
+    4: "13:30",
+    5: "15:00",
+    6: "16:30",
+    7: "18:00",
+    8: "19:30",
+    9: "21:00",
+}
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
