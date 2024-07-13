@@ -48,11 +48,15 @@ class TodayPollAnswerSerializer(serializers.ModelSerializer):
         if not User.objects.filter(id=value).exists():
             raise serializers.ValidationError("User not found.")
         return value
-
+    
+    def validate_todayPoll(self, value):
+    
     def update(self, instance, validated_data):
         user_id = validated_data.pop('user_id', None)
+        expired = validated_data.get('expired')
         if user_id:
             validated_data['user'] = get_object_or_404(User, id=user_id)
+
         instance.answered_at = timezone.now()
         return super().update(instance, validated_data)
 
