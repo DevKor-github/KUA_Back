@@ -4,7 +4,8 @@ import psycopg2
 import random
 from django.utils import timezone
 from datetime import datetime, timedelta
-
+import os
+from dotenv import load_dotenv
 
 scheduler = BackgroundScheduler()
 
@@ -14,7 +15,11 @@ nickname_animal = ['사자', '고양이', '강아지', '호랑이', '매', '양'
 def update_data():
     # DB 연결
     try:
-        conn = psycopg2.connect(host='localhost', dbname="kua", user="postgres", password="postgres")
+        host = os.environ.get('EMAIL_HOST_USER')
+        dbname = os.environ.get('DB_NAME')
+        dbuser = os.environ.get('DB_USER')
+        dbpassword = os.environ.get('DB_PASSWORD')
+        conn = psycopg2.connect(host=host, dbname=dbname, user=dbuser, password=dbpassword)
     except psycopg2.DatabaseError as db_err:
         print(db_err)
         return False
