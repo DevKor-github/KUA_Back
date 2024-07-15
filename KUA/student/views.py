@@ -13,11 +13,13 @@ class SubmitTimeTableView(generics.CreateAPIView): #id, 학수번호, 개설년�
         user = request.user
         print(user.username)
         course_id = request.data['course_id']
-        year_semester = request.data['year_semester']
+        year = request.data['year']
+        semester = request.data['semester']
         timetable = {
             'username': user.username,
             'course_id': course_id,
-            'year_semester': year_semester,
+            'year': year,
+            'semester': semester
         }
         serializer = serializers.TimeTableSerializer(data = timetable)
         if serializer.is_valid():
