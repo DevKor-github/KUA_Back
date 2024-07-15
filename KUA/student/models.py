@@ -19,7 +19,8 @@ class Student(models.Model):
 class TimeTable(models.Model):
     username = models.CharField(null = False, max_length = 20)
     course_id = models.ForeignKey(Course, null = False, on_delete=models.CASCADE)
-    year_semester = models.CharField(null = False, max_length=6)
+    year = models.CharField(null = False, max_length=6)
+    semester = models.CharField(null = False, max_length = 6)
 
     def __str__(self):
         return self.id
