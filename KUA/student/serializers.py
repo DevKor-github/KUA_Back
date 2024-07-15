@@ -7,14 +7,16 @@ class TimeTableSerializer(serializers.ModelSerializer):
         username = validated_data['username']
         check_username =  models.User.objects.filter(username=username).exists()
         course_id = validated_data['course_id']
-        year_semester = validated_data['year_semester']
-        check_course =  models.Course.objects.filter(course_id = course_id, year_semester = year_semester).exists()
+        year = validated_data['year']
+        semester = validated_data['semester']
+        check_course =  models.Course.objects.filter(course_id = course_id, year = year, semester = semester).exists()
 
         if check_username and check_course: 
             timetable = models.TimeTable(
                 username = username,
                 course_id = course_id,
-                year_semester = year_semester
+                year = year,
+                semester = semester,
             )
             return timetable
         elif check_username == False:
