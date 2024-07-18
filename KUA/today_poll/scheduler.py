@@ -22,4 +22,3 @@ def start():
 
     register_events(scheduler)
     scheduler.start()
-    print("Scheduler started!")
