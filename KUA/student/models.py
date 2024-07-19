@@ -19,23 +19,6 @@ class Student(models.Model):
     def __str__(self):
         return self.nickname
 
-class TimeTable(models.Model):
-    username = models.CharField(null = False, max_length = 20)
-    course_id = models.ForeignKey(Course, null = False, on_delete=models.CASCADE)
-    year = models.CharField(null = False, max_length=6)
-    semester = models.CharField(null = False, max_length = 6)
-
-    def __str__(self):
-        return self.id
-        
-class NicknameHistory(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    nickname = models.CharField(max_length=10, null = False, blank = False)
-    nickname_time = models.DateTimeField(null = False)
-
-    def __str__(self):
-        return self.user
-
 class CertificationCode(models.Model):
     email = models.CharField(max_length = 30, null = False, blank=False)
     certification_code = models.CharField(default='', max_length = 8, null = False, blank = False)
