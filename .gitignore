@@ -5,7 +5,7 @@ __pycache__/
 migrations/
 *.py[cod]
 *$py.class
-myenv
+myenv/
 .env
 # C extensions
 *.so
