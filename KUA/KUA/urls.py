@@ -16,6 +16,8 @@ router.register(r'briefings', poll_views.BriefingViewSet, basename='briefing')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
+    path('api/', include('rest_framework.urls')),
+    path('student/', include('student.urls')),
 
     # 특정 게시판 게시글
     path('courses/<int:course_id>/posts/',
@@ -43,5 +45,6 @@ urlpatterns = [
     # 특정 설문 응답
     path('todaypolls/<int:pk>/answer/', poll_views.TodayPollAnswerView.as_view(),
          name='todaypoll-answer'),
+    
 
 ]
