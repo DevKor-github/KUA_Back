@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, User
 from django.core.exceptions import ValidationError
+from course.models import Course
 from django.utils import timezone
     
 class Student(models.Model):
@@ -8,7 +9,7 @@ class Student(models.Model):
     nickname = models.CharField(max_length = 10, null = False, blank = False)
     nickname_change_time = models.DateTimeField(null = True, default='2024-07-01 12:22:44.398477+09')
     points = models.IntegerField(default = 0)
-    permission_date = models.DateTimeField(null = True)
+    permission_date = models.DateTimeField(null = True, default='7')
     permission_type = models.CharField(max_length = 10)
 
 
@@ -17,7 +18,16 @@ class Student(models.Model):
 
     def __str__(self):
         return self.nickname
-    
+
+class TimeTable(models.Model):
+    username = models.CharField(null = False, max_length = 20)
+    course_id = models.ForeignKey(Course, null = False, on_delete=models.CASCADE)
+    year = models.CharField(null = False, max_length=6)
+    semester = models.CharField(null = False, max_length = 6)
+
+    def __str__(self):
+        return self.id
+        
 class NicknameHistory(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     nickname = models.CharField(max_length=10, null = False, blank = False)
@@ -35,4 +45,3 @@ class CertificationCode(models.Model):
 
     def __str__(self):
         return self.email
-
