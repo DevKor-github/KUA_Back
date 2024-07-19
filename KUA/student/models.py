@@ -27,7 +27,15 @@ class TimeTable(models.Model):
 
     def __str__(self):
         return self.id
-    
+        
+class NicknameHistory(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    nickname = models.CharField(max_length=10, null = False, blank = False)
+    nickname_time = models.DateTimeField(null = False)
+
+    def __str__(self):
+        return self.user
+
 class CertificationCode(models.Model):
     email = models.CharField(max_length = 30, null = False, blank=False)
     certification_code = models.CharField(default='', max_length = 8, null = False, blank = False)

@@ -4,3 +4,4 @@ from . import models
 admin.site.register(models.Student)
 admin.site.register(models.TimeTable)
 admin.site.register(models.CertificationCode)
+admin.site.register(models.NicknameHistory)
