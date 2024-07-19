@@ -1,6 +1,7 @@
 from django.urls import path, include
 from . import views
 from rest_framework import urls
+from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
     path('submit-timetable/', views.SubmitTimeTableView().as_view()),
@@ -9,4 +10,7 @@ urlpatterns = [
     path('send-code/', views.EmailCodeSendView().as_view()),
     path('check-code/', views.EmailCodeCheckView().as_view()),
     path('create-group/', views.CreateGroupView().as_view()),
+    path('get-points/', views.PointGetView().as_view()),
+    path('use-points/', views.PointUseView().as_view()),
+    path('check-permission/', views.IsPermissionView().as_view()),
 ]
