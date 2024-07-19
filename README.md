@@ -1,4 +1,5 @@
-# DevKor-teamB-back
+# DevKor-KU&A
+뎁코 KU&A 백엔드 레포지토리입니다.
 
 뎁코 KU&A 백엔드 레포지토리입니다.
 
