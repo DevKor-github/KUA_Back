@@ -28,3 +28,20 @@ class CertificationCode(models.Model):
 
     def __str__(self):
         return self.email
+    
+class TimeTable(models.Model):
+    username = models.CharField(null = False, max_length = 20)
+    course_id = models.ForeignKey(Course, null = False, on_delete=models.CASCADE)
+    year = models.CharField(null = False, max_length=6)
+    semester = models.CharField(null = False, max_length = 6)
+
+    def __str__(self):
+        return self.id
+    
+class NicknameHistory(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    nickname = models.CharField(max_length=10, null = False, blank = False)
+    nickname_time = models.DateTimeField(null = False)
+
+    def __str__(self):
+        return self.user
