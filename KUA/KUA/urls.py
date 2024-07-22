@@ -3,6 +3,8 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from course import views as course_views
 from today_poll import views as poll_views
+from . import settings
+from django.conf.urls.static import static
 
 router = DefaultRouter()
 router.register(r'courses', course_views.CourseViewSet)
