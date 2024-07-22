@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from django.util import timezone
+from django.utils import timezone
 
 
 class Course(models.Model):
