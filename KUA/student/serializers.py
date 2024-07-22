@@ -28,6 +28,7 @@ class TimeTableSerializer(serializers.ModelSerializer):
         
         else:
             return {'error': 'code error'}
+        
 class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         if len(validated_data['username']) > 20 or len(validated_data['username']) < 0 or ' ' in validated_data['username'] or models.User.objects.filter(username = validated_data['username']).exists():
