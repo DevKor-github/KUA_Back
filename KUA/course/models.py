@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.utils import timezone
+from .models import Student
 
 
 class Course(models.Model):
@@ -76,6 +77,8 @@ class Tag(models.Model):
 class Post(models.Model):
     course = models.ForeignKey(
         Course, on_delete=models.CASCADE, related_name='posts')
+    student = models.ForeignKey(
+        Student, on_delete=models.CASCADE, related_name='student_ids')
     title = models.CharField(max_length=255)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -92,6 +95,7 @@ class Post(models.Model):
 class Comment(models.Model):
     post = models.ForeignKey(
         Post, on_delete=models.CASCADE, related_name='comments')
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="student_ids")
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
