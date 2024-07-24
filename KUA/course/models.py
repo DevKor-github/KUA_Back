@@ -100,3 +100,12 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.content[:20]  # 최초 20글자만 표시
+    
+class TimeTable(models.Model):
+    username = models.CharField(null = False, max_length = 20)
+    course_id = models.ForeignKey('course.Course', null = False, on_delete=models.CASCADE)
+    year = models.CharField(null = False, max_length=6)
+    semester = models.CharField(null = False, max_length = 6)
+
+    def __str__(self):
+        return self.id
