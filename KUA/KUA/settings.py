@@ -64,8 +64,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'student',
     'course',
-    'today_poll',
     'course_table',
+    'today_poll',
 ]
 
 MIDDLEWARE = [

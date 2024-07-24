@@ -1,6 +1,5 @@
 from django.db import models
 
-
 class TodayPoll(models.Model):
     course = models.ForeignKey(
         'course.Course', on_delete=models.CASCADE, related_name='todaypolls')

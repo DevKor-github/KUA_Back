@@ -8,7 +8,8 @@ class Student(models.Model):
     nickname = models.CharField(max_length = 10, null = False, blank = False)
     nickname_change_time = models.DateTimeField(null = True, default='2024-07-01 12:22:44.398477+09')
     points = models.IntegerField(default = 0)
-    permission_date = models.DateTimeField(null = True, default='7')
+    #permission_date = models.DateTimeField(null = True, default='7')
+    permission_date = models.DateTimeField(null = True, default=timezone.now)
     permission_type = models.CharField(max_length = 10)
 
 
