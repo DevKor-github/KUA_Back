@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+import sys
 from dotenv import load_dotenv
 
 os.environ.get("KU&A")
@@ -109,6 +110,17 @@ DATABASES = {
         'PORT': os.environ.get("DB_PORT"),
     }
 }
+if 'test' in sys.argv:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get("TEST_DB_NAME"),
+        'USER': os.environ.get("TEST_DB_USER"),
+        'PASSWORD': os.environ.get("TEST_DB_PASSWORD"),
+        'HOST': os.environ.get("TEST_DB_HOST"),
+        'PORT': os.environ.get("TEST_DB_PORT"),
+    }
+
+
 
 
 # Password validation
