@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import TodayPoll, Briefing, Student
+from .models import TodayPoll, Briefing
+from student.models import Student
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 

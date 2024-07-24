@@ -1,11 +1,10 @@
 from django.db import models
-from .models import Course, Student
 
 
 class TodayPoll(models.Model):
     course = models.ForeignKey(
-        Course, on_delete=models.CASCADE, related_name='today_poll')
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='student_ids')
+        'course.Course', on_delete=models.CASCADE, related_name='todaypolls')
+    student = models.ForeignKey('student.Student', on_delete=models.CASCADE, related_name='todaypolls')
     check_attention = models.BooleanField(default=False, null=False)
     check_test = models.BooleanField(default=False, null=False)
     check_homework = models.BooleanField(default=False, null=False)
@@ -19,7 +18,7 @@ class TodayPoll(models.Model):
 
 class Briefing(models.Model):
     course = models.ForeignKey(
-        Course, on_delete=models.CASCADE, related_name='briefing')
+        'course.Course', on_delete=models.CASCADE, related_name='briefings')
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

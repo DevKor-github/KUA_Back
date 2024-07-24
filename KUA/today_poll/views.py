@@ -1,5 +1,6 @@
 from rest_framework import viewsets, generics, permissions
-from .models import TodayPoll, Briefing, Student
+from .models import TodayPoll, Briefing
+from student.models import Student
 from .serializers import TodayPollSerializer, BriefingSerializer, TodayPollAnswerSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView

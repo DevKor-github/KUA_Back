@@ -60,11 +60,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_apscheduler',
+    'rest_framework.authtoken',
+    'student',
     'course',
     'today_poll',
-    'django_apscheduler',
-    'student',
-    'rest_framework.authtoken',
     'course_table',
 ]
 

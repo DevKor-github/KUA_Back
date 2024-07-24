@@ -2,7 +2,7 @@
 
 import pandas as pd
 from django.shortcuts import render, redirect
-from .models import Course
+from course.models import Course
 from .forms import UploadFileForm
 import os
 from django.conf import settings

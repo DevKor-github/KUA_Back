@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, User
 from django.core.exceptions import ValidationError
-from course.models import Course
 from django.utils import timezone
     
 class Student(models.Model):
@@ -31,7 +30,7 @@ class CertificationCode(models.Model):
     
 class TimeTable(models.Model):
     username = models.CharField(null = False, max_length = 20)
-    course_id = models.ForeignKey(Course, null = False, on_delete=models.CASCADE)
+    course_id = models.ForeignKey('course.Course', null = False, on_delete=models.CASCADE)
     year = models.CharField(null = False, max_length=6)
     semester = models.CharField(null = False, max_length = 6)
 

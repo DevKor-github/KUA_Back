@@ -2,7 +2,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, generics
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from .models import Course, Tag, Post, Comment, Student
+from .models import Course, Tag, Post, Comment
+from student.models import Student
 from .serializers import CourseSerializer, TagSerializer, PostSerializer, CommentSerializer
 
 # 강의 전체 뷰(CRUD 포함)
