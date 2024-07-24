@@ -1,13 +1,11 @@
 from django.db import models
-from course.models import Course
-from django.contrib.auth.models import User
+from .models import Course, Student
 
 
 class TodayPoll(models.Model):
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='today_polls')
     course = models.ForeignKey(
         Course, on_delete=models.CASCADE, related_name='today_poll')
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='student_ids')
     check_attention = models.BooleanField(default=False, null=False)
     check_test = models.BooleanField(default=False, null=False)
     check_homework = models.BooleanField(default=False, null=False)

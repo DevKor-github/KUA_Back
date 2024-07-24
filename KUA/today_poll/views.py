@@ -1,8 +1,7 @@
 from rest_framework import viewsets, generics, permissions
-from .models import TodayPoll, Briefing
+from .models import TodayPoll, Briefing, Student
 from .serializers import TodayPollSerializer, BriefingSerializer, TodayPollAnswerSerializer
 from rest_framework.response import Response
-from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 
@@ -20,10 +19,10 @@ class UserTodayPollListCreateView(generics.ListCreateAPIView):
     serializer_class = TodayPollSerializer
 
     def get_queryset(self):
-        user_id = self.kwargs.get('user_id')
-        if user_id:
-            user = get_object_or_404(User, id=user_id)
-            return TodayPoll.objects.filter(user=user)
+        student_id = self.kwargs.get('student_id')
+        if student_id:
+            student_id = get_object_or_404(Student, id=student_id)
+            return TodayPoll.objects.filter(id=student_id)
         return TodayPoll.objects.none()
 
 # 오늘의 설문 상세 뷰
@@ -34,10 +33,10 @@ class TodayPollDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TodayPollSerializer
 
     def get_queryset(self):
-        user_id = self.kwargs.get('user_id')
-        if user_id:
-            user = get_object_or_404(User, id=user_id)
-            return TodayPoll.objects.filter(user=user)
+        id = self.kwargs.get('id')
+        if id:
+            id = get_object_or_404(TodayPoll, id=id)
+            return TodayPoll.objects.filter(id=id)
         return TodayPoll.objects.none()
 
 # 오늘의 설문 응답을 위한 뷰
