@@ -1,7 +1,7 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
-from course.models import Course, Tag, Post, Comment
+from course.models import Course, Tag, Post, Comment, TimeTable
 from student.models import Student
 from django.contrib.auth.models import User
 
@@ -219,3 +219,19 @@ class TagPostListViewTest(APITestCase):
     def test_get_tag_posts(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+class TimeTableViewSetTest(APITestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.student = Student.objects.create(user_id=1, nickname='testnick')
+        self.course = Course.objects.create(course_id='CS101', course_name='Computer Science')
+        self.timetable_data = {'student': self.student.id, 'course_id': self.course.id, 'year': '2024', 'semester': '1'}
+        self.timetable = TimeTable.objects.create(**self.timetable_data)
+
+    def test_get_timetables(self):
+        response = self.client.get(reverse('student-timetables', kwargs={'student_id': self.student.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_create_timetable(self):
+        response = self.client.post(reverse('timetable-list'), self.timetable_data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)

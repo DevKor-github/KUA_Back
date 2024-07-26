@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 from student.models import Student
-from course.models import Course, Tag, Post, Comment
+from course.models import Course, Tag, Post, Comment, TimeTable
 from django.utils import timezone
 
 class CourseModelTest(TestCase):
@@ -84,3 +84,15 @@ class CommentModelTest(TestCase):
     def test_comment_creation(self):
         self.assertEqual(self.comment.content, "This is a test comment.")
         self.assertEqual(self.comment.student.nickname, "testnick")
+
+class TimeTableModelTest(TestCase):
+    def setUp(self):
+        self.student = Student.objects.create(user_id=1, nickname='testnick')
+        self.course = Course.objects.create(course_id='CS101', course_name='Computer Science')
+        self.timetable = TimeTable.objects.create(student=self.student, course_id=self.course, year='2024', semester='1')
+
+    def test_timetable_creation(self):
+        self.assertEqual(self.timetable.year, '2024')
+        self.assertEqual(self.timetable.semester, '1')
+        self.assertEqual(self.timetable.student.nickname, 'testnick')
+        self.assertEqual(str(self.timetable), '2024년도 1 학기 testnick의 시간표')
