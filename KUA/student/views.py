@@ -11,13 +11,15 @@ import random
 from django.core.mail import EmailMessage
 from django.utils import timezone
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import generics
 
 
 
 class EmailCodeSendView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
+        
         letters_set = string.ascii_letters
         random_code_list = random.sample(letters_set,8)
         random_code = ''.join(random_code_list)
@@ -49,6 +51,7 @@ class EmailCodeSendView(APIView):
         return Response({'Permission Code Update' : True})
 
 class EmailCodeCheckView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         email = request.data['email']
         code = request.data['code']
@@ -73,6 +76,7 @@ class CreateGroupView(APIView):
         return Response('Success to create group')
     
 class SignupView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         user_data = {
             'username' : request.data['username'],
