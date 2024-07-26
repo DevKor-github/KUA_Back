@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'drf_yasg',
     'rest_framework',
     'django_apscheduler',
     'rest_framework.authtoken',
@@ -66,6 +67,7 @@ INSTALLED_APPS = [
     'course',
     'course_table',
     'today_poll',
+    
 ]
 
 MIDDLEWARE = [
