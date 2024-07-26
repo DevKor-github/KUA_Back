@@ -102,10 +102,10 @@ class Comment(models.Model):
         return self.content[:20]  # 최초 20글자만 표시
     
 class TimeTable(models.Model):
-    username = models.CharField(null = False, max_length = 20)
-    course_id = models.ForeignKey('course.Course', null = False, on_delete=models.CASCADE)
+    student = models.OneToOneField('student.Student', on_delete=models.CASCADE, related_name='timetables')
+    course_id = models.ForeignKey(Course, null = False, on_delete=models.CASCADE, related_name='timetables')
     year = models.CharField(null = False, max_length=6)
     semester = models.CharField(null = False, max_length = 6)
 
     def __str__(self):
-        return self.id
+        return f"{self.year}년도 {self.semester} 학기 {self.student}의 시간표"

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Course, Tag, Post, Comment, TimeTable
+from student.models import Student
 from django.contrib.auth.models import User
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -27,23 +28,25 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class TimeTableSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
-        username = validated_data['username']
-        check_username =  User.objects.filter(username=username).exists()
+        
+        student = validated_data['student']
         course_id = validated_data['course_id']
         year = validated_data['year']
         semester = validated_data['semester']
+        
+        check_student = Student.objects.filter(student=student)
         check_course =  Course.objects.filter(course_id = course_id, year = year, semester = semester).exists()
 
-        if check_username and check_course: 
+        if check_student and check_course: 
             timetable = TimeTable(
-                username = username,
+                student = student,
                 course_id = course_id,
                 year = year,
                 semester = semester,
             )
             return timetable
-        elif check_username == False:
-            return {'error': 'This User id is not in User Table.'}
+        elif check_student == False:
+            return {'error': 'This User id is not in Student Table.'}
         
         elif check_course == False:
             return {'error': 'This Course is not in Course Table.'}

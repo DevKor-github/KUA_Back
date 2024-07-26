@@ -72,19 +72,19 @@ class StudentCommentListView(generics.ListAPIView):
         student_id = self.kwargs['student_id']
         student = get_object_or_404(Student, id=student_id)
         return Comment.objects.filter(student=student)
-    
-class SubmitTimeTableView(generics.CreateAPIView): #id, 학수번호, 개설년도와 학기 정보를 통해 시간표를 등록하는 view
+#id, 학수번호, 개설년도와 학기 정보를 통해 시간표를 등록하는 view    
+class SubmitTimeTableView(generics.CreateAPIView): 
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
         user = request.user
-        print(user.username)
+        student = get_object_or_404(Student, user=user)
         course_id = request.data['course_id']
         year = request.data['year']
         semester = request.data['semester']
         timetable = {
-            'username': user.username,
+            'student': student,
             'course_id': course_id,
             'year': year,
             'semester': semester
