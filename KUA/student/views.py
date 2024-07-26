@@ -78,6 +78,7 @@ class CreateGroupView(APIView):
     
 class SignupView(APIView):
     permission_classes = [AllowAny]
+    
     def post(self, request):
         user_data = {
             'username' : request.data['username'],
@@ -91,26 +92,55 @@ class SignupView(APIView):
             'is_superuser' : False,
             'date_joined' : timezone.now(),
         }
-        
+
         user_serializer = serializers.UserSerializer(data = user_data)
         if not user_serializer.is_valid():
-            return Response({'Invalid User Infomation'})
-        
+            return Response({'Invalid User Information'})
+
         user = user_serializer.save()
-        
+        username = request.data['id']
+        if User.objects.filter(username = username).exists():
+            return Response({'error': 'This ID is already used'})
+
+        student_number = models.Student.objects.count()
+
+        nickname_animal = ['사자', '고양이', '강아지', '호랑이', '매', '양', '토끼', '용', '용', '다람쥐', '돼지', '소', '쥐', '파리', '모기',
+                   '까마귀', '벌', '개미', '염소', '하마', '코뿔소', '곰', '뱀', '원숭이', '고릴라', '말']
+
+        random_animal = random.choices(nickname_animal, k=1)
+        password = request.data['password']
+        email = request.data['email']
+
+        nickname = random_animal[0] + str(student_number)
+        user = User.objects.create_user(
+            username = username,
+            password = password,
+            email = email,
+        )
+
+        student = models.Student(
+            user = user,
+            name = request.data['name'],
+        )
+        user.save()
+
         student = {
             'user': user.id,
-            'nickname': 'hi',
+            'nickname': nickname,
             'points': 0,
             'permission_type':  '7',
             'permission_date': timezone.now(),
         }
+        serializer = serializers.StudentSerializer(data = student)
+        if serializer.is_valid():
+            serializer.save()
 
         student_serializer = serializers.StudentSerializer(data = student)
+        token = Token.objects.create(user=user)
 
         if not student_serializer.is_valid():   
             return Response(student_serializer.errors)
-            
+
         student_serializer.save()
         token = Token.objects.create(user = user)
         return Response({"Token": token.key})
