@@ -13,6 +13,7 @@ from django.utils import timezone
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import generics
+from datetime import timedelta
 
 
 
