@@ -24,6 +24,8 @@ schema_view = get_schema_view(
             <p><strong>참고사항:</strong> KU&A API는 현재 개발 중입니다. 기능이 추가되거나 변경될 수 있습니다.</p>
         """,
         terms_of_service="https://www.google.com/policies/terms/",
+        contact=openapi.Contact(email="kuna.devkor@gmail.com"), # 부가정보
+        license=openapi.License(name="DevKor"),     # 부가정보
     ),
     public=True,
     permission_classes=[permissions.AllowAny],
