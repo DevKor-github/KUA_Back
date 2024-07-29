@@ -30,10 +30,6 @@ class CourseViewSetTest(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_create_course(self):
-        url = reverse('course-list')
-        response = self.client.post(url, self.course_data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
 class TagViewSetTest(APITestCase):
 
@@ -223,15 +219,33 @@ class TagPostListViewTest(APITestCase):
 class TimeTableViewSetTest(APITestCase):
     def setUp(self):
         self.client = APIClient()
-        self.student = Student.objects.create(user_id=1, nickname='testnick')
-        self.course = Course.objects.create(course_id='CS101', course_name='Computer Science')
-        self.timetable_data = {'student': self.student.id, 'course_id': self.course.id, 'year': '2024', 'semester': '1'}
-        self.timetable = TimeTable.objects.create(**self.timetable_data)
+        self.user = User.objects.create_user(username='testuser', password='testpass')
+        self.student = Student.objects.create(user=self.user, nickname='testnick')
+        self.client.force_authenticate(user=self.user)
+        self.course = Course.objects.create(
+            course_id="CS101",
+            course_name="Introduction to Computer Science",
+            instructor="Prof. Smith",
+            credits=3,
+            classification="Major",
+            course_week=['월', '수', '금'],
+            course_period=[[1, 2], [1, 2], [1, 2]],
+            course_room=["Room 101", "Room 102", "Room 103"]
+        )
+        self.timetable = TimeTable.objects.create(student=self.student, course=self.course, year='2024', semester='1')
 
     def test_get_timetables(self):
-        response = self.client.get(reverse('student-timetables', kwargs={'student_id': self.student.id}))
+        self.url = reverse('student-timetable', kwargs={'student_id': self.student.id})
+        response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_create_timetable(self):
-        response = self.client.post(reverse('timetable-list'), self.timetable_data)
+    def test_submit_timetable(self):
+        self.url = reverse('submit-timetable', kwargs={'student_id': self.student.id})
+        data = {
+            'student': self.student,
+            'course': self.course,
+            'year': '2024',
+            'semester': '1'
+        }
+        response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

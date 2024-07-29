@@ -87,9 +87,19 @@ class CommentModelTest(TestCase):
 
 class TimeTableModelTest(TestCase):
     def setUp(self):
-        self.student = Student.objects.create(user_id=1, nickname='testnick')
-        self.course = Course.objects.create(course_id='CS101', course_name='Computer Science')
-        self.timetable = TimeTable.objects.create(student=self.student, course_id=self.course, year='2024', semester='1')
+        self.user = User.objects.create_user(username='testuser', password='testpass')
+        self.student = Student.objects.create(user=self.user, nickname='testnick')
+        self.course = Course.objects.create(
+            course_id="CS101",
+            course_name="Introduction to Computer Science",
+            instructor="Prof. Smith",
+            credits=3,
+            classification="Major",
+            course_week=['월', '수', '금'],
+            course_period=[[1, 2], [1, 2], [1, 2]],
+            course_room=["Room 101", "Room 102", "Room 103"]
+        )
+        self.timetable = TimeTable.objects.create(student=self.student, course=self.course, year='2024', semester='1')
 
     def test_timetable_creation(self):
         self.assertEqual(self.timetable.year, '2024')
