@@ -216,6 +216,21 @@ class PointGetView(generics.UpdateAPIView):
         'survey': 10
     }
 
+    @swagger_auto_schema(
+        operation_summary="포인트 획득 기능입니다.",
+        operation_description="포인트 타입 획득 타입(answer, chosen, survey)을 입력 -> 해당 타입에 따라 포인트 획득",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'point_type': openapi.Schema(type=openapi.TYPE_STRING),
+            }
+        ),
+        responses={
+            201: openapi.Response(description="Point Get Success"),
+            400: openapi.Response(description="Point Get Rejected")
+        }
+    )
+
     def post(self, request):
         user = request.user
         point_type = request.data['point_type']
