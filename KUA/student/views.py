@@ -110,8 +110,8 @@ class SignupView(APIView):
             }
         ),
         responses={
-            201: openapi.Response(description="Email Code Send Success"),
-            400: openapi.Response(description="Email Code Send Rejected")
+            201: openapi.Response(description="Sign Up Success"),
+            400: openapi.Response(description="Sign Up Rejected")
         }
     )
 
