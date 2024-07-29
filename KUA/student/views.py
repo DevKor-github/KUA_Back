@@ -94,6 +94,27 @@ class CreateGroupView(APIView):
 class SignupView(APIView):
     permission_classes = [AllowAny]
     
+    @swagger_auto_schema(
+        operation_summary="회원가입 기능입니다.",
+        operation_description="id(username), first_name, last_name, email, password, group입력 -> 회원가입 ",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'username': openapi.Schema(type=openapi.TYPE_STRING),
+                'first_name': openapi.Schema(type=openapi.TYPE_STRING),
+                'last_name': openapi.Schema(type=openapi.TYPE_STRING),
+                'email': openapi.Schema(type=openapi.TYPE_STRING, format=openapi.FORMAT_EMAIL),
+                'password': openapi.Schema(type=openapi.TYPE_STRING),
+                'group': openapi.Schema(type=openapi.TYPE_STRING),
+                'name': openapi.Schema(type=openapi.TYPE_STRING),
+            }
+        ),
+        responses={
+            201: openapi.Response(description="Email Code Send Success"),
+            400: openapi.Response(description="Email Code Send Rejected")
+        }
+    )
+
     def post(self, request):
         user_data = {
             'username' : request.data['username'],
@@ -113,9 +134,6 @@ class SignupView(APIView):
             return Response({'Invalid User Information'})
 
         user = user_serializer.save()
-        username = request.data['id']
-        if User.objects.filter(username = username).exists():
-            return Response({'error': 'This ID is already used'})
 
         student_number = models.Student.objects.count()
 
@@ -123,29 +141,18 @@ class SignupView(APIView):
                    '까마귀', '벌', '개미', '염소', '하마', '코뿔소', '곰', '뱀', '원숭이', '고릴라', '말']
 
         random_animal = random.choices(nickname_animal, k=1)
-        password = request.data['password']
-        email = request.data['email']
 
         nickname = random_animal[0] + str(student_number)
-        user = User.objects.create_user(
-            username = username,
-            password = password,
-            email = email,
-        )
-
-        student = models.Student(
-            user = user,
-            name = request.data['name'],
-        )
-        user.save()
 
         student = {
             'user': user.id,
             'nickname': nickname,
+            'nickname_change_time': timezone.now(),
             'points': 0,
             'permission_type':  '7',
             'permission_date': timezone.now(),
         }
+        
         serializer = serializers.StudentSerializer(data = student)
         if serializer.is_valid():
             serializer.save()

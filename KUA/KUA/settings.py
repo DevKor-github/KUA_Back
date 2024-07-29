@@ -62,12 +62,11 @@ INSTALLED_APPS = [
     'drf_yasg',
     'rest_framework',
     'django_apscheduler',
-    'rest_framework.authtoken',
     'student',
     'course',
     'course_table',
     'today_poll',
-
+    'rest_framework.authtoken',
 ]
 
 SWAGGER_SETTINGS = {
