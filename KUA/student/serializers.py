@@ -48,3 +48,6 @@ class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Student
         fields = '__all__'
+
+class CertificationCodeSerializer(serializers.Serializer):
+    email = serializers.EmailField()

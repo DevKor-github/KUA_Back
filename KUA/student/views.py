@@ -20,48 +20,51 @@ from drf_yasg import openapi
 
 class EmailCodeSendView(APIView):
     permission_classes = [AllowAny]
-    serializer_class = CertificationCodeSerializer
+    serializer_class = serializers.CertificationCodeSerializer
 
     @swagger_auto_schema(
         operation_summary="이메일 인증 기능 코드입니다.",
         operation_description="이메일 입력 -> 인증코드 발행.",
-        request_body=serializers.CertificationCodeSerializer,
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'email': openapi.Schema(type=openapi.TYPE_STRING, format=openapi.FORMAT_EMAIL)
+            }
+        ),
         responses={
             201: openapi.Response(description="Email Code Send Success"),
             400: openapi.Response(description="Email Code Send Rejected")
         }
-
     )
-
     def post(self, request):
         letters_set = string.ascii_letters
         random_code_list = random.sample(letters_set, 8)
         random_code = ''.join(random_code_list)
 
-        email = request.data.get('email')
 
-        if not email:
-            return Response({'error': 'Not Valid Email'}, status=400)
-        
+        email = request.data['email']
+
         if User.objects.filter(email=email).exists():
             return Response({'error': 'This email is already used.'}, status=400)
-        
+
         email_message = EmailMessage(
             subject='KU&A Permission Code',
             body=f'KU&A 인증 번호는 {random_code}입니다.',
             to=[email],
         )
         email_message.send()
-        
+
         if models.CertificationCode.objects.filter(email=email).exists():
             email_object = models.CertificationCode.objects.get(email=email)
         else:
             email_object = models.CertificationCode(email=email)
 
         email_object.certification_code = random_code
+        email_object.certification_check = False
+
         email_object.save()
 
-        return Response({'Permission Code Update': True}, status=200)
+        return Response({'Permission Code Update': True}, status=201)
 
 class EmailCodeCheckView(APIView):
     permission_classes = [AllowAny]
