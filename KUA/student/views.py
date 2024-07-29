@@ -152,13 +152,8 @@ class SignupView(APIView):
             'permission_type':  '7',
             'permission_date': timezone.now(),
         }
-        
-        serializer = serializers.StudentSerializer(data = student)
-        if serializer.is_valid():
-            serializer.save()
 
         student_serializer = serializers.StudentSerializer(data = student)
-        token = Token.objects.create(user=user)
 
         if not student_serializer.is_valid():   
             return Response(student_serializer.errors)
