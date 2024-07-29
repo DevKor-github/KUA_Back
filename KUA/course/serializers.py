@@ -36,7 +36,7 @@ class TimeTableSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
 
         student = validated_data['student']
-        course_id = validated_data['course_id']
+        course = validated_data['courses']
         year = validated_data['year']
         semester = validated_data['semester']
 
@@ -60,3 +60,7 @@ class TimeTableSerializer(serializers.ModelSerializer):
 
         else:
             return {'error': 'code error'}
+        
+    class Meta:
+        model = TimeTable
+        fields = '__all__'

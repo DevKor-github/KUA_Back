@@ -41,8 +41,8 @@ urlpatterns = [
     path('api/', include('rest_framework.urls')),
     path('student/', include('student.urls')),
     path('course-table/', include('course_table.urls')),
-    path('course/', include('course.urls')),
-    path('today-poll/', include('today_poll.urls')),   
+    path('', include('course.urls')),
+    path('', include('today_poll.urls')),   
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS)

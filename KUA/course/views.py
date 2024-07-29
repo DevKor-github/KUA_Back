@@ -1,8 +1,8 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, generics
+from rest_framework import viewsets, generics, status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from .models import Course, Tag, Post, Comment
+from .models import Course, Tag, Post, Comment, TimeTable
 from student.models import Student
 from .serializers import CourseSerializer, TagSerializer, PostSerializer, CommentSerializer, TimeTableSerializer
 from rest_framework.response import Response
@@ -36,6 +36,10 @@ class PostViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+
+class TimeTableViewSet(viewsets.ModelViewSet):
+    queryset = TimeTable.objects.all()
+    serializer_class = TimeTableSerializer
 
 # 특정 강의에 대한 게시글을 보는 뷰
 
@@ -122,14 +126,24 @@ class SubmitTimeTableView(generics.CreateAPIView):
         course_id = request.data['course_id']
         year = request.data['year']
         semester = request.data['semester']
-        timetable = {
+        timetable= {
             'student': student,
-            'course_id': course_id,
+            'course' : course,
             'year': year,
             'semester': semester
         }
         serializer = TimeTableSerializer(data=timetable)
         if serializer.is_valid():
             serializer.save()
-            return Response({'response': 'Time Table Saved'})
-        return Response({'response': 'Time Table Rejected'})
+            return Response({'response': 'Time Table Saved'}, status=status.HTTP_201_CREATED)
+        return Response({'response': 'Time Table Rejected'}, status=status.HTTP_201_CREATED)
+
+
+# 특정 학생의 id로 시간표 뷰
+class StudentTimeTableView(generics.ListAPIView):
+    serializer_class = TimeTableSerializer
+
+    def get_queryset(self):
+        student_id = self.kwargs['student_id']
+        student = get_object_or_404(Student, id=student_id)
+        return TimeTable.objects.filter(student=student)
