@@ -261,6 +261,21 @@ class PointUseView(generics.UpdateAPIView):
         '30': 300
     }
 
+    @swagger_auto_schema(
+        operation_summary="포인트로 이용권 구매하는 기능입니다.",
+        operation_description="이용권 type(1, 7, 14, 30)을 입력 -> 해당 타입에 따라 포인트를 사용하여 이용권 구매 OR 실패",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'point_costs': openapi.Schema(type=openapi.TYPE_STRING),
+            }
+        ),
+        responses={
+            201: openapi.Response(description="Point Use Success"),
+            400: openapi.Response(description="Point Use Rejected")
+        }
+    )
+
     def post(self, request):
         user = request.user
         permission_type = request.data['point_costs']
