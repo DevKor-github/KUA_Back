@@ -68,6 +68,24 @@ class EmailCodeSendView(APIView):
 
 class EmailCodeCheckView(APIView):
     permission_classes = [AllowAny]
+    serializer_class = serializers.CertificationCodeSerializer
+
+    @swagger_auto_schema(
+        operation_summary="이메일 인증 확인 코드입니다.",
+        operation_description="email, code 입력 -> 인증코드 확인",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'email': openapi.Schema(type=openapi.TYPE_STRING, format=openapi.FORMAT_EMAIL),
+                'code': openapi.Schema(type=openapi.TYPE_STRING)
+            }
+        ),
+        responses={
+            201: openapi.Response(description="Permission Success"),
+            400: openapi.Response(description="Permission Rejected")
+        }
+    )
+
     def post(self, request):
         email = request.data['email']
         code = request.data['code']
@@ -79,9 +97,9 @@ class EmailCodeCheckView(APIView):
             email_object = models.CertificationCode.objects.get(email=email)
             if code == email_object.certification_code:
                 email_object.certification_check = True
-                return Response({'Permission': True})
+                return Response(status = 201)
             else:
-                return Response({'Permission': False})
+                return Response(status = 400)
         
         else:
             return Response({'error': 'Invalid Email Address'})
