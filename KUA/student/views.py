@@ -66,6 +66,7 @@ class EmailCodeSendView(APIView):
 
         return Response({'Permission Code Update': True}, status=201)
 
+
 class EmailCodeCheckView(APIView):
     permission_classes = [AllowAny]
     serializer_class = serializers.CertificationCodeSerializer
@@ -103,11 +104,6 @@ class EmailCodeCheckView(APIView):
         
         else:
             return Response({'error': 'Invalid Email Address'})
-
-class CreateGroupView(APIView):
-    def post(self, request):
-        group = Group.objects.create(name=request.data['group_name'])
-        return Response('Success to create group')
     
 class SignupView(APIView):
     permission_classes = [AllowAny]
