@@ -47,7 +47,7 @@ SECRET_KEY = 'django-insecure-=-mlpu-wli!ok_xvr!-+pbc7#zs=5*2t&ta(o*paz=f3f07of0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]']
 
 
 # Application definition
@@ -67,8 +67,21 @@ INSTALLED_APPS = [
     'course',
     'course_table',
     'today_poll',
-    
+
 ]
+
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': False,
+    'JSON_EDITOR': True,
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+        }
+    },
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -121,8 +134,6 @@ if 'test' in sys.argv:
         'HOST': os.environ.get("TEST_DB_HOST"),
         'PORT': os.environ.get("TEST_DB_PORT"),
     }
-
-
 
 
 # Password validation
