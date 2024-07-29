@@ -164,13 +164,31 @@ class SignupView(APIView):
         
         
 class LoginView(APIView):
+    permission_classes = [AllowAny]
+
+    @swagger_auto_schema(
+        operation_summary="로그인 기능입니다.",
+        operation_description="id(username), password입력 -> 로그인(Token return)",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'username': openapi.Schema(type=openapi.TYPE_STRING),
+                'password': openapi.Schema(type=openapi.TYPE_STRING),
+            }
+        ),
+        responses={
+            201: openapi.Response(description="Login Success"),
+            400: openapi.Response(description=" Login Rejected")
+        }
+    )
+
     def post(self, request):
         user = authenticate(username = request.data['username'], password = request.data['password'])
         if user is not None:
             token = Token.objects.get(user=user)
             return Response({"Token": token.key})
         else:
-            return Response(status = 401)
+            return Response(status = 400)
 
 class PointGetView(generics.UpdateAPIView):  # 포인트 값과 user를 받아 해당 포인트 값만큼 유저가 포인트를 얻는 view
     authentication_classes = [TokenAuthentication]
