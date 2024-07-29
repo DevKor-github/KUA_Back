@@ -303,6 +303,15 @@ class IsPermissionView(generics.RetrieveAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        operation_summary="이용권 보유 여부를 확인하는 기능입니다.",
+        operation_description="파라미터 없이 get 요청 -> 보유한 이용권이 타당하면 Success return",
+        responses={
+            201: openapi.Response(description="Success"),
+            400: openapi.Response(description="You Need to Buy")
+        }
+    )
+
     def get(self, request):
         user = request.user
 
