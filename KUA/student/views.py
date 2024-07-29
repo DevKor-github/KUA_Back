@@ -17,7 +17,7 @@ from datetime import timedelta
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
-
+#이메일 코드 전송 기능
 class EmailCodeSendView(APIView):
     permission_classes = [AllowAny]
     serializer_class = serializers.CertificationCodeSerializer
@@ -66,7 +66,7 @@ class EmailCodeSendView(APIView):
 
         return Response({'Permission Code Update': True}, status=201)
 
-
+#이메일 코드 인증 확인 기능
 class EmailCodeCheckView(APIView):
     permission_classes = [AllowAny]
     serializer_class = serializers.CertificationCodeSerializer
@@ -104,7 +104,8 @@ class EmailCodeCheckView(APIView):
         
         else:
             return Response({'error': 'Invalid Email Address'})
-    
+
+#회원가입 기능    
 class SignupView(APIView):
     permission_classes = [AllowAny]
     
@@ -176,7 +177,7 @@ class SignupView(APIView):
         token = Token.objects.create(user = user)
         return Response({"Token": token.key})
         
-        
+#로그인 기능        
 class LoginView(APIView):
     permission_classes = [AllowAny]
 
@@ -204,7 +205,8 @@ class LoginView(APIView):
         else:
             return Response(status = 400)
 
-class PointGetView(generics.UpdateAPIView):  # 포인트 값과 user를 받아 해당 포인트 값만큼 유저가 포인트를 얻는 view
+#포인트 획득 기능
+class PointGetView(generics.UpdateAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
@@ -232,8 +234,8 @@ class PointGetView(generics.UpdateAPIView):  # 포인트 값과 user를 받아 �
         else:
             return Response({'error': ' invalid getting points type'})
 
-
-class PointUseView(generics.UpdateAPIView):  # 포인트를 이용하여 이용권을 구매하는 view
+#포인트로 이용권 구매 기능
+class PointUseView(generics.UpdateAPIView): 
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
@@ -266,6 +268,7 @@ class PointUseView(generics.UpdateAPIView):  # 포인트를 이용하여 이용�
         else:
             return Response({'error': ' invalid using points type'})
 
+#사용자가 게시물 접근 권한이 있는지 확인하는 기능
 class IsPermissionView(generics.RetrieveAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
