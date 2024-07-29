@@ -25,6 +25,7 @@ services:
       - DB_USER=kua
       - DB_PASSWORD=kua
       - DB_HOST=db
+      - DB_PORT=5432
       - EMAIL_PORT = 587
       - EMAIL_HOST_USER = testeuichan@gmail.com
       - EMAIL_HOST_PASSWORD = wrplpvtqhknudaqn
