@@ -15,7 +15,7 @@ nickname_animal = ['사자', '고양이', '강아지', '호랑이', '매', '양'
 def update_data():
     # DB 연결
     try:
-        host = os.environ.get('EMAIL_HOST_USER')
+        host = os.environ.get('DB_HOST')
         dbname = os.environ.get('DB_NAME')
         dbuser = os.environ.get('DB_USER')
         dbpassword = os.environ.get('DB_PASSWORD')
