@@ -21,3 +21,6 @@ __pycache__
 .kua
 lib64
 migrations/
+lib/
+static/
+include/
