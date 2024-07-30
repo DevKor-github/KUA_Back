@@ -6,7 +6,7 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 import os
 from dotenv import load_dotenv
-
+ 
 scheduler = BackgroundScheduler()
 
 load_dotenv()
