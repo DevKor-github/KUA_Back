@@ -72,7 +72,9 @@ jobs:
       - name: build and push image
         id: docker_build
         uses: docker/build-push-action@v3
+        working-directory: ${{ env.working-directory }}
         with:
+          platforms: linux/amd64
           push: true
           tags: ${{ env.DOCKER_IMAGE }}:latest
 
@@ -97,6 +99,7 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: setup .env
+        working-directory: ${{ env.working-directory }}
         run: |
           echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
           echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
