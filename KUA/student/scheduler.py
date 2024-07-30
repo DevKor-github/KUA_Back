@@ -40,7 +40,7 @@ def update_data():
     
     numbers = list(range(student_number))
     random.shuffle(numbers)
-
+ 
     # 랜덤 닉네임 만들기
     random_animal = random.choices(nickname_animal, k=student_number)
     nicknames = []
