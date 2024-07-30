@@ -4,6 +4,11 @@ from .models import TodayPoll, Briefing
 from .service import create_briefing
 
 
+def start_scheduler_after_migration(sender, **kwargs):
+    from today_poll.scheduler import start
+    start()
+
+
 @receiver(post_save, sender=TodayPoll)
 def update_briefing(sender, instance, created, **kwargs):
     if instance.answered_at:

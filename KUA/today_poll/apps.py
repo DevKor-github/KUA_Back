@@ -6,4 +6,4 @@ class TodayPollConfig(AppConfig):
     name = 'today_poll'
 
     def ready(self):
-        import today_poll.signals
+        pass
