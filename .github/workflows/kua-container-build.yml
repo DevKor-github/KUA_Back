@@ -7,22 +7,21 @@ on:
 env:
   DOCKER_IMAGE: ghcr.io/euizzang8001/kua-backend
   DOCKER_CONTAINER: kua-backend
+  working-directory: ./KUA
+  DEBUG: "0"
+  DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+  DB_NAME: ${{ secrets.DB_NAME }}
+  DB_USER: ${{ secrets.DB_USER }}
+  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+  DB_HOST: ${{secrets.DB_HOST}}  # localhost since postgres service runs on the same host
+  DB_PORT: 5432
+  EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
+  EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
+  EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
 
 jobs:
   test_django:
     uses: DevKor-github/DevKor-teamB-back/.github/workflows/kua-test.yml@main
-  env:
-      working-directory: ./KUA
-      DEBUG: "0"
-      DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
-      DB_NAME: ${{ secrets.DB_NAME }}
-      DB_USER: ${{ secrets.DB_USER }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      DB_HOST: ${{secrets.DB_HOST}}  # localhost since postgres service runs on the same host
-      DB_PORT: 5432
-      EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
-      EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
-      EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
 
   container_builder:
     runs-on: ubuntu-latest
@@ -42,7 +41,7 @@ jobs:
     needs: build
     runs-on: self-hosted
     steps:
-      - name: setup .env.prod
+      - name: setup .env
         run: |
           echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
           echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
