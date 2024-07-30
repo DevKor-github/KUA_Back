@@ -21,7 +21,7 @@ jobs:
     # Add in environment variables for the entire "build" job
     services:
       postgres_main:
-        image: postgres:12
+        image: postgres:13
         env:
           DB_NAME: ${{secrets.DB_NAME}}
           DB_USER: ${{ secrets.DB_USER }}
@@ -32,7 +32,7 @@ jobs:
           EMAIL_HOST_USER: ${{secrets.EMAIL_HOST_USER}}
           EMAIL_HOST_PASSWORD: ${{secrets.EMAIL_HOST_PASSWORD}}
         ports:
-          - D:DB_PORT
+          - ${{ secrets.DB_PORT }}:${{ secrets.DB_PORT }}
         options: >-
           --health-cmd pg_isready 
           --health-interval 10s 
