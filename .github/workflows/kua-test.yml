@@ -20,17 +20,12 @@ jobs:
     runs-on: ubuntu-latest
     # Add in environment variables for the entire "build" job
     services:
-      postgres_main:
+      postgres:
         image: postgres:13
         env:
-          DB_NAME: ${{secrets.DB_NAME}}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_PORT: ${{ secrets.DB_PORT }}
-          EMAIL_PORT: ${{secrets.EMAIL_PORT}}
-          EMAIL_HOST_USER: ${{secrets.EMAIL_HOST_USER}}
-          EMAIL_HOST_PASSWORD: ${{secrets.EMAIL_HOST_PASSWORD}}
+          POSTGRES_DB: ${{ secrets.DB_NAME }}
+          POSTGRES_USER: ${{ secrets.DB_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
         ports:
           - ${{ secrets.DB_PORT }}:${{ secrets.DB_PORT }}
         options: >-
@@ -41,28 +36,34 @@ jobs:
     # If you want to test multiple python version(s)
     strategy:
       matrix:
-        python-version: ["3.12"] # ["3.8", "3.9", "3.10"]
+        python-version: ["3.12"]
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout code
         uses: actions/checkout@v3
+
       - name: Setup Python ${{ matrix.python-version }}
         uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
+
       - name: Install requirements
         run: |
           pip install -r requirements.txt
+
       - name: Run Tests
         # Step specific environment variables
         env:
           DEBUG: "0"
-          DJANGO_SECRET_KEY: ${{ env.DJANGO_SECRET_KEY }}
-          DB_USERNAME: ${{ env.POSTGRES_USER }}
-          DB_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
-          DB_HOST: ${{ env.POSTGRES_HOST }}
-          DB_DATABASE: ${{ env.POSTGRES_DB }}
-          DB_PORT: ${{ env.POSTGRES_PORT }}
-        # run: |
-        #   python manage.py test
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_HOST: localhost  # localhost since postgres service runs on the same host
+          DB_PORT: ${{ secrets.DB_PORT }}
+          EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
+          EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
+          EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+        run: |
+          python manage.py test
