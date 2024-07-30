@@ -32,7 +32,7 @@ jobs:
           EMAIL_HOST_USER: ${{secrets.EMAIL_HOST_USER}}
           EMAIL_HOST_PASSWORD: ${{secrets.EMAIL_HOST_PASSWORD}}
         ports:
-          - 5432:5432
+          - D:DB_PORT
         options: >-
           --health-cmd pg_isready 
           --health-interval 10s 
