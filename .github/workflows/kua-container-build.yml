@@ -21,7 +21,7 @@ env:
 
 jobs:
   test_django:
-    uses: DevKor-github/DevKor-teamB-back/.github/workflows/kua-test.yml@main
+    uses: DevKor-github/DevKor-teamB-back/.github/workflows/kua-test.yml@develop
 
   container_builder:
     runs-on: ubuntu-latest
