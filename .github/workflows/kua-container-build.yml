@@ -9,7 +9,8 @@ on:
 jobs:
   test_django:
     uses: DevKor-github/DevKor-teamB-back/.github/workflows/kua-test.yml@main
-
+  env:
+      working-directory: ./KUA
   container_builder:
     runs-on: ubuntu-latest
     needs: [test_django]
@@ -23,3 +24,4 @@ jobs:
           -t euizzang8001/kua-backend:${GITHUB_SHA::7} \
           -t euizzang8001/kua-backend:latest \
           .
+        working-directory: ${{ env.working-directory }}
