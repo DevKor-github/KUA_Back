@@ -1,8 +1,8 @@
 FROM python:3.12.2
 
-WORKDIR /devkor-teamb-back
+WORKDIR /devkor-teamb-back/KUA
 
-COPY . /devkor-teamb-back/
+COPY . /devkor-teamb-back/KUA/
 
 RUN pip install -r requirements.txt
 
