@@ -5,8 +5,8 @@ services:
     image: postgres:13
     environment:
       POSTGRES_DB: kua.chzgsszohvju.ap-northeast-2.rds.amazonaws.com
-      POSTGRES_USER: master
-      POSTGRES_PASSWORD: test1234
+      POSTGRES_USER: kua
+      POSTGRES_PASSWORD: kua
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -22,8 +22,8 @@ services:
       - db
     environment:
       - DB_NAME=kua
-      - DB_USER=master
-      - DB_PASSWORD=test1234
+      - DB_USER=kua
+      - DB_PASSWORD=kua
       - DB_HOST=kua.chzgsszohvju.ap-northeast-2.rds.amazonaws.com
       - DB_PORT=5432
       - EMAIL_PORT = 587
