@@ -1,4 +1,4 @@
-version: '3.9'
+version: "3.9"
 
 services:
   db:
@@ -29,6 +29,7 @@ services:
       - EMAIL_PORT = 587
       - EMAIL_HOST_USER = testeuichan@gmail.com
       - EMAIL_HOST_PASSWORD = wrplpvtqhknudaqn
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
 
 volumes:
   postgres_data:
