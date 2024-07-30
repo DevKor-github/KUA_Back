@@ -15,7 +15,7 @@ import os
 import sys
 from dotenv import load_dotenv
 
-os.environ.get("KU&A")
+load_dotenv()
 
 # 교시 -> 시간 데이터
 
@@ -196,9 +196,6 @@ STATICFILES_DIRS = [
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
-
-
-load_dotenv()
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
