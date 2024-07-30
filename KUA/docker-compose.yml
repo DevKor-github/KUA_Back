@@ -1,0 +1,34 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: kua.chzgsszohvju.ap-northeast-2.rds.amazonaws.com
+      POSTGRES_USER: kua
+      POSTGRES_PASSWORD: kua
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  web:
+    build: .
+    volumes:
+      - .:/devkor-teamb-back
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DB_NAME=kua
+      - DB_USER=kua
+      - DB_PASSWORD=kua
+      - DB_HOST=kua.chzgsszohvju.ap-northeast-2.rds.amazonaws.com
+      - DB_PORT=5432
+      - EMAIL_PORT = 587
+      - EMAIL_HOST_USER = testeuichan@gmail.com
+      - EMAIL_HOST_PASSWORD = wrplpvtqhknudaqn
+
+volumes:
+  postgres_data:
