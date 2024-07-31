@@ -106,7 +106,7 @@ class SignupView(APIView):
     permission_classes = [AllowAny]
     
     @swagger_auto_schema(
-        operation_summary="회원가입 기능입니다.",
+        operation_summary="회원가입 기능입니다. - 완료",
         operation_description="id(username), first_name, last_name, email, password, group입력 -> 회원가입 ",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
@@ -117,7 +117,6 @@ class SignupView(APIView):
                 'email': openapi.Schema(type=openapi.TYPE_STRING, format=openapi.FORMAT_EMAIL),
                 'password': openapi.Schema(type=openapi.TYPE_STRING),
                 'group': openapi.Schema(type=openapi.TYPE_STRING),
-                'name': openapi.Schema(type=openapi.TYPE_STRING),
             }
         ),
         responses={
@@ -179,7 +178,7 @@ class LoginView(APIView):
     serializer_class = serializers.UserSerializer
 
     @swagger_auto_schema(
-        operation_summary="로그인 기능입니다.",
+        operation_summary="로그인 기능입니다. - 완료",
         operation_description="id(username), password입력 -> 로그인(Token return)",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
@@ -215,7 +214,7 @@ class PointGetView(generics.UpdateAPIView):
     }
 
     @swagger_auto_schema(
-        operation_summary="포인트 획득 기능입니다.",
+        operation_summary="포인트 획득 기능입니다. - 완료",
         operation_description="포인트 타입 획득 타입(answer, chosen, survey)을 입력 -> 해당 타입에 따라 포인트 획득",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
@@ -290,7 +289,7 @@ class PointUseView(generics.UpdateAPIView):
                 return Response('Not Enough Points')
             student.points -= cost
             student.permission_date = timezone.now()
-            student.permission_type = '1'
+            student.permission_type = self.point_costs.get(cost)
             student.save()
             return Response(f"Get {permission_type} day permission")
 
