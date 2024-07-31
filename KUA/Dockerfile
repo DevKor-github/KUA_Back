@@ -8,4 +8,4 @@ RUN pip install -r requirements.txt
 
 EXPOSE 8000
 
-CMD ["python","manage.py", "runserver"]
+CMD ["python","manage.py", "runserver", "15.165.198.75:8000"]
