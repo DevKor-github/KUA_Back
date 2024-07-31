@@ -16,12 +16,114 @@ class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
 
+    @swagger_auto_schema(
+        operation_summary="강의 목록 조회",
+        operation_description="모든 강의 목록을 조회합니다.",
+        responses={200: CourseSerializer(many=True)}
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_summary="강의 생성",
+        operation_description="새로운 강의를 생성합니다.",
+        request_body=CourseSerializer,
+        responses={201: CourseSerializer}
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_summary="강의 조회",
+        operation_description="ID로 특정 강의를 조회합니다.",
+        responses={200: CourseSerializer}
+    )
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_summary="강의 수정",
+        operation_description="기존 강의 정보를 수정합니다.",
+        request_body=CourseSerializer,
+        responses={200: CourseSerializer}
+    )
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_summary="강의 부분 수정",
+        operation_description="강의 정보의 일부를 수정합니다.",
+        request_body=CourseSerializer,
+        responses={200: CourseSerializer}
+    )
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_summary="강의 삭제",
+        operation_description="ID로 특정 강의를 삭제합니다.",
+        responses={204: 'No Content'}
+    )
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
+
 # 태그 전체 뷰
 
 
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+
+    @swagger_auto_schema(
+        operation_summary="태그 목록 조회",
+        operation_description="모든 태그 목록을 조회합니다.",
+        responses={200: TagSerializer(many=True)}
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_summary="태그 생성",
+        operation_description="새로운 태그를 생성합니다.",
+        request_body=TagSerializer,
+        responses={201: TagSerializer}
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_summary="태그 조회",
+        operation_description="ID로 특정 태그를 조회합니다.",
+        responses={200: TagSerializer}
+    )
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_summary="태그 수정",
+        operation_description="기존 태그 정보를 수정합니다.",
+        request_body=TagSerializer,
+        responses={200: TagSerializer}
+    )
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_summary="태그 부분 수정",
+        operation_description="태그 정보의 일부를 수정합니다.",
+        request_body=TagSerializer,
+        responses={200: TagSerializer}
+    )
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_summary="태그 삭제",
+        operation_description="ID로 특정 태그를 삭제합니다.",
+        responses={204: 'No Content'}
+    )
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
 
 # 게시글 전체 뷰
 
@@ -30,13 +132,64 @@ class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
 
+    @swagger_auto_schema(
+        operation_summary="게시글 목록 조회",
+        operation_description="모든 게시글 목록을 조회합니다.",
+        responses={200: PostSerializer(many=True)}
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_summary="게시글 생성",
+        operation_description="새로운 게시글을 생성합니다.",
+        request_body=PostSerializer,
+        responses={201: PostSerializer}
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_summary="게시글 조회",
+        operation_description="ID로 특정 게시글을 조회합니다.",
+        responses={200: PostSerializer}
+    )
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_summary="게시글 수정",
+        operation_description="기존 게시글 정보를 수정합니다.",
+        request_body=PostSerializer,
+        responses={200: PostSerializer}
+    )
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_summary="게시글 부분 수정",
+        operation_description="게시글 정보의 일부를 수정합니다.",
+        request_body=PostSerializer,
+        responses={200: PostSerializer}
+    )
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_summary="게시글 삭제",
+        operation_description="ID로 특정 게시글을 삭제합니다.",
+        responses={204: 'No Content'}
+    )
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
+
 # 댓글 전체 뷰
 
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-
+# 시간표 뷰
 class TimeTableViewSet(viewsets.ModelViewSet):
     queryset = TimeTable.objects.all()
     serializer_class = TimeTableSerializer
