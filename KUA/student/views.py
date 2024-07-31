@@ -289,7 +289,7 @@ class PointUseView(generics.UpdateAPIView):
                 return Response('Not Enough Points')
             student.points -= cost
             student.permission_date = timezone.now()
-            student.permission_type = self.point_costs.get(cost)
+            student.permission_type = permission_type
             student.save()
             return Response(f"Get {permission_type} day permission")
 
