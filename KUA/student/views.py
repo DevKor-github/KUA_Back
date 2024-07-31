@@ -54,15 +54,10 @@ class EmailCodeSendView(APIView):
         )
         email_message.send()
 
-        try:
-            email_object, created = models.CertificationCode.objects.get_or_create(email=email)
-            email_object.certification_code = random_code
-            email_object.certification_check = False
-            print(email_object)
-            email_object.save()
-
-        except Exception as e:
-            return Response({'error': 'Failed to save certification code.'}, status=500)
+        email_object, created = models.CertificationCode.objects.get_or_create(email=email)
+        email_object.certification_code = random_code
+        email_object.certification_check = False
+        email_object.save()
 
         return Response({'Permission Code Update': True}, status=201)
 
@@ -306,7 +301,7 @@ class IsPermissionView(generics.RetrieveAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = serializers.StudentSerializer
-    
+
     @swagger_auto_schema(
         operation_summary="이용권 보유 여부를 확인하는 기능입니다.",
         operation_description="파라미터 없이 get 요청 -> 보유한 이용권이 타당하면 Success return",
