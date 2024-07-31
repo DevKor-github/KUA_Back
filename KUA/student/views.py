@@ -180,6 +180,7 @@ class SignupView(APIView):
 #로그인 기능        
 class LoginView(APIView):
     permission_classes = [AllowAny]
+    serializer_class = serializers.UserSerializer
 
     @swagger_auto_schema(
         operation_summary="로그인 기능입니다.",
@@ -209,6 +210,7 @@ class LoginView(APIView):
 class PointGetView(generics.UpdateAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
+    serializer_class = serializers.StudentSerializer
 
     point_reward = {
         'answer': 5,
@@ -253,6 +255,7 @@ class PointGetView(generics.UpdateAPIView):
 class PointUseView(generics.UpdateAPIView): 
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
+    serializer_class = serializers.StudentSerializer
 
     point_costs = {
         '1': 80,
@@ -302,7 +305,8 @@ class PointUseView(generics.UpdateAPIView):
 class IsPermissionView(generics.RetrieveAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
-
+    serializer_class = serializers.StudentSerializer
+    
     @swagger_auto_schema(
         operation_summary="이용권 보유 여부를 확인하는 기능입니다.",
         operation_description="파라미터 없이 get 요청 -> 보유한 이용권이 타당하면 Success return",
