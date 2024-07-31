@@ -23,7 +23,7 @@ class EmailCodeSendView(APIView):
     serializer_class = serializers.CertificationCodeSerializer
 
     @swagger_auto_schema(
-        operation_summary="이메일 인증 기능 코드입니다.",
+        operation_summary="이메일 인증 기능 코드입니다. - 완료",
         operation_description="이메일 입력 -> 인증코드 발행.",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
@@ -67,7 +67,7 @@ class EmailCodeCheckView(APIView):
     serializer_class = serializers.CertificationCodeSerializer
 
     @swagger_auto_schema(
-        operation_summary="이메일 인증 확인 코드입니다.",
+        operation_summary="이메일 인증 확인 코드입니다. - 완료",
         operation_description="email, code 입력 -> 인증코드 확인",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
@@ -93,6 +93,7 @@ class EmailCodeCheckView(APIView):
             email_object = models.CertificationCode.objects.get(email=email)
             if code == email_object.certification_code:
                 email_object.certification_check = True
+                email_object.save()
                 return Response(status = 201)
             else:
                 return Response(status = 400)
