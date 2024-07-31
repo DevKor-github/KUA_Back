@@ -260,7 +260,7 @@ class PointUseView(generics.UpdateAPIView):
     }
 
     @swagger_auto_schema(
-        operation_summary="포인트로 이용권 구매하는 기능입니다.",
+        operation_summary="포인트로 이용권 구매하는 기능입니다. - 완료",
         operation_description="이용권 type(1, 7, 14, 30)을 입력 -> 해당 타입에 따라 포인트를 사용하여 이용권 구매 OR 실패",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
@@ -303,7 +303,7 @@ class IsPermissionView(generics.RetrieveAPIView):
     serializer_class = serializers.StudentSerializer
 
     @swagger_auto_schema(
-        operation_summary="이용권 보유 여부를 확인하는 기능입니다.",
+        operation_summary="이용권 보유 여부를 확인하는 기능입니다. - 완료",
         operation_description="파라미터 없이 get 요청 -> 보유한 이용권이 타당하면 Success return",
         responses={
             201: openapi.Response(description="Success"),
