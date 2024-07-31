@@ -185,14 +185,116 @@ class PostViewSet(viewsets.ModelViewSet):
 
 # 댓글 전체 뷰
 
-
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+
+    @swagger_auto_schema(
+        operation_summary="댓글 목록 조회",
+        operation_description="모든 댓글 목록을 조회합니다.",
+        responses={200: CommentSerializer(many=True)}
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_summary="댓글 생성",
+        operation_description="새로운 댓글을 생성합니다.",
+        request_body=CommentSerializer,
+        responses={201: CommentSerializer}
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_summary="댓글 조회",
+        operation_description="ID로 특정 댓글을 조회합니다.",
+        responses={200: CommentSerializer}
+    )
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_summary="댓글 수정",
+        operation_description="기존 댓글 정보를 수정합니다.",
+        request_body=CommentSerializer,
+        responses={200: CommentSerializer}
+    )
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_summary="댓글 부분 수정",
+        operation_description="댓글 정보의 일부를 수정합니다.",
+        request_body=CommentSerializer,
+        responses={200: CommentSerializer}
+    )
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_summary="댓글 삭제",
+        operation_description="ID로 특정 댓글을 삭제합니다.",
+        responses={204: 'No Content'}
+    )
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
+
 # 시간표 뷰
 class TimeTableViewSet(viewsets.ModelViewSet):
     queryset = TimeTable.objects.all()
     serializer_class = TimeTableSerializer
+
+    @swagger_auto_schema(
+        operation_summary="시간표 목록 조회",
+        operation_description="모든 시간표 목록을 조회합니다.",
+        responses={200: TimeTableSerializer(many=True)}
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_summary="시간표 생성",
+        operation_description="새로운 시간표를 생성합니다.",
+        request_body=TimeTableSerializer,
+        responses={201: TimeTableSerializer}
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_summary="시간표 조회",
+        operation_description="ID로 특정 시간표를 조회합니다.",
+        responses={200: TimeTableSerializer}
+    )
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_summary="시간표 수정",
+        operation_description="기존 시간표 정보를 수정합니다.",
+        request_body=TimeTableSerializer,
+        responses={200: TimeTableSerializer}
+    )
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_summary="시간표 부분 수정",
+        operation_description="시간표 정보의 일부를 수정합니다.",
+        request_body=TimeTableSerializer,
+        responses={200: TimeTableSerializer}
+    )
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_summary="시간표 삭제",
+        operation_description="ID로 특정 시간표를 삭제합니다.",
+        responses={204: 'No Content'}
+    )
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
 
 # 특정 강의에 대한 게시글을 보는 뷰
 
