@@ -58,8 +58,9 @@ class EmailCodeSendView(APIView):
             email_object, created = models.CertificationCode.objects.get_or_create(email=email)
             email_object.certification_code = random_code
             email_object.certification_check = False
+            print(email_object)
             email_object.save()
-            
+
         except Exception as e:
             return Response({'error': 'Failed to save certification code.'}, status=500)
 
