@@ -33,7 +33,7 @@ class EmailCodeSendView(APIView):
         ),
         responses={
             201: openapi.Response(description="Email Code Send Success"),
-            400: openapi.Response(description="Email Code Send Rejected")
+            500: openapi.Response(description="Email Code Send Rejected")
         }
     )
     def post(self, request):
@@ -54,15 +54,14 @@ class EmailCodeSendView(APIView):
         )
         email_message.send()
 
-        if models.CertificationCode.objects.filter(email=email).exists():
-            email_object = models.CertificationCode.objects.get(email=email)
-        else:
-            email_object = models.CertificationCode(email=email)
-
-        email_object.certification_code = random_code
-        email_object.certification_check = False
-
-        email_object.save()
+        try:
+            email_object, created = models.CertificationCode.objects.get_or_create(email=email)
+            email_object.certification_code = random_code
+            email_object.certification_check = False
+            email_object.save()
+            
+        except Exception as e:
+            return Response({'error': 'Failed to save certification code.'}, status=500)
 
         return Response({'Permission Code Update': True}, status=201)
 
