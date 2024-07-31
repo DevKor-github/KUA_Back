@@ -23,8 +23,6 @@ class CertificationCode(models.Model):
     email = models.CharField(max_length = 30, null = False, blank=False)
     certification_code = models.CharField(default='', max_length = 8, null = False, blank = False)
     certification_check = models.BooleanField(default=False)
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['certification_code']
 
     def __str__(self):
         return self.email
