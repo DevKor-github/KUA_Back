@@ -81,7 +81,7 @@ class Post(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     attached_file = models.FileField(
         upload_to='attachments/', null=True, blank=True)
-    tags = models.ManyToManyField(Tag, related_name='posts')
+    tags = models.ManyToManyField(Tag, blank=True,  related_name='posts')
 
     def __str__(self):
         return f"{self.title}, {self.content[:20]}"
