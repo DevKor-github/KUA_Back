@@ -17,7 +17,9 @@ from datetime import timedelta
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
-#이메일 코드 전송 기능
+# 이메일 코드 전송 기능
+
+
 class EmailCodeSendView(APIView):
     permission_classes = [AllowAny]
     serializer_class = serializers.CertificationCodeSerializer
@@ -41,7 +43,6 @@ class EmailCodeSendView(APIView):
         random_code_list = random.sample(letters_set, 8)
         random_code = ''.join(random_code_list)
 
-
         email = request.data['email']
 
         if User.objects.filter(email=email).exists():
@@ -54,14 +55,17 @@ class EmailCodeSendView(APIView):
         )
         email_message.send()
 
-        email_object, created = models.CertificationCode.objects.get_or_create(email=email)
+        email_object, created = models.CertificationCode.objects.get_or_create(
+            email=email)
         email_object.certification_code = random_code
         email_object.certification_check = False
         email_object.save()
 
         return Response({'Permission Code Update': True}, status=201)
 
-#이메일 코드 인증 확인 기능
+# 이메일 코드 인증 확인 기능
+
+
 class EmailCodeCheckView(APIView):
     permission_classes = [AllowAny]
     serializer_class = serializers.CertificationCodeSerializer
@@ -81,30 +85,31 @@ class EmailCodeCheckView(APIView):
             400: openapi.Response(description="Permission Rejected")
         }
     )
-
     def post(self, request):
         email = request.data['email']
         code = request.data['code']
-        
+
         if not email:
             return Response({'error': 'Invalid Email Address'})
-        
+
         if models.CertificationCode.objects.filter(email=email).exists():
             email_object = models.CertificationCode.objects.get(email=email)
             if code == email_object.certification_code:
                 email_object.certification_check = True
                 email_object.save()
-                return Response(status = 201)
+                return Response(status=201)
             else:
-                return Response(status = 400)
-        
+                return Response(status=400)
+
         else:
             return Response({'error': 'Invalid Email Address'})
 
-#회원가입 기능    
+# 회원가입 기능
+
+
 class SignupView(APIView):
     permission_classes = [AllowAny]
-    
+
     @swagger_auto_schema(
         operation_summary="회원가입 기능입니다. - 완료",
         operation_description="id(username), first_name, last_name, email, password, group입력 -> 회원가입 ",
@@ -124,22 +129,21 @@ class SignupView(APIView):
             400: openapi.Response(description="Sign Up Rejected")
         }
     )
-
     def post(self, request):
         user_data = {
-            'username' : request.data['username'],
-            'first_name' : request.data['first_name'],
-            'last_name' : request.data['last_name'],
-            'email' : request.data['email'],
-            'password' : request.data['password'],
+            'username': request.data['username'],
+            'first_name': request.data['first_name'],
+            'last_name': request.data['last_name'],
+            'email': request.data['email'],
+            'password': request.data['password'],
             'group': request.data['group'],
-            'is_staff' : False,
-            'is_active' : True,
-            'is_superuser' : False,
-            'date_joined' : timezone.now(),
+            'is_staff': False,
+            'is_active': True,
+            'is_superuser': False,
+            'date_joined': timezone.now(),
         }
 
-        user_serializer = serializers.UserSerializer(data = user_data)
+        user_serializer = serializers.UserSerializer(data=user_data)
         if not user_serializer.is_valid():
             return Response({'Invalid User Information'})
 
@@ -148,7 +152,7 @@ class SignupView(APIView):
         student_number = models.Student.objects.count()
 
         nickname_animal = ['사자', '고양이', '강아지', '호랑이', '매', '양', '토끼', '용', '용', '다람쥐', '돼지', '소', '쥐', '파리', '모기',
-                   '까마귀', '벌', '개미', '염소', '하마', '코뿔소', '곰', '뱀', '원숭이', '고릴라', '말']
+                           '까마귀', '벌', '개미', '염소', '하마', '코뿔소', '곰', '뱀', '원숭이', '고릴라', '말']
 
         random_animal = random.choices(nickname_animal, k=1)
 
@@ -163,16 +167,18 @@ class SignupView(APIView):
             'permission_date': timezone.now(),
         }
 
-        student_serializer = serializers.StudentSerializer(data = student)
+        student_serializer = serializers.StudentSerializer(data=student)
 
-        if not student_serializer.is_valid():   
+        if not student_serializer.is_valid():
             return Response(student_serializer.errors)
 
         student_serializer.save()
-        token = Token.objects.create(user = user)
+        token = Token.objects.create(user=user)
         return Response({"Token": token.key})
-        
-#로그인 기능        
+
+# 로그인 기능
+
+
 class LoginView(APIView):
     permission_classes = [AllowAny]
     serializer_class = serializers.UserSerializer
@@ -192,18 +198,20 @@ class LoginView(APIView):
             400: openapi.Response(description=" Login Rejected")
         }
     )
-
     def post(self, request):
-        user = authenticate(username = request.data['username'], password = request.data['password'])
+        user = authenticate(
+            username=request.data['username'], password=request.data['password'])
         if user is not None:
             token = Token.objects.get(user=user)
-            user.last_login = timezone.now()
+            user.last_login = timezone.localtime(timezone.now())
             user.save()
             return Response({"Token": token.key})
         else:
-            return Response(status = 400)
+            return Response(status=400)
 
-#포인트 획득 기능
+# 포인트 획득 기능
+
+
 class PointGetView(generics.UpdateAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
@@ -229,7 +237,6 @@ class PointGetView(generics.UpdateAPIView):
             400: openapi.Response(description="Point Get Rejected")
         }
     )
-
     def post(self, request):
         user = request.user
         point_type = request.data['point_type']
@@ -248,8 +255,10 @@ class PointGetView(generics.UpdateAPIView):
         else:
             return Response({'error': ' invalid getting points type'})
 
-#포인트로 이용권 구매 기능
-class PointUseView(generics.UpdateAPIView): 
+# 포인트로 이용권 구매 기능
+
+
+class PointUseView(generics.UpdateAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = serializers.StudentSerializer
@@ -275,7 +284,6 @@ class PointUseView(generics.UpdateAPIView):
             400: openapi.Response(description="Point Use Rejected")
         }
     )
-
     def post(self, request):
         user = request.user
         permission_type = request.data['point_costs']
@@ -298,7 +306,9 @@ class PointUseView(generics.UpdateAPIView):
         else:
             return Response({'error': ' invalid using points type'})
 
-#사용자가 게시물 접근 권한이 있는지 확인하는 기능
+# 사용자가 게시물 접근 권한이 있는지 확인하는 기능
+
+
 class IsPermissionView(generics.RetrieveAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
@@ -312,7 +322,6 @@ class IsPermissionView(generics.RetrieveAPIView):
             400: openapi.Response(description="You Need to Buy")
         }
     )
-
     def get(self, request):
         user = request.user
 
