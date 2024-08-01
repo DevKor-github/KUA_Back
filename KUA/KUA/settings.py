@@ -208,11 +208,10 @@ TIME_ZONE = 'Asia/Seoul'
 USE_I18N = True
 
 USE_L10N = True
-USE_TZ = False
+USE_TZ = True
 
 DATE_FORMAT = 'Y-m-d'
 TIME_FORMAT = 'H:i:s'
-
 
 
 # Static files (CSS, JavaScript, Images)
