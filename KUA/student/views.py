@@ -197,6 +197,8 @@ class LoginView(APIView):
         user = authenticate(username = request.data['username'], password = request.data['password'])
         if user is not None:
             token = Token.objects.get(user=user)
+            user.last_login = timezone.now()
+            user.save()
             return Response({"Token": token.key})
         else:
             return Response(status = 400)
