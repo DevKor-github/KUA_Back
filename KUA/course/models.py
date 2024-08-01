@@ -2,7 +2,11 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.utils import timezone
 
+
 class Course(models.Model):
+    def default_course_period():
+        return [[], [], [], [], [], [], []]
+
     COURSE_DAYS = [
         ('월', 'Monday'),
         ('화', 'Tuesday'),
@@ -12,7 +16,6 @@ class Course(models.Model):
         ('토', 'Saturday'),
     ]
 
-    # 학수번호
     course_id = models.CharField(max_length=20, unique=True)
     course_name = models.CharField(max_length=50)
     year = models.IntegerField()
@@ -21,44 +24,44 @@ class Course(models.Model):
     credits = models.IntegerField()
     classification = models.CharField(max_length=10)
 
-    # 수업 요일 리스트
     course_week = ArrayField(
         models.CharField(max_length=3, choices=COURSE_DAYS),
         size=7,
         default=list
     )
 
-    # 수업 교시 이차원 배열
     course_period = ArrayField(
         ArrayField(
             models.IntegerField(),
             size=7,
         ),
         size=7,
-        default=list
+        null=True,  # 초기값 설정을 피하기 위해 null=True 설정
+        blank=True  # 필드가 비어 있어도 무시되도록 설정
     )
 
-    # 강의실 리스트(Nullable)
     course_room = ArrayField(
         models.CharField(max_length=100),
         size=7,
-        default=list,
-        null=True
+        null=True,
+        blank=True
     )
 
-    # year와 semester를 크롤링 시점에 따라 결정
     def save(self, *args, **kwargs):
         if not self.id:  # 객체가 처음 생성될 때만 설정
             now = timezone.now()
             self.year = now.year
-            if now.month < 6:
-                self.semester = '1'
-            else:
-                self.semester = '2'
+            self.semester = 1 if now.month < 6 else 2
+
+            # course_period가 비어 있을 때만 기본값 설정
+            if not self.course_period:
+                self.course_period = [[], [], [], [], [], [], []]
+
         super(Course, self).save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.year} 년도, {self.semester}학기 {self.instructor} 교수님 {self.course_name} ({self.course_id})"
+
 
 # 태그 모델
 
@@ -70,6 +73,8 @@ class Tag(models.Model):
         return self.name
 
 # 게시글 (각 강의에 대한)
+
+
 class Post(models.Model):
     course = models.ForeignKey(
         Course, on_delete=models.CASCADE, related_name='posts')
@@ -91,7 +96,8 @@ class Post(models.Model):
 class Comment(models.Model):
     post = models.ForeignKey(
         Post, on_delete=models.CASCADE, related_name='comments')
-    student = models.ForeignKey('student.Student', on_delete=models.CASCADE, related_name='comments')
+    student = models.ForeignKey(
+        'student.Student', on_delete=models.CASCADE, related_name='comments')
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -100,12 +106,15 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.content[:20]  # 최초 20글자만 표시
-    
+
+
 class TimeTable(models.Model):
-    student = models.OneToOneField('student.Student', on_delete=models.CASCADE, related_name='timetables')
-    course = models.ForeignKey(Course, null = False, on_delete=models.CASCADE, related_name='timetables')
-    year = models.CharField(null = False, max_length=6)
-    semester = models.CharField(null = False, max_length = 6)
+    student = models.OneToOneField(
+        'student.Student', on_delete=models.CASCADE, related_name='timetables')
+    course = models.ForeignKey(
+        Course, null=False, on_delete=models.CASCADE, related_name='timetables')
+    year = models.CharField(null=False, max_length=6)
+    semester = models.CharField(null=False, max_length=6)
 
     def __str__(self):
         return f"{self.year}년도 {self.semester} 학기 {self.student}의 시간표"
