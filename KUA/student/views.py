@@ -199,15 +199,12 @@ class LoginView(APIView):
         }
     )
     def post(self, request):
+        from datetime import datetime
         user = authenticate(
             username=request.data['username'], password=request.data['password'])
         if user is not None:
             token = Token.objects.get(user=user)
-            current_time = timezone.now()
-            if timezone.is_naive(current_time):
-                current_time = timezone.make_aware(
-                    current_time, timezone.get_current_timezone())
-            user.last_login = timezone.localtime(current_time)
+            user.last_login = timezone.localtime()
             user.save()
             return Response({"Token": token.key})
         else:
