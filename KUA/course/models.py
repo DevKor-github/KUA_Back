@@ -76,7 +76,7 @@ class Tag(models.Model):
 
 
 class Post(models.Model):
-    course = models.ForeignKey(
+    course_fk = models.ForeignKey(
         Course, on_delete=models.CASCADE, related_name='posts')
     student = models.ForeignKey(
         'student.Student', on_delete=models.CASCADE, related_name='posts')
@@ -111,7 +111,7 @@ class Comment(models.Model):
 class TimeTable(models.Model):
     student = models.OneToOneField(
         'student.Student', on_delete=models.CASCADE, related_name='timetables')
-    course = models.ForeignKey(
+    course_fk = models.ForeignKey(
         Course, null=False, on_delete=models.CASCADE, related_name='timetables')
     year = models.CharField(null=False, max_length=6)
     semester = models.CharField(null=False, max_length=6)

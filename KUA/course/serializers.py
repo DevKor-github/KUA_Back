@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
-        fields = ['id', 'course_id']
+        fields = '__all__'
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -36,18 +36,18 @@ class TimeTableSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
 
         student = validated_data['student']
-        course_id = validated_data['courses']
+        course = validated_data['course']
         year = validated_data['year']
         semester = validated_data['semester']
 
         check_student = Student.objects.filter(student=student)
         check_course = Course.objects.filter(
-            course_id=course_id, year=year, semester=semester).exists()
+            course = course, year=year, semester=semester).exists()
 
         if check_student and check_course:
             timetable = TimeTable(
                 student=student,
-                course_id=course_id,
+                course=course,
                 year=year,
                 semester=semester,
             )
