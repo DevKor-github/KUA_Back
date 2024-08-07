@@ -9,6 +9,11 @@ class CourseSerializer(serializers.ModelSerializer):
         model = Course
         fields = '__all__'
 
+class CourseMinimalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = ['id', 'course_id']
+
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
@@ -21,12 +26,20 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = '__all__'
 
+class PostMinimalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ['id', 'title']
 
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = '__all__'
 
+class CommentMinimalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ['id', 'post_id', 'student_id']
 
 class TimeTableSerializer(serializers.ModelSerializer):
     class Meta:
