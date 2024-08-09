@@ -381,7 +381,7 @@ class TimeTableViewSet(viewsets.ModelViewSet):
         return super().list(request, *args, **kwargs)
 
     @swagger_auto_schema(
-        operation_summary="시간표 생성 기능",
+        operation_summary="시간표 생성 기능 - 완료",
         operation_description="새로운 시간표를 생성합니다.",
         request_body=TimeTableSerializer,
         responses={201: TimeTableSerializer}
@@ -393,7 +393,7 @@ class TimeTableViewSet(viewsets.ModelViewSet):
         serializer.save()
 
     @swagger_auto_schema(
-        operation_summary="시간표 조회 기능",
+        operation_summary="시간표 조회 기능 - 완료",
         operation_description="ID로 특정 시간표를 조회합니다.",
         responses={200: TimeTableSerializer}
     )
@@ -401,7 +401,7 @@ class TimeTableViewSet(viewsets.ModelViewSet):
         return super().retrieve(request, *args, **kwargs)
 
     @swagger_auto_schema(
-        operation_summary="시간표 수정 기능",
+        operation_summary="시간표 수정 기능 - 완료",
         operation_description="기존 시간표 정보를 수정합니다.",
         request_body=TimeTableSerializer,
         responses={200: TimeTableSerializer}
@@ -410,7 +410,7 @@ class TimeTableViewSet(viewsets.ModelViewSet):
         return super().update(request, *args, **kwargs)
 
     @swagger_auto_schema(
-        operation_summary="시간표 부분 수정",
+        operation_summary="시간표 부분 수정 - 완료",
         operation_description="시간표 정보의 일부를 수정합니다.",
         request_body=TimeTableSerializer,
         responses={200: TimeTableSerializer}
@@ -419,7 +419,7 @@ class TimeTableViewSet(viewsets.ModelViewSet):
         return super().partial_update(request, *args, **kwargs)
 
     @swagger_auto_schema(
-        operation_summary="시간표 삭제",
+        operation_summary="시간표 삭제 - 완료",
         operation_description="ID로 특정 시간표를 삭제합니다.",
         responses={204: 'No Content'}
     )
