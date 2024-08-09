@@ -41,23 +41,30 @@ class CommentMinimalSerializer(serializers.ModelSerializer):
         fields = ['id', 'post_id', 'student_id']
 
 class TimeTableSerializer(serializers.ModelSerializer):
-    courses = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all(), many=True)
+    student = serializers.PrimaryKeyRelatedField(queryset=Student.objects.all())
+    courses = CourseSerializer(many=True, read_only=True)
+    course_ids = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Course.objects.all(), write_only=True
+    )
 
     class Meta:
         model = TimeTable
-        fields = ['student', 'year', 'semester', 'courses']
+        fields = ['id', 'student', 'year', 'semester', 'courses', 'course_ids']
 
-def create(self, validated_data):
-    courses = validated_data.pop('courses', [])
-    print(f"Creating timetable with courses: {courses}")  # 디버깅용 출력
+    def create(self, validated_data):
+        course_ids = validated_data.pop('course_ids')
+        timetable = TimeTable.objects.create(**validated_data)
+        timetable.courses.set(course_ids)
+        return timetable
 
-    # 시간표 객체 생성
-    timetable = TimeTable.objects.create(**validated_data)
+    def update(self, instance, validated_data):
+        course_ids = validated_data.pop('course_ids', None)
+        instance.student = validated_data.get('student', instance.student)
+        instance.year = validated_data.get('year', instance.year)
+        instance.semester = validated_data.get('semester', instance.semester)
 
-    if courses:
-        timetable.courses.set(courses)  # ManyToMany 관계 설정
-        print(f"Successfully added courses to timetable: {timetable.id}")  # 디버깅용 출력
-    else:
-        print(f"No courses were provided for timetable: {timetable.id}")  # 디버깅용 출력
+        if course_ids:
+            instance.courses.set(course_ids)
 
-    return timetable
+        instance.save()
+        return instance
