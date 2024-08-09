@@ -111,9 +111,9 @@ class Comment(models.Model):
 class TimeTable(models.Model):
     student = models.ForeignKey(
         'student.Student', on_delete=models.CASCADE, related_name='timetables')
+    courses = models.ManyToManyField(Course, related_name='timetables', blank=True, null=True)
     year = models.CharField(null=False, max_length=6)
     semester = models.CharField(null=False, max_length=6)
-    courses = models.ManyToManyField(Course, related_name='timetables')
 
     def __str__(self):
-        return f"{self.year}년도 {self.sem스터} 학기 {self.student}의 시간표"
+        return f"{self.year}년도 {self.semester} 학기 {self.student}의 시간표"
