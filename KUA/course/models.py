@@ -111,8 +111,8 @@ class Comment(models.Model):
 class TimeTable(models.Model):
     student = models.OneToOneField(
         'student.Student', on_delete=models.CASCADE, related_name='timetables')
-    course_fk = models.ForeignKey(
-        Course, null=False, on_delete=models.CASCADE, related_name='timetables')
+    course_fk = models.ManyToManyField(
+        Course, related_name='timetables', blank=True)
     year = models.CharField(null=False, max_length=6)
     semester = models.CharField(null=False, max_length=6)
 
