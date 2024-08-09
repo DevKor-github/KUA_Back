@@ -151,7 +151,7 @@ class TagViewSet(viewsets.ModelViewSet):
         return super().retrieve(request, *args, **kwargs)
 
     @swagger_auto_schema(
-        operation_summary="태그 수정",
+        operation_summary="태그 수정 - 완료",
         operation_description="기존 태그 정보를 수정합니다.",
         request_body=TagSerializer,
         responses={200: TagSerializer}
@@ -160,7 +160,7 @@ class TagViewSet(viewsets.ModelViewSet):
         return super().update(request, *args, **kwargs)
 
     @swagger_auto_schema(
-        operation_summary="태그 부분 수정",
+        operation_summary="태그 부분 수정 - 완료",
         operation_description="태그 정보의 일부를 수정합니다.",
         request_body=TagSerializer,
         responses={200: TagSerializer}
@@ -169,7 +169,7 @@ class TagViewSet(viewsets.ModelViewSet):
         return super().partial_update(request, *args, **kwargs)
 
     @swagger_auto_schema(
-        operation_summary="태그 삭제",
+        operation_summary="태그 삭제 - 완료",
         operation_description="ID로 특정 태그를 삭제합니다.",
         responses={204: 'Deleted'}
     )
@@ -387,7 +387,26 @@ class TimeTableViewSet(viewsets.ModelViewSet):
         responses={201: TimeTableSerializer}
     )
     def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+        # student_id로 Student 인스턴스를 조회
+        student_id = request.data.get('student')
+        student = get_object_or_404(Student, id=student_id)
+
+        # course_fk_id로 Course 인스턴스를 조회
+        course_fk_id = request.data.get('course_fk_id')
+        course = get_object_or_404(Course, id=course_fk_id)
+
+        # validated_data를 수동으로 구성
+        validated_data = {
+            'student': student,
+            'year': request.data.get('year'),
+            'semester': request.data.get('semester'),
+        }
+
+        # TimeTable 객체 생성
+        timetable = TimeTable.objects.create(**validated_data)
+        timetable.courses.add(course)  # ManyToMany 관계 설정
+
+        return Response({'message': 'TimeTable created'}, status=status.HTTP_201_CREATED)
 
     @swagger_auto_schema(
         operation_summary="시간표 조회 기능",
