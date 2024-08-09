@@ -387,26 +387,10 @@ class TimeTableViewSet(viewsets.ModelViewSet):
         responses={201: TimeTableSerializer}
     )
     def create(self, request, *args, **kwargs):
-        # student_id로 Student 인스턴스를 조회
-        student_id = request.data.get('student')
-        student = get_object_or_404(Student, id=student_id)
+        return super().create(request, *args, **kwargs)
 
-        # course_fk_id로 Course 인스턴스를 조회
-        course_fk_id = request.data.get('course_fk_id')
-        course = get_object_or_404(Course, id=course_fk_id)
-
-        # validated_data를 수동으로 구성
-        validated_data = {
-            'student': student,
-            'year': request.data.get('year'),
-            'semester': request.data.get('semester'),
-        }
-
-        # TimeTable 객체 생성
-        timetable = TimeTable.objects.create(**validated_data)
-        timetable.courses.add(course)  # ManyToMany 관계 설정
-
-        return Response({'message': 'TimeTable created'}, status=status.HTTP_201_CREATED)
+    def perform_create(self, serializer):
+        serializer.save()
 
     @swagger_auto_schema(
         operation_summary="시간표 조회 기능",
