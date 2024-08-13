@@ -1,14 +1,12 @@
 
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, generics, status
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
 from .models import Course, Tag, Post, Comment, TimeTable
-from student.models import Student
 from .serializers import *
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from rest_framework.parsers import MultiPartParser, FormParser
 
 # 강의 전체 뷰(CRUD 포함)
 
@@ -191,6 +189,7 @@ class TagViewSet(viewsets.ModelViewSet):
 
 class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
+    parser_classes = [MultiPartParser, FormParser]
 
     def get_queryset(self):
         queryset = Post.objects.all()
