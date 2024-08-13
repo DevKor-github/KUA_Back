@@ -238,20 +238,9 @@ class PostViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_summary="게시글 생성 기능 - 완료",
         operation_description="새로운 게시글을 생성합니다.",
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            required=['title', 'content', 'course_fk', 'student'],
-            properties={
-                'title': openapi.Schema(type=openapi.TYPE_STRING, description='게시글 제목'),
-                'content': openapi.Schema(type=openapi.TYPE_STRING, description='게시글 내용'),
-                'course_fk': openapi.Schema(type=openapi.TYPE_INTEGER, description='강의 ID'),
-                'student': openapi.Schema(type=openapi.TYPE_INTEGER, description='학생 ID'),
-                'attached_file': openapi.Schema(type=openapi.TYPE_FILE, description='첨부 파일'),
-                'tags': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_INTEGER), description='태그 ID 배열'),
-            },
-        ),
+        request_body=PostSerializer,
         responses={201: PostSerializer},
-        consumes=['multipart/form-data'],  # Form-data를 사용하도록 설정
+        consumes=['multipart/form-data']  # Form-data를 사용하도록 설정
     )
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
