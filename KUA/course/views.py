@@ -11,9 +11,11 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 # 강의 전체 뷰(CRUD 포함)
+
+
 class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseSerializer
-    
+
     def get_queryset(self):
         queryset = Course.objects.all()
 
@@ -40,16 +42,21 @@ class CourseViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(semester=semester)
 
         return queryset
-    
+
     @swagger_auto_schema(
         operation_summary="강의 목록 조회 기능 - 완료",
         operation_description="모든 강의 목록을 조회하거나, 쿼리 파라미터에 따라 필터링된 강의 목록을 조회합니다.",
         manual_parameters=[
-            openapi.Parameter('course_id', openapi.IN_QUERY, description="학수번호로 필터링", type=openapi.TYPE_STRING),
-            openapi.Parameter('course_name', openapi.IN_QUERY, description="강의명으로 필터링", type=openapi.TYPE_STRING),
-            openapi.Parameter('instructor', openapi.IN_QUERY, description="교수로 필터링", type=openapi.TYPE_STRING),
-            openapi.Parameter('year', openapi.IN_QUERY, description="강의 개설 연도로 필터링", type=openapi.TYPE_INTEGER),
-            openapi.Parameter('semester', openapi.IN_QUERY, description="학기별로 필터링", type=openapi.TYPE_INTEGER),
+            openapi.Parameter('course_id', openapi.IN_QUERY,
+                              description="학수번호로 필터링", type=openapi.TYPE_STRING),
+            openapi.Parameter('course_name', openapi.IN_QUERY,
+                              description="강의명으로 필터링", type=openapi.TYPE_STRING),
+            openapi.Parameter('instructor', openapi.IN_QUERY,
+                              description="교수로 필터링", type=openapi.TYPE_STRING),
+            openapi.Parameter('year', openapi.IN_QUERY,
+                              description="강의 개설 연도로 필터링", type=openapi.TYPE_INTEGER),
+            openapi.Parameter('semester', openapi.IN_QUERY,
+                              description="학기별로 필터링", type=openapi.TYPE_INTEGER),
         ],
         responses={200: CourseMinimalSerializer(many=True)}
     )
@@ -64,14 +71,13 @@ class CourseViewSet(viewsets.ModelViewSet):
         request_body=CourseSerializer,
         responses={201: CourseMinimalSerializer}
     )
-    
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         minimal_serializer = CourseMinimalSerializer(serializer.instance)
         return Response(minimal_serializer.data, status=status.HTTP_201_CREATED)
-    
+
     @swagger_auto_schema(
         operation_summary="강의 조회 기능 - 완료",
         operation_description="겅의 인덱스로 특정 강의의 세부 정보를 조회합니다.",
@@ -107,6 +113,8 @@ class CourseViewSet(viewsets.ModelViewSet):
         return super().destroy(request, *args, **kwargs)
 
 # 태그 전체 뷰
+
+
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
@@ -126,7 +134,8 @@ class TagViewSet(viewsets.ModelViewSet):
         operation_summary="태그 목록 조회 - 완료",
         operation_description="모든 태그 목록을 조회하거나, 이름으로 필터링된 태그 목록을 조회합니다.",
         manual_parameters=[
-            openapi.Parameter('name', openapi.IN_QUERY, description="태그 이름으로 필터링", type=openapi.TYPE_STRING),
+            openapi.Parameter('name', openapi.IN_QUERY,
+                              description="태그 이름으로 필터링", type=openapi.TYPE_STRING),
         ],
         responses={200: TagSerializer(many=True)}
     )
@@ -182,20 +191,19 @@ class TagViewSet(viewsets.ModelViewSet):
 
 class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
-    
+
     def get_queryset(self):
         queryset = Post.objects.all()
 
         # 필터링 조건 추가
-        course_index = self.request.query_params.get('course_index',None)
+        course_index = self.request.query_params.get('course_index', None)
         course_id = self.request.query_params.get('course_id', None)
         student_id = self.request.query_params.get('student_id', None)
         title = self.request.query_params.get('title', None)
 
-        
         if course_index is not None:
             queryset = queryset.filter(course_fk_id=course_index)
-            
+
         if course_id is not None:
             queryset = queryset.filter(course_fk__course_id=course_id)
 
@@ -211,10 +219,14 @@ class PostViewSet(viewsets.ModelViewSet):
         operation_summary="게시글 목록 조회 기능 - 완료",
         operation_description="모든 게시글 목록을 조회하거나, 쿼리 파라미터에 따라 필터링된 게시글 목록을 조회합니다.",
         manual_parameters=[
-            openapi.Parameter('course_index', openapi.IN_QUERY,description="강의 인덱스로 필터링", type=openapi.TYPE_INTEGER),
-            openapi.Parameter('course_id', openapi.IN_QUERY, description="학수번호로 필터링", type=openapi.TYPE_STRING),
-            openapi.Parameter('student_id', openapi.IN_QUERY, description="학생 ID로 필터링", type=openapi.TYPE_INTEGER),
-            openapi.Parameter('title', openapi.IN_QUERY, description="게시글 제목으로 필터링", type=openapi.TYPE_STRING),
+            openapi.Parameter('course_index', openapi.IN_QUERY,
+                              description="강의 인덱스로 필터링", type=openapi.TYPE_INTEGER),
+            openapi.Parameter('course_id', openapi.IN_QUERY,
+                              description="학수번호로 필터링", type=openapi.TYPE_STRING),
+            openapi.Parameter('student_id', openapi.IN_QUERY,
+                              description="학생 ID로 필터링", type=openapi.TYPE_INTEGER),
+            openapi.Parameter('title', openapi.IN_QUERY,
+                              description="게시글 제목으로 필터링", type=openapi.TYPE_STRING),
         ],
         responses={200: PostMinimalSerializer(many=True)}
     )
@@ -226,8 +238,20 @@ class PostViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_summary="게시글 생성 기능 - 완료",
         operation_description="새로운 게시글을 생성합니다.",
-        request_body=PostSerializer,
-        responses={201: PostSerializer}
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['title', 'content', 'course_fk', 'student'],
+            properties={
+                'title': openapi.Schema(type=openapi.TYPE_STRING, description='게시글 제목'),
+                'content': openapi.Schema(type=openapi.TYPE_STRING, description='게시글 내용'),
+                'course_fk': openapi.Schema(type=openapi.TYPE_INTEGER, description='강의 ID'),
+                'student': openapi.Schema(type=openapi.TYPE_INTEGER, description='학생 ID'),
+                'attached_file': openapi.Schema(type=openapi.TYPE_FILE, description='첨부 파일'),
+                'tags': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_INTEGER), description='태그 ID 배열'),
+            },
+        ),
+        responses={201: PostSerializer},
+        consumes=['multipart/form-data'],  # Form-data를 사용하도록 설정
     )
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
@@ -268,9 +292,10 @@ class PostViewSet(viewsets.ModelViewSet):
 
 # 댓글 전체 뷰
 
+
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    
+
     def get_queryset(self):
         queryset = Comment.objects.all()
 
@@ -290,8 +315,10 @@ class CommentViewSet(viewsets.ModelViewSet):
         operation_summary="댓글 목록 조회 기능 - 완료",
         operation_description="모든 댓글 목록을 조회하거나, 쿼리 파라미터에 따라 필터링된 댓글 목록을 조회합니다.",
         manual_parameters=[
-            openapi.Parameter('post_id', openapi.IN_QUERY, description="게시글 ID로 필터링", type=openapi.TYPE_INTEGER),
-            openapi.Parameter('student_id', openapi.IN_QUERY, description="학생 ID로 필터링", type=openapi.TYPE_INTEGER),
+            openapi.Parameter('post_id', openapi.IN_QUERY,
+                              description="게시글 ID로 필터링", type=openapi.TYPE_INTEGER),
+            openapi.Parameter('student_id', openapi.IN_QUERY,
+                              description="학생 ID로 필터링", type=openapi.TYPE_INTEGER),
         ],
         responses={200: CommentMinimalSerializer(many=True)}
     )
@@ -347,7 +374,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 # 시간표 뷰
 class TimeTableViewSet(viewsets.ModelViewSet):
     serializer_class = TimeTableSerializer
-    
+
     def get_queryset(self):
         queryset = TimeTable.objects.all()
 
@@ -371,9 +398,12 @@ class TimeTableViewSet(viewsets.ModelViewSet):
         operation_summary="시간표 목록 조회 기능 - 완료",
         operation_description="모든 시간표 목록을 조회하거나, 쿼리 파라미터에 따라 필터링된 시간표 목록을 조회합니다.",
         manual_parameters=[
-            openapi.Parameter('student_id', openapi.IN_QUERY, description="학생 ID로 필터링", type=openapi.TYPE_INTEGER),
-            openapi.Parameter('year', openapi.IN_QUERY, description="년도별로 필터링", type=openapi.TYPE_STRING),
-            openapi.Parameter('semester', openapi.IN_QUERY, description="학기별로 필터링", type=openapi.TYPE_STRING),
+            openapi.Parameter('student_id', openapi.IN_QUERY,
+                              description="학생 ID로 필터링", type=openapi.TYPE_INTEGER),
+            openapi.Parameter('year', openapi.IN_QUERY,
+                              description="년도별로 필터링", type=openapi.TYPE_STRING),
+            openapi.Parameter('semester', openapi.IN_QUERY,
+                              description="학기별로 필터링", type=openapi.TYPE_STRING),
         ],
         responses={200: TimeTableSerializer(many=True)}
     )
