@@ -242,7 +242,35 @@ class PostViewSet(viewsets.ModelViewSet):
         consumes=['multipart/form-data']  # Form-data를 사용하도록 설정
     )
     def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+        tags = request.data.get('tags', None)
+
+        if tags:
+            try:
+                if isinstance(tags, str):
+                    tags = [int(tag) for tag in tags.split(',')]
+                else:
+                    tags = [int(tag) for tag in tags]
+            except ValueError:
+                return Response({"tags": "태그는 정수형 값이어야 합니다."}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            tags = []
+        post_data = {
+            "title": request.data.get("title"),
+            "content": request.data.get("content"),
+            "course_fk": request.data.get("course_fk"),
+            "student": request.data.get("student"),
+            "attached_file": request.data.get("attached_file"),
+        }
+
+        serializer = self.get_serializer(data=post_data)
+        serializer.is_valid(raise_exception=True)
+        post = serializer.save()
+
+        if tags:
+            post.tags.set(tags)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     @swagger_auto_schema(
         operation_summary="게시글 조회 기능 - 완료",
