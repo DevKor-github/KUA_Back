@@ -199,18 +199,22 @@ class PostViewSet(viewsets.ModelViewSet):
         course_id = self.request.query_params.get('course_id', None)
         student_id = self.request.query_params.get('student_id', None)
         title = self.request.query_params.get('title', None)
+        content = self.request.query_params.get('content', None)
 
         if course_index is not None:
             queryset = queryset.filter(course_fk_id=course_index)
 
         if course_id is not None:
-            queryset = queryset.filter(course_fk__course_id=course_id)
+            queryset = queryset.filter(course_fk__course_id__icontains=course_id)
 
         if student_id is not None:
             queryset = queryset.filter(student_id=student_id)
 
         if title is not None:
             queryset = queryset.filter(title__icontains=title)
+        
+        if content is not None:
+            queryset = queryset.filter(content__icontains=content)
 
         return queryset
 
@@ -225,14 +229,27 @@ class PostViewSet(viewsets.ModelViewSet):
             openapi.Parameter('student_id', openapi.IN_QUERY,
                               description="학생 ID로 필터링", type=openapi.TYPE_INTEGER),
             openapi.Parameter('title', openapi.IN_QUERY,
-                              description="게시글 제목으로 필터링", type=openapi.TYPE_STRING),
+                              description="게시글 제목으로 필터링합니다. 일부 포함된 게시글도 보여줍니다.", type=openapi.TYPE_STRING),
+            openapi.Parameter('content', openapi.IN_QUERY,
+                              description="게시글 내용으로 필터링합니다. 일부 포함된 게시글 보여줍니다.", type=openapi.TYPE_STRING),
         ],
         responses={200: PostMinimalSerializer(many=True)}
     )
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = PostMinimalSerializer(queryset, many=True)
-        return Response(serializer.data)
+        results = serializer.data
+        
+        query_params = request.query_params.dict()
+
+        for result in results:
+            post_instance = Post.objects.get(id=result['id'])
+            if 'content' in query_params:
+                result['content'] = post_instance.content
+            if 'course_id' in query_params:
+                result['course_id'] = post_instance.course_fk.course_id
+                
+        return Response(results)
 
     @swagger_auto_schema(
         operation_summary="게시글 생성 기능 - 완료",
@@ -274,7 +291,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
     @swagger_auto_schema(
         operation_summary="게시글 조회 기능 - 완료",
-        operation_description="게시글 인덱스로 특정 게시글을 조회합니다.",
+        operation_description="게시글 인덱스로 특정 게시글의 세부 내용을 조회합니다.",
         responses={200: PostSerializer}
     )
     def retrieve(self, request, *args, **kwargs):
