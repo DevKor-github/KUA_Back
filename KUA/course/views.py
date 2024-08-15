@@ -493,13 +493,23 @@ class TimeTableViewSet(viewsets.ModelViewSet):
         return super().destroy(request, *args, **kwargs)
 
 
-class UserIDView(APIView):
+class UserStudentInfoView(APIView):
     permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
-        operation_summary="유저 id 반환 뷰 - 완료",
-        operation_description="현재 로그인한 유저의 id를 반환해줍니다.",
+        operation_summary="유저의 학생 정보 반환 뷰 - 완료",
+        operation_description="현재 로그인한 유저의 학생(Student) 정보를 반환합니다.",
     )
     def get(self, request):
-        user_id = request.user.id
-        return Response({"user_id": user_id})
+        try:
+            student = Student.objects.get(user=request.user)
+            student_data = {
+                "user_id": request.user.id,
+                "nickname": student.nickname,
+                "points": student.points,
+                "permission_date": student.permission_date,
+                "permission_type": student.permission_type,
+            }
+            return Response(student_data)
+        except Student.DoesNotExist:
+            return Response({"error": "학생 정보가 없습니다."}, status=404)

@@ -12,5 +12,5 @@ router.register(r'timetables', views.TimeTableViewSet, basename='timetable')
 urlpatterns = [
     path('', include(router.urls)),
 
-    path('id/', views.UserIDView.as_view()),
+    path('user-info/', views.UserStudentInfoView.as_view()),
 ]
