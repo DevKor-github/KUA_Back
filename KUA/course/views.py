@@ -1,4 +1,6 @@
 
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, generics, status
 from .models import Course, Tag, Post, Comment, TimeTable
@@ -205,14 +207,15 @@ class PostViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(course_fk_id=course_index)
 
         if course_id is not None:
-            queryset = queryset.filter(course_fk__course_id__icontains=course_id)
+            queryset = queryset.filter(
+                course_fk__course_id__icontains=course_id)
 
         if student_id is not None:
             queryset = queryset.filter(student_id=student_id)
 
         if title is not None:
             queryset = queryset.filter(title__icontains=title)
-        
+
         if content is not None:
             queryset = queryset.filter(content__icontains=content)
 
@@ -239,7 +242,7 @@ class PostViewSet(viewsets.ModelViewSet):
         queryset = self.get_queryset()
         serializer = PostMinimalSerializer(queryset, many=True)
         results = serializer.data
-        
+
         query_params = request.query_params.dict()
 
         for result in results:
@@ -248,7 +251,7 @@ class PostViewSet(viewsets.ModelViewSet):
                 result['content'] = post_instance.content
             if 'course_id' in query_params:
                 result['course_id'] = post_instance.course_fk.course_id
-                
+
         return Response(results)
 
     @swagger_auto_schema(
@@ -488,3 +491,15 @@ class TimeTableViewSet(viewsets.ModelViewSet):
     )
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
+
+
+class UserIDView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_summary="유저 id 반환 뷰 - 완료",
+        operation_description="현재 로그인한 유저의 id를 반환해줍니다.",
+    )
+    def get(self, request):
+        user_id = request.user.id
+        return Response({"user_id": user_id})
