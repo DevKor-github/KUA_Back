@@ -301,7 +301,7 @@ class PostViewSet(viewsets.ModelViewSet):
         post_id = kwargs.get('pk')
         post = Post.objects.get(id=post_id)
         tags_data = post.tags.values('id', 'name')
-        
+
         post_data = {
             "id": post.id,
             "title": post.title,
@@ -316,7 +316,7 @@ class PostViewSet(viewsets.ModelViewSet):
                 "nickname": post.student.nickname,
             },
         }
-        
+
         return Response(post_data)
 
     @swagger_auto_schema(
@@ -400,7 +400,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         comment_id = kwargs.get('pk', None)
         comment = Comment.objects.get(pk=comment_id)
         parent_post = Post.objects.get(pk=comment.post_id)
-        
+
         comment_data = {
             "id": comment.id,
             "content": comment.content,
@@ -410,12 +410,13 @@ class CommentViewSet(viewsets.ModelViewSet):
             },
             "created_at": comment.created_at,
             "updated_at": comment.updated_at,
+            "is_chosen": comment.is_chosen,
             "author": {
                 "id": comment.student.id,
                 "nickname": comment.student.nickname,
             },
         }
-        
+
         return Response(comment_data)
 
     @swagger_auto_schema(
@@ -529,5 +530,3 @@ class TimeTableViewSet(viewsets.ModelViewSet):
     )
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
-
-
