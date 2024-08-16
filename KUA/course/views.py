@@ -298,7 +298,26 @@ class PostViewSet(viewsets.ModelViewSet):
         responses={200: PostSerializer}
     )
     def retrieve(self, request, *args, **kwargs):
-        return super().retrieve(request, *args, **kwargs)
+        post_id = kwargs.get('pk')
+        post = Post.objects.get(id=post_id)
+        tags_data = post.tags.values('id', 'name')
+        
+        post_data = {
+            "id": post.id,
+            "title": post.title,
+            "content": post.content,
+            "course_id": post.course_fk.course_id,
+            "created_at": post.created_at,
+            "updated_at": post.updated_at,
+            "attached_file": post.attached_file.url if post.attached_file else None,
+            "tags": list(tags_data),
+            "author": {
+                "id": post.student.id,
+                "nickname": post.student.nickname,
+            },
+        }
+        
+        return Response(post_data)
 
     @swagger_auto_schema(
         operation_summary="게시글 수정 기능 - 완료",
@@ -378,7 +397,26 @@ class CommentViewSet(viewsets.ModelViewSet):
         responses={200: CommentSerializer}
     )
     def retrieve(self, request, *args, **kwargs):
-        return super().retrieve(request, *args, **kwargs)
+        comment_id = kwargs.get('pk', None)
+        comment = Comment.objects.get(pk=comment_id)
+        parent_post = Post.objects.get(pk=comment.post_id)
+        
+        comment_data = {
+            "id": comment.id,
+            "content": comment.content,
+            "parent_post": {
+                "id": parent_post.id,
+                "title": parent_post.title,
+            },
+            "created_at": comment.created_at,
+            "updated_at": comment.updated_at,
+            "author": {
+                "id": comment.student.id,
+                "nickname": comment.student.nickname,
+            },
+        }
+        
+        return Response(comment_data)
 
     @swagger_auto_schema(
         operation_summary="댓글 수정 기능 - 완료",
