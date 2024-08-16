@@ -372,7 +372,7 @@ class GetNowPointView(generics.RetrieveAPIView):
     serializer_class = serializers.StudentSerializer
 
     @swagger_auto_schema(
-        operation_summary="현재 포인트를 조회하는 기능입니다",
+        operation_summary="현재 포인트를 조회하는 기능입니다 - 완료",
         operation_description="파라미터 없이 get 요청 -> 현재 보유한 포인트 return",
         responses={
             201: openapi.Response(description="Success"),
