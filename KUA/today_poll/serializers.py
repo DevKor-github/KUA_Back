@@ -1,42 +1,36 @@
 from rest_framework import serializers
 from .models import TodayPoll, Briefing
+from django.utils import timezone
 
 class TodayPollSerializer(serializers.ModelSerializer):
     class Meta:
         model = TodayPoll
         fields = '__all__'
+class TodayPollListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TodayPoll
+        fields = ['id', 'course_fk', 'student']
 
+class TodayPollAnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TodayPoll
+        fields = ['check_attention', 'check_test', 'check_homework', 'answered_at']
+        read_only_fields = ['answered_at']
 
-# class TodayPollAnswerSerializer(serializers.ModelSerializer):
-#     student_id = serializers.IntegerField(write_only=True, required=False)
-
-#     class Meta:
-#         model = TodayPoll
-#         fields = ['id', 'student', 'course', 'check_attention',
-#                   'check_test', 'check_homework', 'answered_at', 'student_id']
-#         read_only_fields = ['answered_at']
-
-#     def validate_student_id(self, value):
-#         if not Student.objects.filter(id=value).exists():
-#             raise serializers.ValidationError("Student not found.")
-#         return value
-
-#     def validate_expired(self, data):
-#         if data.get('expired'):
-#             raise serializers.ValidationError("Already Expired.")
-#         return data
-
-#     def update(self, instance, validated_data):
-#         student_id = validated_data.pop('student_id', None)
-
-#         if student_id:
-#             validated_data['student'] = get_object_or_404(Student, id=student_id)
-
-#         instance.answered_at = timezone.now()
-#         return super().update(instance, validated_data)
-
+    def update(self, instance, validated_data):
+        instance.check_attention = validated_data.get('check_attention', instance.check_attention)
+        instance.check_test = validated_data.get('check_test', instance.check_test)
+        instance.check_homework = validated_data.get('check_homework', instance.check_homework)
+        instance.answered_at = timezone.now()
+        instance.save()
+        return instance
 
 class BriefingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Briefing
         fields = '__all__'
+        
+class BriefingListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Briefing
+        fields = ['id', 'course_fk', 'updated_at']
