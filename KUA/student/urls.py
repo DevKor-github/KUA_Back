@@ -12,4 +12,5 @@ urlpatterns = [
     path('use-points/', views.PointUseView().as_view()),
     path('check-permission/', views.IsPermissionView().as_view()),
     path('get-nickname/', views.GetNickNameView().as_view()),
+    path('get-now-points/', views.GetNowPointView().as_view()),
 ]

@@ -335,14 +335,16 @@ class IsPermissionView(generics.RetrieveAPIView):
             return Response("You Need to Buy")
         else:
             return Response("Success")
-        
+
+#id로 닉네임 조회하는 기능
+
 class GetNickNameView(generics.RetrieveAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = serializers.NicknameSerializer
 
     @swagger_auto_schema(
-        operation_summary="id를 parameter로 닉네임을 조회하는 기능입니다.",
+        operation_summary="id를 parameter로 닉네임을 조회하는 기능입니다 - 완료",
         operation_description="user_id를 parameter로 입력 -> 닉네임 get",
         manual_parameters=[
             openapi.Parameter('user_id', openapi.IN_QUERY, description="user Id", type=openapi.TYPE_STRING)
@@ -362,4 +364,27 @@ class GetNickNameView(generics.RetrieveAPIView):
         except models.Student.DoesNotExist:
             return Response({'error': 'User not found'}, status=404)
 
+#현재 포인트 조회하기 기능
 
+class GetNowPointView(generics.RetrieveAPIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = serializers.StudentSerializer
+
+    @swagger_auto_schema(
+        operation_summary="현재 포인트를 조회하는 기능입니다",
+        operation_description="파라미터 없이 get 요청 -> 현재 보유한 포인트 return",
+        responses={
+            201: openapi.Response(description="Success"),
+            400: openapi.Response(description="Not Success")
+        }
+    )
+    def get(self, request):
+        user = request.user
+
+        try:
+            student = user.student
+            return Response(student.points, status = 200)
+        
+        except models.Student.DoesNotExist:
+            return Response("Student not found", status=400)
