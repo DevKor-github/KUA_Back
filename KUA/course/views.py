@@ -531,37 +531,3 @@ class TimeTableViewSet(viewsets.ModelViewSet):
         return super().destroy(request, *args, **kwargs)
 
 
-class UserStudentInfoView(APIView):
-    permission_classes = [IsAuthenticated]
-    @swagger_auto_schema(
-        operation_summary="유저의 학생 정보 반환 뷰 - 완료",
-        operation_description="특정 학생 ID를 쿼리 파라미터로 입력받아 해당 학생의 정보를 반환합니다. 아무 파라미터도 입력하지 않았을 때는 현재 로그인한 학생의 정보를 반환합니다.",
-        manual_parameters=[
-            openapi.Parameter(
-                'id', openapi.IN_QUERY,
-                description="학생 ID (선택적)",
-                type=openapi.TYPE_INTEGER
-            ),
-        ],
-    )
-    def get(self, request):
-        student_id = request.query_params.get('id')  # 쿼리 파라미터에서 'id'를 가져옴
-
-        try:
-            if student_id:
-                # 특정 학생 ID로 조회
-                student = Student.objects.get(id=student_id)
-            else:
-                # 현재 로그인한 유저의 학생 정보 조회
-                student = Student.objects.get(user=request.user)
-                
-            student_data = {
-                "user_id": student.user.id,
-                "nickname": student.nickname,
-                "points": student.points,
-                "permission_date": student.permission_date,
-                "permission_type": student.permission_type,
-            }
-            return Response(student_data)
-        except Student.DoesNotExist:
-            return Response({"error": "학생 정보가 없습니다."}, status=404)
