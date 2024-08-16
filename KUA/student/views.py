@@ -335,3 +335,31 @@ class IsPermissionView(generics.RetrieveAPIView):
             return Response("You Need to Buy")
         else:
             return Response("Success")
+        
+class GetNickNameView(generics.RetrieveAPIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = serializers.NicknameSerializer
+
+    @swagger_auto_schema(
+        operation_summary="id를 parameter로 닉네임을 조회하는 기능입니다.",
+        operation_description="user_id를 parameter로 입력 -> 닉네임 get",
+        manual_parameters=[
+            openapi.Parameter('user_id', openapi.IN_QUERY, description="user Id", type=openapi.TYPE_STRING)
+        ],
+        responses={
+            200: openapi.Response(description='Nickname retrieved successfully'),
+            404: openapi.Response(description='User not found')
+        }
+    )
+    def get(self, request):
+        user_id = request.query_params.get('user_id')
+
+        try:
+            student = models.Student.objects.get(user=user_id)
+            serializer = self.serializer_class(student)
+            return Response(serializer.data, status=200)
+        except models.Student.DoesNotExist:
+            return Response({'error': 'User not found'}, status=404)
+
+

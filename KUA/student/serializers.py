@@ -51,3 +51,8 @@ class StudentSerializer(serializers.ModelSerializer):
 
 class CertificationCodeSerializer(serializers.Serializer):
     email = serializers.EmailField()
+
+class NicknameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Student
+        fields = ['nickname']
