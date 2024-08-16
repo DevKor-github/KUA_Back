@@ -1,33 +1,4 @@
-import logging
-from apscheduler.schedulers.background import BackgroundScheduler
-from django_apscheduler.jobstores import DjangoJobStore, register_events
-from apscheduler.triggers.cron import CronTrigger
-from django.utils import timezone
-import sys
 
-logger = logging.getLogger(__name__)
-
-
-def test_scheduler():
-    dt_now = timezone.now()
-    logger.debug(f'dt_now: {dt_now}')
-
-
-def start():
-    try:
-        job_id = 'job_1'
-        sched = BackgroundScheduler(timezone='Asia/Seoul')
-        sched.add_jobstore(DjangoJobStore(), "default")
-        register_events(sched)
-        sched.start()
-        logger.info("Scheduler started...")
-
-        sched.add_job(test_scheduler, 'cron', second='*/5',
-                      id=job_id, jobstore='default', replace_existing=True)
-        logger.info(f"Job {job_id} added.")
-    except Exception as ex:
-        logger.error(ex)
-        sched.shutdown()
 
 # from apscheduler.schedulers.background import BackgroundScheduler
 # from apscheduler.triggers.date import DateTrigger
