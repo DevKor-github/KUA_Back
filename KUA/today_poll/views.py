@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.views import APIView
+import json
 
 
 # 오늘의 설문 전체 뷰 (CRUD 포함)
@@ -57,11 +58,11 @@ class TodayPollViewSet(viewsets.ModelViewSet):
             openapi.Parameter('created_at_end', openapi.IN_QUERY,
                               description="종료 날짜 및 시간으로 필터링 (YYYY-MM-DDTHH:MM 형식)", type=openapi.TYPE_STRING),
         ],
-        responses={200: TodayPollSerializer(many=True)}
+        responses={200: TodayPollListSerializer(many=True)}
     )
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
-        serializer = TodayPollSerializer(queryset, many=True)
+        serializer = TodayPollListSerializer(queryset, many=True)
         return Response(serializer.data)
 
     @swagger_auto_schema(
@@ -111,23 +112,31 @@ class TodayPollViewSet(viewsets.ModelViewSet):
         return super().destroy(request, *args, **kwargs)
 
 
-# 오늘의 설문 응답을 위한 뷰 - 리뉴얼 대기
-# class TodayPollAnswerView(APIView):
 
-#     @swagger_auto_schema(
-#         operation_summary="설문 응답 기능 - 완료",
-#         operation_description="특정 설문에 대한 응답을 등록합니다.",
-#         request_body=TodayPollAnswerSerializer,
-#         responses={200: TodayPollAnswerSerializer}
-#     )
-#     def post(self, request, pk):
-#         today_poll = get_object_or_404(TodayPoll, pk=pk)
-#         serializer = TodayPollAnswerSerializer(
-#             today_poll, data=request.data, partial=True, context={'request': request})
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class TodayPollAnswerView(APIView):
+
+    @swagger_auto_schema(
+        operation_summary="설문 응답 기능 - 완료",
+        operation_description="특정 설문에 대한 응답을 등록합니다.",
+        request_body=TodayPollAnswerSerializer,
+        responses={200: TodayPollAnswerSerializer}
+    )
+    def post(self, request, pk):
+        today_poll = get_object_or_404(TodayPoll, pk=pk)
+        serializer = TodayPollAnswerSerializer(today_poll, data=request.data, partial=True)
+        if serializer.is_valid():
+            updated_poll = serializer.save()
+
+            # Convert date to ISO format and return as dict
+            response_data = {
+                'check_attention': updated_poll.check_attention,
+                'check_test': updated_poll.check_test,
+                'check_homework': updated_poll.check_homework,
+                'answered_at': updated_poll.answered_at.isoformat() if updated_poll.answered_at else None,
+            }
+            
+            return Response(response_data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # 브리핑 전체 뷰 (CRUD 포함)
@@ -166,11 +175,11 @@ class BriefingViewSet(viewsets.ModelViewSet):
             openapi.Parameter('created_at_end', openapi.IN_QUERY,
                               description="종료 날짜로 필터링 (YYYY-MM-DD 형식)", type=openapi.TYPE_STRING),
         ],
-        responses={200: BriefingSerializer(many=True)}
+        responses={200: BriefingListSerializer(many=True)}
     )
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
-        serializer = BriefingSerializer(queryset, many=True)
+        serializer = BriefingListSerializer(queryset, many=True)
         return Response(serializer.data)
 
     @swagger_auto_schema(
@@ -188,7 +197,16 @@ class BriefingViewSet(viewsets.ModelViewSet):
         responses={200: BriefingSerializer}
     )
     def retrieve(self, request, *args, **kwargs):
-        return super().retrieve(request, *args, **kwargs)
+        briefing_id = kwargs.get('pk', None)
+        briefing = Briefing.objects.get(id = briefing_id)
+        response_data = {
+            "id" : briefing_id,
+            "course_fk": briefing.course_fk.id,
+            "content": json.loads(briefing.content),
+            "created_at": briefing.created_at.isoformat(),
+            "updated_at": briefing.updated_at.isoformat() if briefing.updated_at else None,  # None check
+        }
+        return Response(response_data)
 
     @swagger_auto_schema(
         operation_summary="브리핑 수정 기능 - 완료",

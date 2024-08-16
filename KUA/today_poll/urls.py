@@ -10,4 +10,5 @@ router.register(r'briefings', views.BriefingViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('todaypolls/<int:pk>/answer/', views.TodayPollAnswerView.as_view(), name='todaypoll-answer'),
 ]
