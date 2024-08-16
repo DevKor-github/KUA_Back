@@ -5,6 +5,7 @@ from rest_framework import urls
 
 router = DefaultRouter()
 router.register(r'todaypolls', views.TodayPollViewSet)
+router.register(r'briefings', views.BriefingViewSet)
 
 
 urlpatterns = [
