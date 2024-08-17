@@ -23,22 +23,18 @@ class PostImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostImage
         fields = ['id', 'image']
+
 class PostSerializer(serializers.ModelSerializer):
-    images = PostImageSerializer(many=True, read_only=True)
-    image_uploads = serializers.ListField(
-        child=serializers.ImageField(write_only=True),
-        write_only=True,
-        required=False
-    )
+
     class Meta:
         model = Post
-        fields = '__all__'
-        
+        fields = ['id', 'title', 'content', 'course_fk', 'student', 'likes', 'views', 'reported', 'tags']
+
     def create(self, validated_data):
         image_uploads = validated_data.pop('image_uploads', [])
         post = Post.objects.create(**validated_data)
         
-        for image in image_uploads[:10]:  # 최대 10개 이미지 처리
+        for image in image_uploads[:10]:  # 최대 10개의 이미지 처리
             PostImage.objects.create(post=post, image=image)
         
         return post

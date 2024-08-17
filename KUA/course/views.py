@@ -192,219 +192,214 @@ class TagViewSet(viewsets.ModelViewSet):
 
 
 # 게시글 전체 뷰
-# Post ViewSet
+
 class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.all()
     serializer_class = PostSerializer
+    parser_classes = [MultiPartParser, FormParser]
 
+    def get_queryset(self):
+        queryset = Post.objects.all()
 
-# class PostViewSet(viewsets.ModelViewSet):
-#     serializer_class = PostSerializer
-#     parser_classes = [MultiPartParser, FormParser]
+        # 필터링 조건 추가
+        course_index = self.request.query_params.get('course_index', None)
+        course_id = self.request.query_params.get('course_id', None)
+        student_id = self.request.query_params.get('student_id', None)
+        title = self.request.query_params.get('title', None)
+        content = self.request.query_params.get('content', None)
+        order_by = self.request.query_params.get('order_by', None)
 
-#     def get_queryset(self):
-#         queryset = Post.objects.all()
+        if course_index is not None:
+            queryset = queryset.filter(course_fk_id=course_index)
 
-#         # 필터링 조건 추가
-#         course_index = self.request.query_params.get('course_index', None)
-#         course_id = self.request.query_params.get('course_id', None)
-#         student_id = self.request.query_params.get('student_id', None)
-#         title = self.request.query_params.get('title', None)
-#         content = self.request.query_params.get('content', None)
-#         order_by = self.request.query_params.get('order_by', None)
+        if course_id is not None:
+            queryset = queryset.filter(
+                course_fk__course_id__icontains=course_id)
 
-#         if course_index is not None:
-#             queryset = queryset.filter(course_fk_id=course_index)
+        if student_id is not None:
+            queryset = queryset.filter(student_id=student_id)
 
-#         if course_id is not None:
-#             queryset = queryset.filter(
-#                 course_fk__course_id__icontains=course_id)
+        if title is not None:
+            queryset = queryset.filter(title__icontains=title)
 
-#         if student_id is not None:
-#             queryset = queryset.filter(student_id=student_id)
-
-#         if title is not None:
-#             queryset = queryset.filter(title__icontains=title)
-
-#         if content is not None:
-#             queryset = queryset.filter(content__icontains=content)
+        if content is not None:
+            queryset = queryset.filter(content__icontains=content)
             
-#         # 정렬 조건 추가
-#         if order_by:
-#             if order_by == 'likes_asc':
-#                 queryset = queryset.order_by('likes')
-#             elif order_by == 'likes_desc':
-#                 queryset = queryset.order_by('-likes')
-#             elif order_by == 'views_asc':
-#                 queryset = queryset.order_by('views')
-#             elif order_by == 'views_desc':
-#                 queryset = queryset.order_by('-views')
+        # 정렬 조건 추가
+        if order_by:
+            if order_by == 'likes_asc':
+                queryset = queryset.order_by('likes')
+            elif order_by == 'likes_desc':
+                queryset = queryset.order_by('-likes')
+            elif order_by == 'views_asc':
+                queryset = queryset.order_by('views')
+            elif order_by == 'views_desc':
+                queryset = queryset.order_by('-views')
 
-#         return queryset
+        return queryset
 
 
-#     @swagger_auto_schema(
-#         operation_summary="게시글 목록 조회 기능 - 완료",
-#         operation_description="모든 게시글 목록을 조회하거나, 쿼리 파라미터에 따라 필터링된 게시글 목록을 조회합니다.",
-#         manual_parameters=[
-#             openapi.Parameter('course_index', openapi.IN_QUERY,
-#                               description="강의 인덱스로 필터링", type=openapi.TYPE_INTEGER),
-#             openapi.Parameter('course_id', openapi.IN_QUERY,
-#                               description="학수번호로 필터링", type=openapi.TYPE_STRING),
-#             openapi.Parameter('student_id', openapi.IN_QUERY,
-#                               description="학생 ID로 필터링", type=openapi.TYPE_INTEGER),
-#             openapi.Parameter('title', openapi.IN_QUERY,
-#                               description="게시글 제목으로 필터링합니다. 일부 포함된 게시글도 보여줍니다.", type=openapi.TYPE_STRING),
-#             openapi.Parameter('content', openapi.IN_QUERY,
-#                               description="게시글 내용으로 필터링합니다. 일부 포함된 게시글도 보여줍니다.", type=openapi.TYPE_STRING),
-#             openapi.Parameter('order_by', openapi.IN_QUERY,
-#                               description="정렬 기준 (likes_asc, likes_desc, views_asc, views_desc 중 하나)", type=openapi.TYPE_STRING),
-#         ],
-#         responses={200: PostMinimalSerializer(many=True)}
-#     )
-#     def list(self, request, *args, **kwargs):
-#         queryset = self.get_queryset()
-#         serializer = PostMinimalSerializer(queryset, many=True)
-#         results = serializer.data
+    @swagger_auto_schema(
+        operation_summary="게시글 목록 조회 기능 - 완료",
+        operation_description="모든 게시글 목록을 조회하거나, 쿼리 파라미터에 따라 필터링된 게시글 목록을 조회합니다.",
+        manual_parameters=[
+            openapi.Parameter('course_index', openapi.IN_QUERY,
+                              description="강의 인덱스로 필터링", type=openapi.TYPE_INTEGER),
+            openapi.Parameter('course_id', openapi.IN_QUERY,
+                              description="학수번호로 필터링", type=openapi.TYPE_STRING),
+            openapi.Parameter('student_id', openapi.IN_QUERY,
+                              description="학생 ID로 필터링", type=openapi.TYPE_INTEGER),
+            openapi.Parameter('title', openapi.IN_QUERY,
+                              description="게시글 제목으로 필터링합니다. 일부 포함된 게시글도 보여줍니다.", type=openapi.TYPE_STRING),
+            openapi.Parameter('content', openapi.IN_QUERY,
+                              description="게시글 내용으로 필터링합니다. 일부 포함된 게시글도 보여줍니다.", type=openapi.TYPE_STRING),
+            openapi.Parameter('order_by', openapi.IN_QUERY,
+                              description="정렬 기준 (likes_asc, likes_desc, views_asc, views_desc 중 하나)", type=openapi.TYPE_STRING),
+        ],
+        responses={200: PostMinimalSerializer(many=True)}
+    )
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = PostMinimalSerializer(queryset, many=True)
+        results = serializer.data
 
-#         query_params = request.query_params.dict()
+        query_params = request.query_params.dict()
 
-#         for result in results:
-#             post_instance = Post.objects.get(id=result['id'])
-#             if 'content' in query_params:
-#                 result['content'] = post_instance.content
-#             if 'course_id' in query_params:
-#                 result['course_id'] = post_instance.course_fk.course_id
+        for result in results:
+            post_instance = Post.objects.get(id=result['id'])
+            if 'content' in query_params:
+                result['content'] = post_instance.content
+            if 'course_id' in query_params:
+                result['course_id'] = post_instance.course_fk.course_id
 
-#         return Response(results)
+        return Response(results)
 
-#     @swagger_auto_schema(
-#         operation_summary="게시글 생성 기능 - 완료",
-#         operation_description="새로운 게시글을 생성합니다.",
-#         manual_parameters=[
-#             openapi.Parameter('title', openapi.IN_FORM, type=openapi.TYPE_STRING, description='게시글 제목'),
-#             openapi.Parameter('content', openapi.IN_FORM, type=openapi.TYPE_STRING, description='게시글 내용'),
-#             openapi.Parameter('course_fk', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='강의 FK'),
-#             openapi.Parameter('student', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='학생 ID'),
-#             openapi.Parameter('image_uploads', openapi.IN_FORM, type=openapi.TYPE_FILE, description='이미지 파일 업로드', multiple=True),
-#             openapi.Parameter('tags', openapi.IN_FORM, type=openapi.TYPE_STRING, description='태그 목록 (쉼표로 구분)'),
-#         ],
-#         consumes=['multipart/form-data'],
-#         responses={201: PostSerializer}
-#     )
-#     def create(self, request, *args, **kwargs):
-#         tags = request.data.get('tags', None)
+    @swagger_auto_schema(
+        operation_summary="게시글 생성 기능 - 완료",
+        operation_description="새로운 게시글을 생성합니다.",
+        manual_parameters=[
+            openapi.Parameter('title', openapi.IN_FORM, type=openapi.TYPE_STRING, description='게시글 제목'),
+            openapi.Parameter('content', openapi.IN_FORM, type=openapi.TYPE_STRING, description='게시글 내용'),
+            openapi.Parameter('course_fk', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='강의 ID'),
+            openapi.Parameter('student', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='학생 ID'),
+            openapi.Parameter('image_uploads', openapi.IN_FORM, type=openapi.TYPE_FILE, description='이미지 파일 업로드', multiple=True),
+            openapi.Parameter('tags', openapi.IN_FORM, type=openapi.TYPE_STRING, description='태그 목록 (쉼표로 구분)'),
+        ],
+        consumes=['multipart/form-data'],
+        responses={201: PostSerializer}
+    )
+    def create(self, request, *args, **kwargs):
+        tags = request.data.get('tags', None)
 
-#         if tags:
-#             try:
-#                 if isinstance(tags, str):
-#                     tags = [int(tag) for tag in tags.split(',')]
-#                 else:
-#                     tags = [int(tag) for tag in tags]
-#             except ValueError:
-#                 return Response({"tags": "태그는 정수형 값이어야 합니다."}, status=status.HTTP_400_BAD_REQUEST)
-#         else:
-#             tags = []
+        if tags:
+            try:
+                if isinstance(tags, str):
+                    tags = [int(tag) for tag in tags.split(',')]
+                else:
+                    tags = [int(tag) for tag in tags]
+            except ValueError:
+                return Response({"tags": "태그는 정수형 값이어야 합니다."}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            tags = []
          
-#         image_uploads = request.FILES.getlist('image_uploads', []) 
+        image_uploads = request.FILES.getlist('image_uploads', []) 
                 
-#         post_data = {
-#             "title": request.data.get("title"),
-#             "content": request.data.get("content"),
-#             "course_fk": request.data.get("course_fk"),
-#             "student": request.data.get("student"),
-#         }
+        post_data = {
+            "title": request.data.get("title"),
+            "content": request.data.get("content"),
+            "course_fk": request.data.get("course_fk"),
+            "student": request.data.get("student"),
+        }
 
-#         serializer = self.get_serializer(data=post_data)
-#         serializer.is_valid(raise_exception=True)
-#         post = serializer.save()
+        serializer = self.get_serializer(data=post_data)
+        serializer.is_valid(raise_exception=True)
+        post = serializer.save()
 
-#         # 이미지가 있을 경우 처리
-#         if image_uploads:
-#             for image in image_uploads[:10]:  # 최대 10개의 이미지 처리
-#                 PostImage.objects.create(post=post, image=image)
+        # 이미지가 있을 경우 처리
+        if image_uploads:
+            for image in image_uploads[:10]:  # 최대 10개의 이미지 처리
+                PostImage.objects.create(post=post, image=image)
 
-#         # 태그 설정
-#         if tags:
-#             post.tags.set(tags)
+        # 태그 설정
+        if tags:
+            post.tags.set(tags)
 
-#         headers = self.get_success_headers(serializer.data)
-#         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-#     @swagger_auto_schema(
-#         operation_summary="게시글 조회 기능 - 완료",
-#         operation_description="게시글 인덱스로 특정 게시글의 세부 내용을 조회합니다. 조회 수가 오릅니다.",
-#         responses={200: PostSerializer}
-#     )
-#     def retrieve(self, request, *args, **kwargs):
-#         post_id = kwargs.get('pk')
-#         post = Post.objects.get(id=post_id)
-#         tags_data = post.tags.values('id', 'name')
+    @swagger_auto_schema(
+        operation_summary="게시글 조회 기능 - 완료",
+        operation_description="게시글 인덱스로 특정 게시글의 세부 내용을 조회합니다. 조회 수가 오릅니다.",
+        responses={200: PostSerializer}
+    )
+    def retrieve(self, request, *args, **kwargs):
+        post_id = kwargs.get('pk')
+        post = Post.objects.get(id=post_id)
+        tags_data = post.tags.values('id', 'name')
 
-#         attachments = []
-#         post_images = PostImage.objects.filter(post=post)
+        attachments = []
+        post_images = PostImage.objects.filter(post=post)
         
-#         for post_image in post_images:
-#             file_path = post_image.image.path
-#             content_type, _ = mimetypes.guess_type(file_path)
-#             attachment = {
-#                 "uri": post_image.image.url,
-#                 "name": post_image.image.name,
-#                 "type": content_type or "application/octet-stream"
-#             }
-#             attachments.append(attachment)
+        for post_image in post_images:
+            file_path = post_image.image.path
+            content_type, _ = mimetypes.guess_type(file_path)
+            attachment = {
+                "uri": post_image.image.url,
+                "name": post_image.image.name,
+                "type": content_type or "application/octet-stream"
+            }
+            attachments.append(attachment)
         
         
 
-#         post.views = F('views') + 1
-#         post.save(update_fields=['views'])
-#         post.refresh_from_db() 
+        post.views = F('views') + 1
+        post.save(update_fields=['views'])
+        post.refresh_from_db() 
         
-#         post_data = {
-#             "id": post.id,
-#             "title": post.title,
-#             "content": post.content,
-#             "course_id": post.course_fk.course_id,
-#             "created_at": post.created_at,
-#             "updated_at": post.updated_at,
-#             "attachment": attachments,
-#             "tags": list(tags_data),
-#             "author": {
-#                 "id": post.student.id,
-#                 "nickname": post.student.nickname,
-#             },
-#             "likes":post.likes,
-#             "views":post.views,
-#             "reports":post.reports,
-#         }
+        post_data = {
+            "id": post.id,
+            "title": post.title,
+            "content": post.content,
+            "course_id": post.course_fk.course_id,
+            "created_at": post.created_at,
+            "updated_at": post.updated_at,
+            "attachment": attachments,
+            "tags": list(tags_data),
+            "author": {
+                "id": post.student.id,
+                "nickname": post.student.nickname,
+            },
+            "likes":post.likes,
+            "views":post.views,
+            "reports":post.reported,
+        }
 
-#         return Response(post_data)
+        return Response(post_data)
 
-#     @swagger_auto_schema(
-#         operation_summary="게시글 수정 기능 - 완료",
-#         operation_description="기존 게시글 정보를 수정합니다.",
-#         request_body=PostSerializer,
-#         responses={200: PostSerializer}
-#     )
-#     def update(self, request, *args, **kwargs):
-#         return super().update(request, *args, **kwargs)
+    @swagger_auto_schema(
+        operation_summary="게시글 수정 기능 - 완료",
+        operation_description="기존 게시글 정보를 수정합니다.",
+        request_body=PostSerializer,
+        responses={200: PostSerializer}
+    )
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
 
-#     @swagger_auto_schema(
-#         operation_summary="게시글 부분 수정 - 완료",
-#         operation_description="게시글 정보의 일부를 수정합니다.",
-#         request_body=PostSerializer,
-#         responses={200: PostSerializer}
-#     )
-#     def partial_update(self, request, *args, **kwargs):
-#         return super().partial_update(request, *args, **kwargs)
+    @swagger_auto_schema(
+        operation_summary="게시글 부분 수정 - 완료",
+        operation_description="게시글 정보의 일부를 수정합니다.",
+        request_body=PostSerializer,
+        responses={200: PostSerializer}
+    )
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
 
-#     @swagger_auto_schema(
-#         operation_summary="게시글 삭제 - 완료",
-#         operation_description="ID로 특정 게시글을 삭제합니다.",
-#         responses={204: 'Deleted'}
-#     )
-#     def destroy(self, request, *args, **kwargs):
-#         return super().destroy(request, *args, **kwargs)
+    @swagger_auto_schema(
+        operation_summary="게시글 삭제 - 완료",
+        operation_description="ID로 특정 게시글을 삭제합니다.",
+        responses={204: 'Deleted'}
+    )
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
 
 # 댓글 전체 뷰
 
@@ -483,7 +478,7 @@ class CommentViewSet(viewsets.ModelViewSet):
                 "nickname": comment.student.nickname,
             },
             "likes": comment.likes,
-            "reports": comment.reports,
+            "reports": comment.reported,
         }
 
         return Response(comment_data)
