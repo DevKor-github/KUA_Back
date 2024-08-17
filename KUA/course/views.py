@@ -10,7 +10,7 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.parsers import MultiPartParser, FormParser
 import mimetypes
-
+from django.db.models import F
 # 강의 전체 뷰(CRUD 포함)
 
 
@@ -273,9 +273,16 @@ class PostViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_summary="게시글 생성 기능 - 완료",
         operation_description="새로운 게시글을 생성합니다.",
-        request_body=PostSerializer,
-        responses={201: PostSerializer},
-        consumes=['multipart/form-data']  # Form-data를 사용하도록 설정
+        manual_parameters=[
+            openapi.Parameter('title', openapi.IN_FORM, type=openapi.TYPE_STRING, description='게시글 제목'),
+            openapi.Parameter('content', openapi.IN_FORM, type=openapi.TYPE_STRING, description='게시글 내용'),
+            openapi.Parameter('course_fk', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='강의 FK'),
+            openapi.Parameter('student', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='학생 ID'),
+            openapi.Parameter('image_uploads', openapi.IN_FORM, type=openapi.TYPE_FILE, description='이미지 파일 업로드', multiple=True),
+            openapi.Parameter('tags', openapi.IN_FORM, type=openapi.TYPE_STRING, description='태그 목록 (쉼표로 구분)'),
+        ],
+        consumes=['multipart/form-data'],
+        responses={201: PostSerializer}
     )
     def create(self, request, *args, **kwargs):
         tags = request.data.get('tags', None)
@@ -337,9 +344,9 @@ class PostViewSet(viewsets.ModelViewSet):
                 "name": post_image.image.name,
                 "type": content_type or "application/octet-stream"
             }
-        attachments.append(attachment)
+            attachments.append(attachment)
         
-        from django.db.models import F
+        
 
         post.views = F('views') + 1
         post.save(update_fields=['views'])
@@ -352,7 +359,7 @@ class PostViewSet(viewsets.ModelViewSet):
             "course_id": post.course_fk.course_id,
             "created_at": post.created_at,
             "updated_at": post.updated_at,
-            "attachment": attachment,
+            "attachment": attachments,
             "tags": list(tags_data),
             "author": {
                 "id": post.student.id,
@@ -445,7 +452,12 @@ class CommentViewSet(viewsets.ModelViewSet):
         comment_id = kwargs.get('pk', None)
         comment = Comment.objects.get(pk=comment_id)
         parent_post = Post.objects.get(pk=comment.post_id)
-        parent_comment = Comment.objects.get(comment, None)
+        parent_comment = comment.parent_comment
+        parent_comment_data = {
+            "id": parent_comment.id,
+            "content": parent_comment.content[:50]
+        } if parent_comment else None
+
         
         comment_data = {
             "id": comment.id,
@@ -454,10 +466,7 @@ class CommentViewSet(viewsets.ModelViewSet):
                 "id": parent_post.id,
                 "title": parent_post.title,
             },
-            "parent_comment": {
-                "id": parent_comment.id,
-                "content": parent_comment.content[:50] 
-            },
+            "parent_comment": parent_comment_data,
             "created_at": comment.created_at,
             "updated_at": comment.updated_at,
             "is_chosen": comment.is_chosen,

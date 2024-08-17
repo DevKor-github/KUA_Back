@@ -49,6 +49,10 @@ class PostMinimalSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'likes']
 
 class CommentSerializer(serializers.ModelSerializer):
+    parent_comment = serializers.PrimaryKeyRelatedField(
+        queryset=Comment.objects.all(), allow_null=True, required=False
+    )
+
     class Meta:
         model = Comment
         fields = '__all__'
