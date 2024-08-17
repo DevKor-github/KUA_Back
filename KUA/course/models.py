@@ -87,6 +87,11 @@ class Post(models.Model):
     attached_file = models.FileField(
         upload_to='attachments/', null=True, blank=True)
     tags = models.ManyToManyField(Tag, blank=True,  related_name='posts')
+    
+    # likes = models.IntegerField(default = 0, related_name='posts')
+    # views = models.IntegerField(default = 0, related_name='posts')
+    # reported = models.IntegerField()
+    
 
     def __str__(self):
         return f"{self.title}, {self.content[:20]}"
