@@ -13,6 +13,6 @@ urlpatterns = [
     path('check-permission/', views.IsPermissionView().as_view()),
     path('get-nickname/', views.GetNickNameView().as_view()),
     path('get-now-points/', views.GetNowPointView().as_view()),
-    
+    path('get-myid/', views.GetLoginUserIdView().as_view()),
     path('user-info/', views.UserStudentInfoView.as_view()),
 ]
