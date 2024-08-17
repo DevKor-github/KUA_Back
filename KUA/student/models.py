@@ -41,6 +41,7 @@ class PointHistory(models.Model):
         "U": "Use",
     }
     purpose = models.CharField(max_length=1, choices=HOW)
+    point = models.IntegerField(null = False)
     point_time = models.DateTimeField(null = False)
 
     def __str__(self):

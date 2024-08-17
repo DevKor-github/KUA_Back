@@ -211,9 +211,7 @@ class LoginView(APIView):
             return Response(status=400)
 
 # 포인트 획득 기능
-
-
-class PointGetView(generics.UpdateAPIView):
+class PointGetView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = serializers.StudentSerializer
@@ -238,27 +236,37 @@ class PointGetView(generics.UpdateAPIView):
             400: openapi.Response(description="Point Get Rejected")
         }
     )
-    def post(self, request):
+    def post(self, request):  # If using UpdateAPIView, consider using put or patch
         user = request.user
-        point_type = request.data['point_type']
+        point_type = request.data.get('point_type')
+        
+        if not point_type or point_type not in self.point_reward:
+            return Response({'error': 'Invalid point type'}, status=400)
+
         try:
             student = user.student
         except models.Student.DoesNotExist:
-            return Response("Student not found", status=400)
+            return Response({'error': 'Student not found'}, status=400)
 
         reward = self.point_reward.get(point_type)
+        student.points += reward
+        student.save()
 
-        if reward:
-            student.points += reward
-            student.save()
-            return Response(f"Get {reward} Points")
-
+        history_data = {
+            'user': user.id,
+            'purpose': 'G',
+            'point': reward,
+            'point_time': timezone.now()
+        }
+        
+        serializer = serializers.PointHistorySerializer(data=history_data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(f"Get {reward} Points", status=201)
         else:
-            return Response({'error': ' invalid getting points type'})
+            return Response({'error': 'Failed to save point history'}, status=400)
 
 # 포인트로 이용권 구매 기능
-
-
 class PointUseView(generics.UpdateAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
@@ -302,7 +310,19 @@ class PointUseView(generics.UpdateAPIView):
             student.permission_date = timezone.now()
             student.permission_type = permission_type
             student.save()
-            return Response(f"Get {permission_type} day permission")
+            history_data = {
+                'user': user.id,
+                'purpose': 'U',
+                'point': cost,
+                'point_time': timezone.now()
+            }
+            
+            serializer = serializers.PointHistorySerializer(data=history_data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response(f"Use {cost} Points", status=201)
+            else:
+                return Response({'error': 'Failed to save point history'}, status=400)
 
         else:
             return Response({'error': ' invalid using points type'})
