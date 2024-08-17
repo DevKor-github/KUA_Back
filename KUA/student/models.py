@@ -8,7 +8,6 @@ class Student(models.Model):
     nickname = models.CharField(max_length = 10, null = False, blank = False)
     nickname_change_time = models.DateTimeField(null = True, default='2024-07-01 12:22:44.398477+09')
     points = models.IntegerField(default = 0)
-    #permission_date = models.DateTimeField(null = True, default='7')
     permission_date = models.DateTimeField(null = True, default=timezone.now)
     permission_type = models.CharField(max_length = 10)
 
@@ -31,6 +30,18 @@ class NicknameHistory(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     nickname = models.CharField(max_length=10, null = False, blank = False)
     nickname_time = models.DateTimeField(null = False)
+
+    def __str__(self):
+        return self.user
+    
+class PointHistory(models.Model):
+    user = models.ForeignKey(User, on_delete = models.CASCADE)
+    HOW = {
+        "G": "Get",
+        "U": "Use",
+    }
+    purpose = models.CharField(max_length=1, choices=HOW)
+    point_time = models.DateTimeField(null = False)
 
     def __str__(self):
         return self.user

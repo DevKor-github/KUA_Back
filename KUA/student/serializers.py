@@ -56,3 +56,8 @@ class NicknameSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Student
         fields = ['nickname']
+
+class PointHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.PointHistory
+        fields = '__all__'
