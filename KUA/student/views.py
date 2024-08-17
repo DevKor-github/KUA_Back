@@ -425,25 +425,3 @@ class UserStudentInfoView(APIView):
         except models.Student.DoesNotExist:
             return Response({"error": "학생 정보가 없습니다."}, status=404)
 
-
-class GetLoginUserIdView(generics.RetrieveAPIView):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
-    serializer_class = serializers.UserSerializer
-
-    @swagger_auto_schema(
-        operation_summary="현재 로그인 한 사용자의 user id를 얻는 기능입니다.",
-        operation_description="파라미터 없이 get 요청 -> 현재 로그인한 사용자의 id return",
-        responses={
-            200: openapi.Response(description="Success"),
-            400: openapi.Response(description="Not Success")
-        }
-    )
-     
-    def get(selt, request):
-        user = request.user
-
-        try:
-            return Response(user.id, status=200)
-        except:
-            return Response(status=400)
