@@ -10,3 +10,4 @@ tzdata==2024.1
 tzlocal==5.2
 drf-yasg==1.21.7
 python-dotenv 
+pillow==10.4.0
