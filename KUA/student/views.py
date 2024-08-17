@@ -151,8 +151,7 @@ class SignupView(APIView):
 
         student_number = models.Student.objects.count()
 
-        nickname_animal = ['사자', '고양이', '강아지', '호랑이', '매', '양', '토끼', '용', '용', '다람쥐', '돼지', '소', '쥐', '파리', '모기',
-                           '까마귀', '벌', '개미', '염소', '하마', '코뿔소', '곰', '뱀', '원숭이', '고릴라', '말']
+        nickname_animal = ['고양이', '강아지', '호랑이', '토끼', '쥐', '기린', '얼룩말', '여우']
 
         random_animal = random.choices(nickname_animal, k=1)
 
