@@ -14,5 +14,6 @@ urlpatterns = [
     path('get-nickname/', views.GetNickNameView().as_view()),
     path('get-now-points/', views.GetNowPointView().as_view()),
     path('user-info/', views.UserStudentInfoView.as_view()),
-    path('get-point-history/', views.GetPointHistoryView.as_view(),)
+    path('get-point-history/', views.GetPointHistoryView.as_view()),
+    path('image/', views.ImageView().as_view()),
 ]

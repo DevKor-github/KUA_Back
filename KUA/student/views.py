@@ -481,39 +481,39 @@ class GetPointHistoryView(generics.RetrieveAPIView):
             return Response("Student not found", status=400)
 
 
-class NicknameImageView(APIView):
+class ImageView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
-    serializer_class = serializers.NicknameImageSerializer
+    serializer_class = serializers.ImageSerializer
     @swagger_auto_schema(
-        operation_summary="닉네임 별 이미지 생성하기",
-        operation_description="새로운 닉네임과 그에 대한 이미지를 생성합니다.",
+        operation_summary="이미지 생성하기",
+        operation_description="이미지 이름, 태그, 이미지 데이터를 생성합니다.",
         manual_parameters=[
-            openapi.Parameter('nickname', openapi.IN_FORM, type=openapi.TYPE_STRING, description='게시글 제목'),
+            openapi.Parameter('name', openapi.IN_FORM, type=openapi.TYPE_STRING, description='이미지 이름'),
+            openapi.Parameter('tag', openapi.IN_FORM, type=openapi.TYPE_STRING, description='이미지 태그'),
             openapi.Parameter('image_uploads', openapi.IN_FORM, type=openapi.TYPE_FILE, description='이미지 파일 업로드', multiple=True),
-        ]
+        ],
+        responses={
+            201: openapi.Response(description="Success"),
+            400: openapi.Response(description="Rejected")
+        }
     )
     def create(self, request, *args, **kwargs):
-        nickname = request.data.get('nickname')
-         
+        name = request.data.get('name')
+        tag = request.data.get('tag')
         image_uploads = request.FILES.getlist('image_uploads', []) 
                 
-        nickname_data = {
-            "nickname": nickname,
+        data = {
+            "name": name,
+            "tag": tag,
         }
 
-        serializer = self.get_serializer(data=nickname_data)
+        serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         post = serializer.save()
 
         # 이미지가 있을 경우 처리
-        if image_uploads:
-            for image in image_uploads[:10]:  # 최대 10개의 이미지 처리
-                PostImage.objects.create(post=post, image=image)
+        if image_uploads:  # 최대 10개의 이미지 처리
+            models.Image.objects.create(post=post, image=image_uploads)
 
-        # 태그 설정
-        if tags:
-            post.tags.set(tags)
-
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.data, status=200)
