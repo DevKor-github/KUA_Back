@@ -66,3 +66,8 @@ class NicknameHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.NicknameHistory
         fields = '__all__'
+
+class NicknameImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.NicknameImage
+        fields = ['nickname', 'image']
