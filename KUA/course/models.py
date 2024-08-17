@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.utils import timezone
+from django.core.validators import FileExtensionValidator
 
 
 class Course(models.Model):
@@ -84,23 +85,34 @@ class Post(models.Model):
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    attached_file = models.FileField(
-        upload_to='attachments/', null=True, blank=True)
     tags = models.ManyToManyField(Tag, blank=True,  related_name='posts')
     
-    # likes = models.IntegerField(default = 0, related_name='posts')
-    # views = models.IntegerField(default = 0, related_name='posts')
-    # reported = models.IntegerField()
+    likes = models.IntegerField(default = 0)
+    views = models.IntegerField(default = 0)
+    reported = models.IntegerField(default = 0)
     
 
     def __str__(self):
         return f"{self.title}, {self.content[:20]}"
+
+# 게시글 이미지 저장.
+class PostImage(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(
+        upload_to='attachments/', 
+        validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'gif'])]
+    )
+
+    def __str__(self):
+        return f"{self.post.title}의 - 이미지"
 
 
 # 댓글
 class Comment(models.Model):
     post = models.ForeignKey(
         Post, on_delete=models.CASCADE, related_name='comments')
+    parent_comment = models.ForeignKey(
+        'self', on_delete=models.CASCADE, related_name='replies', null=True, blank=True)
     student = models.ForeignKey(
         'student.Student', on_delete=models.CASCADE, related_name='comments')
     content = models.TextField()
@@ -108,6 +120,8 @@ class Comment(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     # 채택?
     is_chosen = models.BooleanField(default=False)
+    likes = models.IntegerField(default = 0)
+    reported = models.IntegerField(default = 0)
 
     def __str__(self):
         return self.content[:20]  # 최초 20글자만 표시
