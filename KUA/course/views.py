@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.parsers import MultiPartParser, FormParser
+import mimetypes
 
 # 강의 전체 뷰(CRUD 포함)
 
@@ -279,7 +280,7 @@ class PostViewSet(viewsets.ModelViewSet):
             "content": request.data.get("content"),
             "course_fk": request.data.get("course_fk"),
             "student": request.data.get("student"),
-            "attached_file": request.data.get("attached_file"),
+            "attached_file": request.FILES.get("attached_file")
         }
 
         serializer = self.get_serializer(data=post_data)
@@ -288,9 +289,34 @@ class PostViewSet(viewsets.ModelViewSet):
 
         if tags:
             post.tags.set(tags)
+            
+        attachment = None
+        if post.attached_file:
+            file_path = post.attached_file.path
+            content_type, _ = mimetypes.guess_type(file_path)
+            attachment = {
+                "url": post.attached_file.url,
+                "name": post.attached_file.name,
+                "content_type": content_type or "application/octet-stream"
+            }
 
+        post_data = {
+        "id": post.id,
+        "title": post.title,
+        "content": post.content,
+        "course_id": post.course_fk.course_id,
+        "created_at": post.created_at,
+        "updated_at": post.updated_at,
+        "attachment": attachment,
+        "tags": list(post.tags.values("id", "name")),
+        "author": {
+            "id": post.student.id,
+            "nickname": post.student.nickname,
+        },
+    }
+        
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(post_data, status=status.HTTP_201_CREATED, headers=headers)
 
     @swagger_auto_schema(
         operation_summary="게시글 조회 기능 - 완료",
@@ -302,6 +328,17 @@ class PostViewSet(viewsets.ModelViewSet):
         post = Post.objects.get(id=post_id)
         tags_data = post.tags.values('id', 'name')
 
+        attachment = None
+        if post.attached_file:
+            file_path = post.attached_file.path
+            content_type, _ = mimetypes.guess_type(file_path)
+            attachment = {
+                "url": post.attached_file.url,
+                "name": post.attached_file.name,
+                "content_type": content_type or "application/octet-stream"
+            }
+        
+        
         post_data = {
             "id": post.id,
             "title": post.title,
@@ -309,7 +346,7 @@ class PostViewSet(viewsets.ModelViewSet):
             "course_id": post.course_fk.course_id,
             "created_at": post.created_at,
             "updated_at": post.updated_at,
-            "attached_file": post.attached_file.url if post.attached_file else None,
+            "attachment": attachment,
             "tags": list(tags_data),
             "author": {
                 "id": post.student.id,
