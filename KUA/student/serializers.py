@@ -65,4 +65,4 @@ class PointHistorySerializer(serializers.ModelSerializer):
 class NicknameHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.NicknameHistory
-        fields = '__all___'
+        fields = '__all__'
