@@ -481,40 +481,48 @@ class GetPointHistoryView(generics.RetrieveAPIView):
             return Response("Student not found", status=400)
 
 
-# class ImageView(APIView):
-#     authentication_classes = [TokenAuthentication]
-#     permission_classes = [IsAuthenticated]
-#     serializer_class = serializers.ImageSerializer
+class ImageView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = serializers.ImageSerializer
 
-#     @swagger_auto_schema(
-#         operation_summary="이미지 생성하기",
-#         operation_description="이미지 이름, 태그, 이미지 데이터를 생성합니다.",
-#         manual_parameters=[
-#             openapi.Parameter('name', openapi.IN_FORM, type=openapi.TYPE_STRING, description='이미지 이름'),
-#             openapi.Parameter('tag', openapi.IN_FORM, type=openapi.TYPE_STRING, description='이미지 태그'),
-#             openapi.Parameter('image_uploads', openapi.IN_FORM, type=openapi.TYPE_FILE, description='이미지 파일 업로드', multiple=True),
-#         ],
-#         responses={
-#             201: openapi.Response(description="Success"),
-#             400: openapi.Response(description="Rejected")
-#         }
-#     )
-#     def post(self, request, *args, **kwargs):
-#         name = request.data.get('name')
-#         tag = request.data.get('tag')
-#         image_uploads = request.FILES.getlist('image_uploads', []) 
-                
-#         data = {
-#             "name": name,
-#             "tag": tag,
-#         }
+    @swagger_auto_schema(
+        operation_summary="이미지 생성하기",
+        operation_description="이미지 이름, 태그, 이미지 데이터를 생성합니다.",
+        manual_parameters=[
+            openapi.Parameter('name', openapi.IN_FORM, type=openapi.TYPE_STRING, description='이미지 이름'),
+            openapi.Parameter('tag', openapi.IN_FORM, type=openapi.TYPE_STRING, description='이미지 태그'),
+            openapi.Parameter('image_uploads', openapi.IN_FORM, type=openapi.TYPE_FILE, description='이미지 파일 업로드'),
+        ],
+        responses={
+            201: openapi.Response(description="Success"),
+            400: openapi.Response(description="Rejected")
+        }
+    )
+    def post(self, request, *args, **kwargs):
+        name = request.data.get('name')
+        tag = request.data.get('tag')
+        image_uploads = request.FILES.getlist('image_uploads', [])
 
-#         serializer = self.get_serializer(data=data)
-#         serializer.is_valid(raise_exception=True)
-#         post = serializer.save()
+        # 이미지가 여러 개 업로드된 경우 에러 반환
+        if len(image_uploads) > 1:
+            return Response({"error": "Only one image can be uploaded at a time."}, status=400)
 
-#         # 이미지가 있을 경우 처리
-#         if image_uploads:  # 최대 10개의 이미지 처리
-#             models.Image.objects.create(post=post, image=image_uploads)
+        # 이미지가 없는 경우 에러 반환
+        if not image_uploads:
+            return Response({"error": "No image uploaded."}, status=400)
 
-#         return Response(serializer.data, status=200)
+        data = {
+            "name": name,
+            "tag": tag,
+        }
+
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        post = serializer.save()
+
+        # 이미지가 있을 경우 처리 (여기서 하나의 이미지만 처리)
+        image = image_uploads[0]
+        models.Image.objects.create(name=post.name, tag=post.tag, image=image)
+
+        return Response(serializer.data, status=201)
