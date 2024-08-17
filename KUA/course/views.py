@@ -203,6 +203,7 @@ class PostViewSet(viewsets.ModelViewSet):
         student_id = self.request.query_params.get('student_id', None)
         title = self.request.query_params.get('title', None)
         content = self.request.query_params.get('content', None)
+        order_by = self.request.query_params.get('order_by', None)
 
         if course_index is not None:
             queryset = queryset.filter(course_fk_id=course_index)
@@ -219,8 +220,20 @@ class PostViewSet(viewsets.ModelViewSet):
 
         if content is not None:
             queryset = queryset.filter(content__icontains=content)
+            
+        # 정렬 조건 추가
+        if order_by:
+            if order_by == 'likes_asc':
+                queryset = queryset.order_by('likes')
+            elif order_by == 'likes_desc':
+                queryset = queryset.order_by('-likes')
+            elif order_by == 'views_asc':
+                queryset = queryset.order_by('views')
+            elif order_by == 'views_desc':
+                queryset = queryset.order_by('-views')
 
         return queryset
+
 
     @swagger_auto_schema(
         operation_summary="게시글 목록 조회 기능 - 완료",
@@ -235,7 +248,9 @@ class PostViewSet(viewsets.ModelViewSet):
             openapi.Parameter('title', openapi.IN_QUERY,
                               description="게시글 제목으로 필터링합니다. 일부 포함된 게시글도 보여줍니다.", type=openapi.TYPE_STRING),
             openapi.Parameter('content', openapi.IN_QUERY,
-                              description="게시글 내용으로 필터링합니다. 일부 포함된 게시글 보여줍니다.", type=openapi.TYPE_STRING),
+                              description="게시글 내용으로 필터링합니다. 일부 포함된 게시글도 보여줍니다.", type=openapi.TYPE_STRING),
+            openapi.Parameter('order_by', openapi.IN_QUERY,
+                              description="정렬 기준 (likes_asc, likes_desc, views_asc, views_desc 중 하나)", type=openapi.TYPE_STRING),
         ],
         responses={200: PostMinimalSerializer(many=True)}
     )
@@ -275,52 +290,35 @@ class PostViewSet(viewsets.ModelViewSet):
                 return Response({"tags": "태그는 정수형 값이어야 합니다."}, status=status.HTTP_400_BAD_REQUEST)
         else:
             tags = []
+         
+        image_uploads = request.FILES.getlist('image_uploads', []) 
+                
         post_data = {
             "title": request.data.get("title"),
             "content": request.data.get("content"),
             "course_fk": request.data.get("course_fk"),
             "student": request.data.get("student"),
-            "attached_file": request.FILES.get("attached_file")
         }
 
         serializer = self.get_serializer(data=post_data)
         serializer.is_valid(raise_exception=True)
         post = serializer.save()
 
+        # 이미지가 있을 경우 처리
+        if image_uploads:
+            for image in image_uploads[:10]:  # 최대 10개의 이미지 처리
+                PostImage.objects.create(post=post, image=image)
+
+        # 태그 설정
         if tags:
             post.tags.set(tags)
-            
-        attachment = None
-        if post.attached_file:
-            file_path = post.attached_file.path
-            content_type, _ = mimetypes.guess_type(file_path)
-            attachment = {
-                "url": post.attached_file.url,
-                "name": post.attached_file.name,
-                "content_type": content_type or "application/octet-stream"
-            }
 
-        post_data = {
-        "id": post.id,
-        "title": post.title,
-        "content": post.content,
-        "course_id": post.course_fk.course_id,
-        "created_at": post.created_at,
-        "updated_at": post.updated_at,
-        "attachment": attachment,
-        "tags": list(post.tags.values("id", "name")),
-        "author": {
-            "id": post.student.id,
-            "nickname": post.student.nickname,
-        },
-    }
-        
         headers = self.get_success_headers(serializer.data)
-        return Response(post_data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     @swagger_auto_schema(
         operation_summary="게시글 조회 기능 - 완료",
-        operation_description="게시글 인덱스로 특정 게시글의 세부 내용을 조회합니다.",
+        operation_description="게시글 인덱스로 특정 게시글의 세부 내용을 조회합니다. 조회 수가 오릅니다.",
         responses={200: PostSerializer}
     )
     def retrieve(self, request, *args, **kwargs):
@@ -328,16 +326,24 @@ class PostViewSet(viewsets.ModelViewSet):
         post = Post.objects.get(id=post_id)
         tags_data = post.tags.values('id', 'name')
 
-        attachment = None
-        if post.attached_file:
-            file_path = post.attached_file.path
+        attachments = []
+        post_images = PostImage.objects.filter(post=post)
+        
+        for post_image in post_images:
+            file_path = post_image.image.path
             content_type, _ = mimetypes.guess_type(file_path)
             attachment = {
-                "url": post.attached_file.url,
-                "name": post.attached_file.name,
-                "content_type": content_type or "application/octet-stream"
+                "uri": post_image.image.url,
+                "name": post_image.image.name,
+                "type": content_type or "application/octet-stream"
             }
+        attachments.append(attachment)
         
+        from django.db.models import F
+
+        post.views = F('views') + 1
+        post.save(update_fields=['views'])
+        post.refresh_from_db() 
         
         post_data = {
             "id": post.id,
@@ -352,6 +358,9 @@ class PostViewSet(viewsets.ModelViewSet):
                 "id": post.student.id,
                 "nickname": post.student.nickname,
             },
+            "likes":post.likes,
+            "views":post.views,
+            "reports":post.reports,
         }
 
         return Response(post_data)
@@ -383,7 +392,6 @@ class PostViewSet(viewsets.ModelViewSet):
         return super().destroy(request, *args, **kwargs)
 
 # 댓글 전체 뷰
-
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
@@ -437,13 +445,18 @@ class CommentViewSet(viewsets.ModelViewSet):
         comment_id = kwargs.get('pk', None)
         comment = Comment.objects.get(pk=comment_id)
         parent_post = Post.objects.get(pk=comment.post_id)
-
+        parent_comment = Comment.objects.get(comment, None)
+        
         comment_data = {
             "id": comment.id,
             "content": comment.content,
             "parent_post": {
                 "id": parent_post.id,
                 "title": parent_post.title,
+            },
+            "parent_comment": {
+                "id": parent_comment.id,
+                "content": parent_comment.content[:50] 
             },
             "created_at": comment.created_at,
             "updated_at": comment.updated_at,
@@ -452,6 +465,8 @@ class CommentViewSet(viewsets.ModelViewSet):
                 "id": comment.student.id,
                 "nickname": comment.student.nickname,
             },
+            "likes": comment.likes,
+            "reports": comment.reports,
         }
 
         return Response(comment_data)
