@@ -48,12 +48,17 @@ class PointHistory(models.Model):
     def __str__(self):
         return self.user
     
-class NicknameImage(models.Model):
-    nickname = models.CharField(primary_key=True)
+class Image(models.Model):
+    name = models.CharField(primary_key=True)
     image = models.ImageField(
         upload_to='attachments/', 
         validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'gif'])]
     )
+    TAG = {
+        "N": "Nickname",
+        "A": "Advertisement",
+    }
+    tag = models.CharField(max_length=1, choices=TAG)
 
     def __str__(self):
-        return f"{self.nickname}의 - 이미지"
+        return f"{self.name}의 {self.tag} - 이미지"

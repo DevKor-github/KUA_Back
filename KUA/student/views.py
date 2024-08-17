@@ -479,4 +479,41 @@ class GetPointHistoryView(generics.RetrieveAPIView):
         
         except:
             return Response("Student not found", status=400)
+
+
+class NicknameImageView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = serializers.NicknameImageSerializer
+    @swagger_auto_schema(
+        operation_summary="닉네임 별 이미지 생성하기",
+        operation_description="새로운 닉네임과 그에 대한 이미지를 생성합니다.",
+        manual_parameters=[
+            openapi.Parameter('nickname', openapi.IN_FORM, type=openapi.TYPE_STRING, description='게시글 제목'),
+            openapi.Parameter('image_uploads', openapi.IN_FORM, type=openapi.TYPE_FILE, description='이미지 파일 업로드', multiple=True),
+        ]
+    )
+    def create(self, request, *args, **kwargs):
+        nickname = request.data.get('nickname')
          
+        image_uploads = request.FILES.getlist('image_uploads', []) 
+                
+        nickname_data = {
+            "nickname": nickname,
+        }
+
+        serializer = self.get_serializer(data=nickname_data)
+        serializer.is_valid(raise_exception=True)
+        post = serializer.save()
+
+        # 이미지가 있을 경우 처리
+        if image_uploads:
+            for image in image_uploads[:10]:  # 최대 10개의 이미지 처리
+                PostImage.objects.create(post=post, image=image)
+
+        # 태그 설정
+        if tags:
+            post.tags.set(tags)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
