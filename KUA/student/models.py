@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, User
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from django.core.validators import FileExtensionValidator
     
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -46,3 +47,13 @@ class PointHistory(models.Model):
 
     def __str__(self):
         return self.user
+    
+class NicknameImage(models.Model):
+    nickname = models.CharField(primary_key=True)
+    image = models.ImageField(
+        upload_to='attachments/', 
+        validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'gif'])]
+    )
+
+    def __str__(self):
+        return f"{self.nickname}의 - 이미지"
