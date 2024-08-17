@@ -55,7 +55,7 @@ class CertificationCodeSerializer(serializers.Serializer):
 class NicknameSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Student
-        fields = ['nickname']
+        fields = '__all__'
 
 class PointHistorySerializer(serializers.ModelSerializer):
     class Meta:
