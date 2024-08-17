@@ -166,6 +166,7 @@ class SignupView(APIView):
             'permission_type':  '7',
             'permission_date': timezone.now(),
         }
+        
 
         student_serializer = serializers.StudentSerializer(data=student)
 
@@ -173,8 +174,18 @@ class SignupView(APIView):
             return Response(student_serializer.errors)
 
         student_serializer.save()
-        token = Token.objects.create(user=user)
-        return Response({"Token": token.key})
+        history_data = {
+            'user': user.id,
+            'nickname' : nickname,
+            'nickname_time': timezone.now()
+        }
+        serializer = serializers.NicknameHistorySerializer(data=history_data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            token = Token.objects.create(user=user)
+            return Response({"Token": token.key})      
+        else:
+            return Response({'error': 'Failed to save nickname history'}, status=400)
 
 # 로그인 기능
 
