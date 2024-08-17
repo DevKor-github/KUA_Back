@@ -469,3 +469,4 @@ class GetPointHistoryView(generics.RetrieveAPIView):
         
         except:
             return Response("Student not found", status=400)
+         
