@@ -515,14 +515,11 @@ class ImageView(APIView):
         data = {
             "name": name,
             "tag": tag,
+            "image": image_uploads[0],  # 이미지를 직렬화할 데이터에 포함시킴
         }
 
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
-        post = serializer.save()
-
-        # 이미지가 있을 경우 처리 (여기서 하나의 이미지만 처리)
-        image = image_uploads[0]
-        models.Image.objects.create(name=post.name, tag=post.tag, image=image)
+        serializer.save()  # 이미지를 포함하여 저장
 
         return Response(serializer.data, status=201)
