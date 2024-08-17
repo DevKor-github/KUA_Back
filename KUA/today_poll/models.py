@@ -8,7 +8,7 @@ class TodayPoll(models.Model):
     check_test = models.BooleanField(default=False, null=False)
     check_homework = models.BooleanField(default=False, null=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    answered_at = models.DateTimeField(default= None)
+    answered_at = models.DateTimeField(default= None, null= True, blank= True)
     expired = models.BooleanField(default=False)
 
     def __str__(self):

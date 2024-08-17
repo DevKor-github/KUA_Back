@@ -6,6 +6,7 @@ class TodayPollSerializer(serializers.ModelSerializer):
     class Meta:
         model = TodayPoll
         fields = '__all__'
+        
 class TodayPollListSerializer(serializers.ModelSerializer):
     class Meta:
         model = TodayPoll
@@ -17,6 +18,8 @@ class TodayPollAnswerSerializer(serializers.ModelSerializer):
         fields = ['check_attention', 'check_test', 'check_homework', 'answered_at']
         read_only_fields = ['answered_at']
 
+    
+    
     def update(self, instance, validated_data):
         instance.check_attention = validated_data.get('check_attention', instance.check_attention)
         instance.check_test = validated_data.get('check_test', instance.check_test)
