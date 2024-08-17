@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Course, Tag, Post, Comment, TimeTable
+from .models import *
 from student.models import Student
 
 
@@ -19,16 +19,34 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = '__all__'
 
-
+class PostImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostImage
+        fields = ['id', 'image']
 class PostSerializer(serializers.ModelSerializer):
+    images = PostImageSerializer(many=True, read_only=True)
+    image_uploads = serializers.ListField(
+        child=serializers.ImageField(write_only=True),
+        write_only=True,
+        required=False
+    )
     class Meta:
         model = Post
         fields = '__all__'
+        
+    def create(self, validated_data):
+        image_uploads = validated_data.pop('image_uploads', [])
+        post = Post.objects.create(**validated_data)
+        
+        for image in image_uploads[:10]:  # 최대 10개 이미지 처리
+            PostImage.objects.create(post=post, image=image)
+        
+        return post
 
 class PostMinimalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ['id', 'title']
+        fields = ['id', 'title', 'likes']
 
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
