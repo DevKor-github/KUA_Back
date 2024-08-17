@@ -425,3 +425,27 @@ class UserStudentInfoView(APIView):
         except models.Student.DoesNotExist:
             return Response({"error": "학생 정보가 없습니다."}, status=404)
 
+#로그인 한 사용자의 포인트 사용 기록을 알 수 있는 기능
+class GetPointHistoryView(generics.RetrieveAPIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = serializers.PointHistorySerializer
+
+    @swagger_auto_schema(
+        operation_summary="유저의 포인트 사용 기록 반환 뷰",
+        operation_description="파라미터 입력 x -> 로그인 되어 있는 사용자의 포인트 사용 기록 return",
+        responses={
+            201: openapi.Response(description="Success"),
+            400: openapi.Response(description="Not Success")
+        }
+    )
+
+    def get(self, request):
+        user = request.user
+
+        try:
+            history = models.PointHistory.objects.all(user = user.id)
+            return Response(history, status = 200)
+        
+        except:
+            return Response("Student not found", status=400)
