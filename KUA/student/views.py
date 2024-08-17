@@ -485,6 +485,7 @@ class ImageView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = serializers.ImageSerializer
+
     @swagger_auto_schema(
         operation_summary="이미지 생성하기",
         operation_description="이미지 이름, 태그, 이미지 데이터를 생성합니다.",
@@ -498,7 +499,7 @@ class ImageView(APIView):
             400: openapi.Response(description="Rejected")
         }
     )
-    def create(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         name = request.data.get('name')
         tag = request.data.get('tag')
         image_uploads = request.FILES.getlist('image_uploads', []) 
