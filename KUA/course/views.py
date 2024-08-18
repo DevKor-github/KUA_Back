@@ -20,7 +20,7 @@ class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseSerializer
 
     def get_queryset(self):
-        queryset = Course.objects.all()
+        queryset = Course.objects.all().order_by('id')
 
         # 필터링 조건 추가
         course_id = self.request.query_params.get('course_id', None)
@@ -119,7 +119,7 @@ class CourseViewSet(viewsets.ModelViewSet):
 
 
 class TagViewSet(viewsets.ModelViewSet):
-    queryset = Tag.objects.all()
+    queryset = Tag.objects.all().order_by('id')
     serializer_class = TagSerializer
 
     def get_queryset(self):
@@ -198,7 +198,7 @@ class PostViewSet(viewsets.ModelViewSet):
     parser_classes = [MultiPartParser, FormParser]
 
     def get_queryset(self):
-        queryset = Post.objects.all()
+        queryset = Post.objects.all().order_by('created_at')
 
         # 필터링 조건 추가
         course_index = self.request.query_params.get('course_index', None)
@@ -407,7 +407,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
 
     def get_queryset(self):
-        queryset = Comment.objects.all()
+        queryset = Comment.objects.all().order_by('created_at')
 
         # 필터링 조건 추가
         post_id = self.request.query_params.get('post_id', None)
@@ -515,7 +515,7 @@ class TimeTableViewSet(viewsets.ModelViewSet):
     serializer_class = TimeTableSerializer
 
     def get_queryset(self):
-        queryset = TimeTable.objects.all()
+        queryset = TimeTable.objects.all().order_by('id')
 
         # 필터링 조건 추가
         student_id = self.request.query_params.get('student_id', None)

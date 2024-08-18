@@ -15,7 +15,7 @@ class TodayPollViewSet(viewsets.ModelViewSet):
     serializer_class = TodayPollSerializer
 
     def get_queryset(self):
-        queryset = TodayPoll.objects.all()
+        queryset = TodayPoll.objects.all().order_by('created_at')
 
         # 필터링 조건 추가
         student_id = self.request.query_params.get('student_id', None)
@@ -145,7 +145,7 @@ class BriefingViewSet(viewsets.ModelViewSet):
     serializer_class = BriefingSerializer
 
     def get_queryset(self):
-        queryset = Briefing.objects.all()
+        queryset = Briefing.objects.all().order_by('created_at')
 
         # 필터링 조건 추가
         course_fk = self.request.query_params.get('course_fk', None)
