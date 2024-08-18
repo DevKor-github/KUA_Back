@@ -198,7 +198,7 @@ class PostViewSet(viewsets.ModelViewSet):
     parser_classes = [MultiPartParser, FormParser]
 
     def get_queryset(self):
-        queryset = Post.objects.all().order_by('created_at')
+        queryset = Post.objects.all().order_by('-created_at')
 
         # 필터링 조건 추가
         course_index = self.request.query_params.get('course_index', None)
@@ -407,7 +407,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
 
     def get_queryset(self):
-        queryset = Comment.objects.all().order_by('created_at')
+        queryset = Comment.objects.all().order_by('-created_at')
 
         # 필터링 조건 추가
         post_id = self.request.query_params.get('post_id', None)
