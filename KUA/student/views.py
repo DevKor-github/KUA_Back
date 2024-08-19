@@ -529,8 +529,8 @@ class ImageView(APIView):
         operation_summary="이미지 조회하기",
         operation_description="이미지 이름과 태그로 이미지를 가져옵니다.",
         manual_parameters=[
-            openapi.Parameter('name', openapi.IN_FORM, type=openapi.TYPE_STRING, description='이미지 이름'),
-            openapi.Parameter('tag', openapi.IN_FORM, type=openapi.TYPE_STRING, description='이미지 태그'),
+            openapi.Parameter('name', openapi.IN_QUERY, type=openapi.TYPE_STRING, description='이미지 이름'),
+            openapi.Parameter('tag', openapi.IN_QUERY, type=openapi.TYPE_STRING, description='이미지 태그'),
         ],
         responses={
             201: openapi.Response(description="Success"),
