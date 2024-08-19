@@ -563,30 +563,34 @@ class ImageView(APIView):
             404: openapi.Response(description="Not Found"),
         }
     )
-    def put(self, request, image_id=None):
-        try:
-            image = models.Image.objects.get(pk=image_id)
-        except models.Image.DoesNotExist:
-            return Response({"error": "Image not found."}, status=404)
-
+    def put(self, request, *args, **kwargs):
         name = request.data.get('name', image.name)
         tag = request.data.get('tag', image.tag)
-        image_uploads = request.FILES.getlist('image_uploads', [])
 
-        if len(image_uploads) > 1:
-            return Response({"error": "Only one image can be uploaded at a time."}, status=400)
+        try:
+            image = models.Image.objects.get(name = name, tag = tag)
 
-        data = {
-            "name": name,
-            "tag": tag,
-            "image": image_uploads[0] if image_uploads else image.image,
-        }
+            image_uploads = request.FILES.getlist('image_uploads', [])
 
-        serializer = serializers.ImageSerializer(image, data=data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+            if len(image_uploads) > 1:
+                return Response({"error": "Only one image can be uploaded at a time."}, status=400)
 
-        return Response(serializer.data, status=200)
+            data = {
+                "name": name,
+                "tag": tag,
+                "image": image_uploads[0] if image_uploads else image.image,
+            }
+
+            serializer = serializers.ImageSerializer(image, data=data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+
+            return Response(serializer.data, status=200)
+        
+        except models.Image.DoesNotExist:
+            return Response({"error": "Image not found."}, status=404)
+        
+        
 
     @swagger_auto_schema(
         operation_summary="이미지 삭제하기",
@@ -600,10 +604,10 @@ class ImageView(APIView):
             404: openapi.Response(description="Not Found"),
         }
     )
-    def delete(self, request, image_id=None):
+    def delete(self, request, *args, **kwargs):
         try:
-            name = request.data.get('name', image.name)
-            tag = request.data.get('tag', image.tag)
+            name = request.data.get('name')
+            tag = request.data.get('tag')
             image = models.Image.objects.get(name=name, tag = tag)
         except models.Image.DoesNotExist:
             return Response({"error": "Image not found."}, status=404)
