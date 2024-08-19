@@ -486,7 +486,7 @@ class ImageView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = serializers.ImageSerializer
     parser_classes = [MultiPartParser, FormParser]
-    
+
     @swagger_auto_schema(
         operation_summary="이미지 생성하기",
         operation_description="이미지 이름, 태그, 이미지 데이터를 생성합니다.",
@@ -524,3 +524,79 @@ class ImageView(APIView):
         serializer.save()  # 이미지를 포함하여 저장
 
         return Response(serializer.data, status=201)
+
+    @swagger_auto_schema(
+        operation_summary="이미지 조회하기",
+        operation_description="이미지 ID로 이미지를 조회합니다.",
+        responses={
+            200: openapi.Response(description="Success", schema=serializers.ImageSerializer),
+            404: openapi.Response(description="Not Found"),
+        }
+    )
+    def get(self, request, image_id=None):
+        try:
+            image = models.Image.objects.get(pk=image_id)
+        except models.Image.DoesNotExist:
+            return Response({"error": "Image not found."}, status=404)
+
+        serializer = self.serializer_class(image)
+        return Response(serializer.data, status=200)
+
+    @swagger_auto_schema(
+        operation_summary="이미지 수정하기",
+        operation_description="이미지 ID로 이미지를 수정합니다.",
+        manual_parameters=[
+            openapi.Parameter('name', openapi.IN_FORM, type=openapi.TYPE_STRING, description='이미지 이름'),
+            openapi.Parameter('tag', openapi.IN_FORM, type=openapi.TYPE_STRING, description='이미지 태그'),
+            openapi.Parameter('image_uploads', openapi.IN_FORM, type=openapi.TYPE_FILE, description='이미지 파일 업로드'),
+        ],
+        responses={
+            200: openapi.Response(description="Success"),
+            400: openapi.Response(description="Rejected"),
+            404: openapi.Response(description="Not Found"),
+        }
+    )
+    def put(self, request, image_id=None):
+        try:
+            image = models.Image.objects.get(pk=image_id)
+        except models.Image.DoesNotExist:
+            return Response({"error": "Image not found."}, status=404)
+
+        name = request.data.get('name', image.name)
+        tag = request.data.get('tag', image.tag)
+        image_uploads = request.FILES.getlist('image_uploads', [])
+
+        # 이미지가 여러 개 업로드된 경우 에러 반환
+        if len(image_uploads) > 1:
+            return Response({"error": "Only one image can be uploaded at a time."}, status=400)
+
+        # 데이터 준비
+        data = {
+            "name": name,
+            "tag": tag,
+            "image": image_uploads[0] if image_uploads else image.image,
+        }
+
+        serializer = self.get_serializer(image, data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=200)
+
+    @swagger_auto_schema(
+        operation_summary="이미지 삭제하기",
+        operation_description="이미지 ID로 이미지를 삭제합니다.",
+        responses={
+            204: openapi.Response(description="No Content"),
+            404: openapi.Response(description="Not Found"),
+        }
+    )
+    def delete(self, request, image_id=None):
+        try:
+            image = models.Image.objects.get(pk=image_id)
+        except models.Image.DoesNotExist:
+            return Response({"error": "Image not found."}, status=404)
+
+        image.delete()
+        return Response(status=204)
+
