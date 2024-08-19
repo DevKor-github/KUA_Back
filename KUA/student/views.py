@@ -524,18 +524,25 @@ class ImageView(APIView):
         serializer.save()  # 이미지를 포함하여 저장
 
         return Response(serializer.data, status=201)
-
+    
     @swagger_auto_schema(
         operation_summary="이미지 조회하기",
-        operation_description="이미지 ID로 이미지를 조회합니다.",
+        operation_description="이미지 이름과 태그로 이미지를 가져옵니다.",
+        manual_parameters=[
+            openapi.Parameter('name', openapi.IN_FORM, type=openapi.TYPE_STRING, description='이미지 이름'),
+            openapi.Parameter('tag', openapi.IN_FORM, type=openapi.TYPE_STRING, description='이미지 태그'),
+        ],
         responses={
-            200: openapi.Response(description="Success", schema=serializers.ImageSerializer),
-            404: openapi.Response(description="Not Found"),
+            201: openapi.Response(description="Success"),
+            400: openapi.Response(description="Rejected")
         }
     )
-    def get(self, request, image_id=None):
+    def get(self, request, *args, **kwargs):
+        name = request.data.get('name')
+        tag = request.data.get('tag')
+
         try:
-            image = models.Image.objects.get(pk=image_id)
+            image = models.Image.objects.get(name = name, tag = tag)
         except models.Image.DoesNotExist:
             return Response({"error": "Image not found."}, status=404)
 
