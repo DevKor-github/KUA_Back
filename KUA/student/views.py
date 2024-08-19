@@ -521,7 +521,7 @@ class ImageView(APIView):
             "image": image_uploads[0],  # 이미지를 직렬화할 데이터에 포함시킴
         }
 
-        serializer = self.get_serializer(data=data)
+        serializer = serializers.ImageSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()  # 이미지를 포함하여 저장
 
