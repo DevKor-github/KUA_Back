@@ -11,7 +11,9 @@ scheduler = BackgroundScheduler()
 
 load_dotenv()
 
-nickname_animal = ['고양이', '강아지', '호랑이', '토끼', '쥐', '기린', '얼룩말', '여우']
+nickname_animal = ["소","금붕어","우파루파","여우","뱀","양","판다","호랑이","고양이","범고래","카멜레온","오리","거북이","비버","청둥오리","원숭이",
+                           "쥐","표범","물소","곰","하마","강아지","게","코끼리","무당벌레","코뿔소","말","문어","벌","닭","사자","바다사자","나비","북극곰","사슴","기린","홍학","개구리","물개","앵무새"]
+
 
 
 def update_data():
@@ -33,6 +35,10 @@ def update_data():
     cur.execute('SELECT id FROM student_student;')
     student_ids = cur.fetchall()
     student_number = len(student_ids)
+
+    cur.execute('SELECT id FROM student_nicknamehistory;')
+    history_ids = cur.fetchall()
+    history_number = len(history_ids) + 1
 
     if student_number == 0:
         print("No students found.")
@@ -59,8 +65,9 @@ def update_data():
         ''', (nickname, nickname_change_time, student_id))
         cur.execute('''
             INSERT INTO student_nicknamehistory
-            VALUES ( %s, %s, %s);
-        ''', (student_id, nickname, nickname_change_time))
+            VALUES ( %s, %s, %s, %s);
+        ''', (history_number, nickname, nickname_change_time, student_id))
+        history_number += 1
 
     conn.commit()
     conn.close()
@@ -74,5 +81,5 @@ def start_scheduler():
     if not scheduler.running:
         # 2024년 7월 4일 오전 12시 이후 1분마다 실행되도록 설정
         scheduler.add_job(update_data, 'interval',
-                          hours=24, start_date=start_time)
+                          minutes = 1, start_date=start_time)
         scheduler.start()
