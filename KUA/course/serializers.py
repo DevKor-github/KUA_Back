@@ -70,28 +70,30 @@ class TimeTableSerializer(serializers.ModelSerializer):
     student = serializers.PrimaryKeyRelatedField(
         queryset=Student.objects.all())
     courses = CourseSerializer(many=True, read_only=True)
-    course_ids = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Course.objects.all(), write_only=True
-    )
 
     class Meta:
         model = TimeTable
         fields = ['id', 'student', 'year', 'semester', 'courses']
 
     def create(self, validated_data):
-        course_ids = validated_data.pop('course_ids')
-        timetable = TimeTable.objects.create(**validated_data)
-        timetable.courses.set(course_ids)
+        course_ids = self.context['request'].data.get('course_ids')
+        if course_ids:
+            course_instances = Course.objects.filter(id__in=course_ids)
+            timetable = TimeTable.objects.create(**validated_data)
+            timetable.courses.set(course_instances)
+        else:
+            timetable = TimeTable.objects.create(**validated_data)
         return timetable
 
     def update(self, instance, validated_data):
-        course_ids = validated_data.pop('course_ids', None)
+        course_ids = self.context['request'].data.get('course_ids', None)
         instance.student = validated_data.get('student', instance.student)
         instance.year = validated_data.get('year', instance.year)
         instance.semester = validated_data.get('semester', instance.semester)
 
         if course_ids:
-            instance.courses.set(course_ids)
+            course_instances = Course.objects.filter(id__in=course_ids)
+            instance.courses.set(course_instances)
 
         instance.save()
         return instance

@@ -1,6 +1,5 @@
 
 
-
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
@@ -189,8 +188,6 @@ class TagViewSet(viewsets.ModelViewSet):
         return super().destroy(request, *args, **kwargs)
 
 
-
-
 # 게시글 전체 뷰
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -223,7 +220,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
         if content is not None:
             queryset = queryset.filter(content__icontains=content)
-            
+
         # 정렬 조건 추가
         if order_by:
             if order_by == 'likes_asc':
@@ -236,7 +233,6 @@ class PostViewSet(viewsets.ModelViewSet):
                 queryset = queryset.order_by('-views')
 
         return queryset
-
 
     @swagger_auto_schema(
         operation_summary="게시글 목록 조회 기능 - 완료",
@@ -277,12 +273,18 @@ class PostViewSet(viewsets.ModelViewSet):
         operation_summary="게시글 생성 기능 - 완료",
         operation_description="새로운 게시글을 생성합니다.",
         manual_parameters=[
-            openapi.Parameter('title', openapi.IN_FORM, type=openapi.TYPE_STRING, description='게시글 제목'),
-            openapi.Parameter('content', openapi.IN_FORM, type=openapi.TYPE_STRING, description='게시글 내용'),
-            openapi.Parameter('course_fk', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='강의 ID'),
-            openapi.Parameter('student', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='학생 ID'),
-            openapi.Parameter('image_uploads', openapi.IN_FORM, type=openapi.TYPE_FILE, description='이미지 파일 업로드', multiple=True),
-            openapi.Parameter('tags', openapi.IN_FORM, type=openapi.TYPE_STRING, description='태그 목록 (쉼표로 구분)'),
+            openapi.Parameter('title', openapi.IN_FORM,
+                              type=openapi.TYPE_STRING, description='게시글 제목'),
+            openapi.Parameter('content', openapi.IN_FORM,
+                              type=openapi.TYPE_STRING, description='게시글 내용'),
+            openapi.Parameter('course_fk', openapi.IN_FORM,
+                              type=openapi.TYPE_INTEGER, description='강의 ID'),
+            openapi.Parameter('student', openapi.IN_FORM,
+                              type=openapi.TYPE_INTEGER, description='학생 ID'),
+            openapi.Parameter('image_uploads', openapi.IN_FORM,
+                              type=openapi.TYPE_FILE, description='이미지 파일 업로드', multiple=True),
+            openapi.Parameter(
+                'tags', openapi.IN_FORM, type=openapi.TYPE_STRING, description='태그 목록 (쉼표로 구분)'),
         ],
         consumes=['multipart/form-data'],
         responses={201: PostSerializer}
@@ -300,9 +302,9 @@ class PostViewSet(viewsets.ModelViewSet):
                 return Response({"tags": "태그는 정수형 값이어야 합니다."}, status=status.HTTP_400_BAD_REQUEST)
         else:
             tags = []
-         
-        image_uploads = request.FILES.getlist('image_uploads', []) 
-                
+
+        image_uploads = request.FILES.getlist('image_uploads', [])
+
         post_data = {
             "title": request.data.get("title"),
             "content": request.data.get("content"),
@@ -338,7 +340,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
         attachments = []
         post_images = PostImage.objects.filter(post=post)
-        
+
         for post_image in post_images:
             file_path = post_image.image.path
             content_type, _ = mimetypes.guess_type(file_path)
@@ -348,13 +350,11 @@ class PostViewSet(viewsets.ModelViewSet):
                 "type": content_type or "application/octet-stream"
             }
             attachments.append(attachment)
-        
-        
 
         post.views = F('views') + 1
         post.save(update_fields=['views'])
-        post.refresh_from_db() 
-        
+        post.refresh_from_db()
+
         post_data = {
             "id": post.id,
             "title": post.title,
@@ -368,9 +368,9 @@ class PostViewSet(viewsets.ModelViewSet):
                 "id": post.student.id,
                 "nickname": post.student.nickname,
             },
-            "likes":post.likes,
-            "views":post.views,
-            "reports":post.reported,
+            "likes": post.likes,
+            "views": post.views,
+            "reports": post.reported,
         }
 
         return Response(post_data)
@@ -402,6 +402,7 @@ class PostViewSet(viewsets.ModelViewSet):
         return super().destroy(request, *args, **kwargs)
 
 # 댓글 전체 뷰
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
@@ -461,7 +462,6 @@ class CommentViewSet(viewsets.ModelViewSet):
             "content": parent_comment.content[:50]
         } if parent_comment else None
 
-        
         comment_data = {
             "id": comment.id,
             "content": comment.content,
@@ -552,8 +552,17 @@ class TimeTableViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_summary="시간표 생성 기능 - 완료",
         operation_description="새로운 시간표를 생성합니다.",
-        request_body=TimeTableSerializer,
-        responses={201: TimeTableSerializer}
+        responses={201: TimeTableSerializer},
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'student': openapi.Schema(type=openapi.TYPE_INTEGER, description='학생 ID'),
+                'year': openapi.Schema(type=openapi.TYPE_STRING, description='년도'),
+                'semester': openapi.Schema(type=openapi.TYPE_STRING, description='학기'),
+                'course_ids': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_INTEGER), description='강의 ID 리스트')
+            },
+            required=['student', 'year', 'semester', 'course_ids']
+        )
     )
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
@@ -572,8 +581,17 @@ class TimeTableViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_summary="시간표 수정 기능 - 완료",
         operation_description="기존 시간표 정보를 수정합니다.",
-        request_body=TimeTableSerializer,
-        responses={200: TimeTableSerializer}
+        responses={200: TimeTableSerializer},
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'student': openapi.Schema(type=openapi.TYPE_INTEGER, description='학생 ID'),
+                'year': openapi.Schema(type=openapi.TYPE_STRING, description='년도'),
+                'semester': openapi.Schema(type=openapi.TYPE_STRING, description='학기'),
+                'course_ids': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_INTEGER), description='강의 ID 리스트')
+            },
+            required=['student', 'year', 'semester', 'course_ids']
+        )
     )
     def update(self, request, *args, **kwargs):
         return super().update(request, *args, **kwargs)
