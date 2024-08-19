@@ -507,23 +507,21 @@ class ImageView(APIView):
         tag = request.data.get('tag')
         image_uploads = request.FILES.getlist('image_uploads', [])
 
-        # 이미지가 여러 개 업로드된 경우 에러 반환
         if len(image_uploads) > 1:
             return Response({"error": "Only one image can be uploaded at a time."}, status=400)
 
-        # 이미지가 없는 경우 에러 반환
         if not image_uploads:
             return Response({"error": "No image uploaded."}, status=400)
 
         data = {
             "name": name,
             "tag": tag,
-            "image": image_uploads[0],  # 이미지를 직렬화할 데이터에 포함시킴
+            "image": image_uploads[0],
         }
 
         serializer = serializers.ImageSerializer(data=data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()  # 이미지를 포함하여 저장
+        serializer.save()
 
         return Response(serializer.data, status=201)
     
@@ -575,18 +573,16 @@ class ImageView(APIView):
         tag = request.data.get('tag', image.tag)
         image_uploads = request.FILES.getlist('image_uploads', [])
 
-        # 이미지가 여러 개 업로드된 경우 에러 반환
         if len(image_uploads) > 1:
             return Response({"error": "Only one image can be uploaded at a time."}, status=400)
 
-        # 데이터 준비
         data = {
             "name": name,
             "tag": tag,
             "image": image_uploads[0] if image_uploads else image.image,
         }
 
-        serializer = self.get_serializer(image, data=data)
+        serializer = serializers.ImageSerializer(image, data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
@@ -594,7 +590,11 @@ class ImageView(APIView):
 
     @swagger_auto_schema(
         operation_summary="이미지 삭제하기",
-        operation_description="이미지 ID로 이미지를 삭제합니다.",
+        operation_description="이미지 name과 tag로 이미지를 삭제합니다.",
+        manual_parameters=[
+            openapi.Parameter('name', openapi.IN_FORM, type=openapi.TYPE_STRING, description='이미지 이름'),
+            openapi.Parameter('tag', openapi.IN_FORM, type=openapi.TYPE_STRING, description='이미지 태그'),
+        ],
         responses={
             204: openapi.Response(description="No Content"),
             404: openapi.Response(description="Not Found"),
@@ -602,7 +602,9 @@ class ImageView(APIView):
     )
     def delete(self, request, image_id=None):
         try:
-            image = models.Image.objects.get(pk=image_id)
+            name = request.data.get('name', image.name)
+            tag = request.data.get('tag', image.tag)
+            image = models.Image.objects.get(name=name, tag = tag)
         except models.Image.DoesNotExist:
             return Response({"error": "Image not found."}, status=404)
 
