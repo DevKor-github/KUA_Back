@@ -12,11 +12,12 @@ from django.core.mail import EmailMessage
 from django.utils import timezone
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework import generics
+from rest_framework import generics, status
 from datetime import timedelta
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.parsers import MultiPartParser, FormParser
+
 # 이메일 코드 전송 기능
 
 
@@ -300,6 +301,7 @@ class PointUseView(generics.UpdateAPIView):
         ),
         responses={
             201: openapi.Response(description="Point Use Success"),
+            204: openapi.Response(description="포인트 부족"),
             400: openapi.Response(description="Point Use Rejected")
         }
     )
@@ -315,7 +317,7 @@ class PointUseView(generics.UpdateAPIView):
 
         if cost:
             if student.points < cost:
-                return Response('Not Enough Points')
+                return Response('Not Enough Points', status=204)
             student.points -= cost
             student.permission_date = timezone.now()
             student.permission_type = permission_type
@@ -335,7 +337,7 @@ class PointUseView(generics.UpdateAPIView):
                 return Response({'error': 'Failed to save point history'}, status=400)
 
         else:
-            return Response({'error': ' invalid using points type'})
+            return Response({'error': ' invalid using points type'}, status=400)
 
 # 사용자가 게시물 접근 권한이 있는지 확인하는 기능
 
