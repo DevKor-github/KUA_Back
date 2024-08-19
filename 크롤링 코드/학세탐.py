@@ -21,13 +21,13 @@ cour_time__location = []
 
 
 num_alpha_list = []
-for front_num in range(1, 10):
+for front_num in range(1, 9):
     for back_alpha in range(65, 91):
         num_alpha_list.append(str(front_num)+chr(back_alpha))
 
 #005
 for cour_cls in num_alpha_list:
-    url = "https://infodepot.korea.ac.kr/lecture1/lecsubjectPlanViewNew.jsp?year=2024&term=1R&grad_cd=0136&col_cd=9999&dept_cd="+ "6649" +"&cour_cd=" + "GELI"  + '005'  + "&cour_cls=" + cour_cls + "&"
+    url = "https://infodepot.korea.ac.kr/lecture1/lecsubjectPlanViewNew.jsp?year=2024&term=2R&grad_cd=0136&col_cd=9999&dept_cd="+ "6649" +"&cour_cd=" + "GELI"  + '005'  + "&cour_cls=" + cour_cls + "&"
     html = req.urlopen(url)
     doc = BeautifulSoup(html,"html.parser")
     h3_tag = doc.find('h3')
@@ -71,8 +71,8 @@ for cour_cls in num_alpha_list:
     print(f"{number_class} 완료")
     
 #006
-for cour_cls in range(0, 10):
-    url = "https://infodepot.korea.ac.kr/lecture1/lecsubjectPlanViewNew.jsp?year=2024&term=1R&grad_cd=0136&col_cd=9999&dept_cd="+ "6649" +"&cour_cd=" + "GELI"  + '006'  + "&cour_cls=" + str(cour_cls).zfill(2) + "&"
+for cour_cls in range(0, 21):
+    url = "https://infodepot.korea.ac.kr/lecture1/lecsubjectPlanViewNew.jsp?year=2024&term=2R&grad_cd=0136&col_cd=9999&dept_cd="+ "6649" +"&cour_cd=" + "GELI"  + '006'  + "&cour_cls=" + str(cour_cls).zfill(2) + "&"
     html = req.urlopen(url)
     doc = BeautifulSoup(html,"html.parser")
     h3_tag = doc.find('h3')
@@ -116,8 +116,8 @@ for cour_cls in range(0, 10):
     print(f"{number_class} 완료") 
 
 #007
-for cour_cls in ['A1', 'B1', 'B2', 'B3', 'B4', 'B5', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8']:
-    url = "https://infodepot.korea.ac.kr/lecture1/lecsubjectPlanViewNew.jsp?year=2024&term=1R&grad_cd=0136&col_cd=9999&dept_cd="+ "6649" +"&cour_cd=" + "GELI"  + '007'  + "&cour_cls=" + cour_cls + "&"
+for cour_cls in ['A1', 'B1', 'B2', 'B3', 'B4', 'B5', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'CA']:
+    url = "https://infodepot.korea.ac.kr/lecture1/lecsubjectPlanViewNew.jsp?year=2024&term=2R&grad_cd=0136&col_cd=9999&dept_cd="+ "6649" +"&cour_cd=" + "GELI"  + '007'  + "&cour_cls=" + cour_cls + "&"
     html = req.urlopen(url)
     doc = BeautifulSoup(html,"html.parser")
     h3_tag = doc.find('h3')
@@ -162,7 +162,7 @@ for cour_cls in ['A1', 'B1', 'B2', 'B3', 'B4', 'B5', 'C1', 'C2', 'C3', 'C4', 'C5
 
 #008
 for cour_cls in ['D1', 'E1', 'E2', 'F1', 'F2', 'F3', 'F4', 'F5']:
-    url = "https://infodepot.korea.ac.kr/lecture1/lecsubjectPlanViewNew.jsp?year=2024&term=1R&grad_cd=0136&col_cd=9999&dept_cd="+ "6649" +"&cour_cd=" + "GELI"  + '008'  + "&cour_cls=" + cour_cls + "&"
+    url = "https://infodepot.korea.ac.kr/lecture1/lecsubjectPlanViewNew.jsp?year=2024&term=2R&grad_cd=0136&col_cd=9999&dept_cd="+ "6649" +"&cour_cd=" + "GELI"  + '008'  + "&cour_cls=" + cour_cls + "&"
     html = req.urlopen(url)
     doc = BeautifulSoup(html,"html.parser")
     h3_tag = doc.find('h3')

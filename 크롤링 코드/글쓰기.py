@@ -19,8 +19,8 @@ cour_division = []
 #강의시간 및 장소
 cour_time__location = []
 
-for cour_cls in range(0, 70):
-    url = "https://infodepot.korea.ac.kr/lecture1/lecsubjectPlanViewNew.jsp?year=2024&term=1R&grad_cd=0136&col_cd=9999&dept_cd="+ "6649" +"&cour_cd=" + "GEWR"  + '002'  + "&cour_cls=" + str(cour_cls).zfill(2) + "&"
+for cour_cls in range(0, 65):
+    url = "https://infodepot.korea.ac.kr/lecture1/lecsubjectPlanViewNew.jsp?year=2024&term=2R&grad_cd=0136&col_cd=9999&dept_cd="+ "6649" +"&cour_cd=" + "GEWR"  + '002'  + "&cour_cls=" + str(cour_cls).zfill(2) + "&"
     html = req.urlopen(url)
     doc = BeautifulSoup(html,"html.parser")
     h3_tag = doc.find('h3')
@@ -63,8 +63,8 @@ for cour_cls in range(0, 70):
 
     print(f"{number_class} 완료")
 
-for cour_cls in ['B1', 'C1', 'C2', 'C3', 'C4', 'C5', 'D1', 'D2', 'D3', 'D4' ,'D5', 'D6', 'D7', 'D8', 'PH']:
-    url = "https://infodepot.korea.ac.kr/lecture1/lecsubjectPlanViewNew.jsp?year=2024&term=1R&grad_cd=0136&col_cd=9999&dept_cd="+ "6649" +"&cour_cd=" + "GEWR"  + '002'  + "&cour_cls=" + cour_cls + "&"
+for cour_cls in ['A1', 'A2', 'A3', 'A4', 'B1', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'DA', 'DB', 'DC', 'DD', 'DE', 'DF', 'DG', 'DH', 'DI', 'DJ']:
+    url = "https://infodepot.korea.ac.kr/lecture1/lecsubjectPlanViewNew.jsp?year=2024&term=2R&grad_cd=0136&col_cd=9999&dept_cd="+ "6649" +"&cour_cd=" + "GEWR"  + '002'  + "&cour_cls=" + cour_cls + "&"
     html = req.urlopen(url)
     doc = BeautifulSoup(html,"html.parser")
     h3_tag = doc.find('h3')

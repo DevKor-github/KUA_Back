@@ -16,28 +16,21 @@ cour_division = []
 #강의시간 및 장소
 cour_time__location = []
 
-# 24-1 1학년세미나
+# 24-2 1학년세미나
 major_cour_cls_alpha = {'GEKS':'6649'} #1학년세미나
-alpha_list = []
-for alpha_front in range(65, 91):
-    for num_back in range(1, 10):
-        alpha_list.append(chr(alpha_front)+str(num_back))
-    for alpha_back in range(65, 91):
-        alpha_list.append(chr(alpha_front)+chr(alpha_back))
 
-#print(alpha_list)
 
 #for number in range (250, 900):
     #for cour_cls in range(0, 10):
 
-for cour_cls in alpha_list:
-    url = "https://infodepot.korea.ac.kr/lecture1/lecsubjectPlanViewNew.jsp?year=2024&term=1R&grad_cd=0136&col_cd=9999&dept_cd="+ "6649" +"&cour_cd=" + "GEKS"  + '007'  + "&cour_cls=" + cour_cls + "&"
+for cour_cls in range(1, 65):
+    url = "https://infodepot.korea.ac.kr/lecture1/lecsubjectPlanViewNew.jsp?year=2024&term=2R&grad_cd=0136&col_cd=9999&dept_cd="+ "6649" +"&cour_cd=" + "GEKS"  + '008'  + "&cour_cls=" + str(cour_cls).zfill(2) + "&"
     html = req.urlopen(url)
     doc = BeautifulSoup(html,"html.parser")
     h3_tag = doc.find('h3')
         
     if (not h3_tag) or not h3_tag.string or len(h3_tag.string) == 19:
-        print('no site')
+        print(str(cour_cls)+'no site')
         continue
         
     
