@@ -49,7 +49,7 @@ class PointHistory(models.Model):
         return self.user
     
 class Image(models.Model):
-    name = models.CharField(unique=True)
+    name = models.CharField(primary_key=True)
     image = models.ImageField(
         upload_to='attachments/', 
         validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'gif'])]
