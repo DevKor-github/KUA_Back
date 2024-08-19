@@ -8,6 +8,7 @@ class CourseSerializer(serializers.ModelSerializer):
         model = Course
         fields = '__all__'
 
+
 class CourseMinimalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
@@ -19,30 +20,35 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = '__all__'
 
+
 class PostImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostImage
         fields = ['id', 'image']
 
+
 class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['id', 'title', 'content', 'course_fk', 'student', 'likes', 'views', 'reported', 'tags']
+        fields = ['id', 'title', 'content', 'course_fk',
+                  'student', 'likes', 'views', 'reported', 'tags']
 
     def create(self, validated_data):
         image_uploads = validated_data.pop('image_uploads', [])
         post = Post.objects.create(**validated_data)
-        
+
         for image in image_uploads[:10]:  # 최대 10개의 이미지 처리
             PostImage.objects.create(post=post, image=image)
-        
+
         return post
+
 
 class PostMinimalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['id', 'title', 'likes']
+
 
 class CommentSerializer(serializers.ModelSerializer):
     parent_comment = serializers.PrimaryKeyRelatedField(
@@ -53,13 +59,16 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = '__all__'
 
+
 class CommentMinimalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ['id', 'post_id', 'student_id']
 
+
 class TimeTableSerializer(serializers.ModelSerializer):
-    student = serializers.PrimaryKeyRelatedField(queryset=Student.objects.all())
+    student = serializers.PrimaryKeyRelatedField(
+        queryset=Student.objects.all())
     courses = CourseSerializer(many=True, read_only=True)
     course_ids = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Course.objects.all(), write_only=True
@@ -67,7 +76,7 @@ class TimeTableSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TimeTable
-        fields = ['id', 'student', 'year', 'semester', 'courses', 'course_ids']
+        fields = ['id', 'student', 'year', 'semester', 'courses']
 
     def create(self, validated_data):
         course_ids = validated_data.pop('course_ids')
