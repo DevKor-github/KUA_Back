@@ -4,7 +4,7 @@ import pandas as pd
 import re
 
 # CSV 파일 경로
-csv_file = 'C:\\Users\\soobin.park\\Desktop\\devkor_backend\\csv원본\\전공4-5.csv'
+csv_file = 'C:\\Users\\soobin.park\\Desktop\\re_뎁코백엔드깃헙\\전공11.csv'
 
 # CSV 파일을 DataFrame으로 읽기
 df = pd.read_csv(csv_file)
@@ -51,7 +51,7 @@ df['요일'], df['교시'], df['장소'] = zip(*df['강의시간표 및 장소']
 
 
 # 결과를 CSV 파일로 저장 (옵션)
-output_csv = 'C:\\Users\\soobin.park\\Desktop\\devkor_backend\\csv정리본\\전공4-5_modified.csv'
+output_csv = 'C:\\Users\\soobin.park\\Desktop\\re_뎁코백엔드깃헙\\교시및강의실추출\\전공11.csv'
 df.to_csv(output_csv, index=False, encoding='utf-8-sig')
 
 # DataFrame 출력 (테스트용)
