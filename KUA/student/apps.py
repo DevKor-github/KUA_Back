@@ -8,6 +8,6 @@ class StudentConfig(AppConfig):
     def ready(self):
         pass
 
-    # def ready(self):
-    #     from .scheduler import start_scheduler  # 스케줄러 초기화
-    #     start_scheduler()
+    def ready(self):
+        from .scheduler import start_scheduler  # 스케줄러 초기화
+        start_scheduler()
