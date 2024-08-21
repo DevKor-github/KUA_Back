@@ -1,12 +1,39 @@
+from django.conf import settings
 from rest_framework import serializers
 from .models import *
 from student.models import Student
 
 
 class CourseSerializer(serializers.ModelSerializer):
+    course_schedule = serializers.SerializerMethodField()
+
     class Meta:
         model = Course
-        fields = '__all__'
+        fields = [
+            'id', 'course_id', 'course_name', 'year', 'semester',
+            'instructor', 'credits', 'classification', 'course_week',
+            'course_schedule', 'course_room'
+        ]
+
+    def get_course_schedule(self, obj):
+        schedule = []
+        for day_index, day_periods in enumerate(obj.course_period):
+            day_schedule = []
+            for period in day_periods:
+                if period in settings.CLASS_TIMES:
+                    start_time, end_time = settings.CLASS_TIMES[period]
+                    day_schedule.append({
+                        "period": period,
+                        "time": f"{start_time}~{end_time}"
+                    })
+            if day_schedule:
+                schedule.append({
+                    "day": obj.course_week[day_index],
+                    "schedule": day_schedule,
+                })
+
+        return schedule
+        
 
 
 class CourseMinimalSerializer(serializers.ModelSerializer):
