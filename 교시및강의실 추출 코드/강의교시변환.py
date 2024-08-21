@@ -33,6 +33,6 @@ def process_csv_to_excel(input_csv, output_excel, column_to_transform):
     df.to_excel(output_excel, index=False)
 
 # 사용 예시
-input_csv = output_csv = 'C:\\Users\\soobin.park\\Desktop\\re_뎁코백엔드깃헙\\교시및강의실추출\\전공11.csv'
-output_excel = 'C:\\Users\\soobin.park\\Desktop\\re_뎁코백엔드깃헙\\강의교시변환_최종본\\전공11.xlsx'
+input_csv = output_csv = 'C:\\Users\\soobin.park\\Desktop\\re_뎁코백엔드깃헙\\교시및강의실추출\\학세탐.csv'
+output_excel = 'C:\\Users\\soobin.park\\Desktop\\re_뎁코백엔드깃헙\\강의교시변환_최종본\\학세탐.xlsx'
 process_csv_to_excel(input_csv, output_excel, '교시')
