@@ -6,6 +6,7 @@ myenv/
 .env
 # C extensions
 *.so
+*.pem
 
 # Distribution / packaging
 .Python
