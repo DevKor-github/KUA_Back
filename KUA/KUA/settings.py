@@ -47,7 +47,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-dS = ['*']
+ALLOWED_HOSTS = ['3.37.163.236', 'localhost', '127.0.0.1']
 
 # default
 APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
