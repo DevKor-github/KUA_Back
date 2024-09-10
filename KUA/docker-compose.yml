@@ -4,9 +4,9 @@ services:
   db:
     image: postgres:13
     environment:
-      POSTGRES_DB: kua.c9a6yqqo01jz.ap-northeast-2.rds.amazonaws.com
-      POSTGRES_USER: kua
-      POSTGRES_PASSWORD: kua
+      POSTGRES_DB: ${DB_HOST}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -21,14 +21,14 @@ services:
     depends_on:
       - db
     environment:
-      - DB_NAME=kua
-      - DB_USER=kua
-      - DB_PASSWORD=kua
-      - DB_HOST=kua.c9a6yqqo01jz.ap-northeast-2.rds.amazonaws.com
-      - DB_PORT=5432
-      - EMAIL_PORT = 587
-      - EMAIL_HOST_USER = testeuichan@gmail.com
-      - EMAIL_HOST_PASSWORD = wrplpvtqhknudaqn
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - EMAIL_PORT=${EMAIL_PORT}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
 
 volumes:
