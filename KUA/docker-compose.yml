@@ -4,7 +4,7 @@ services:
   db:
     image: postgres:13
     environment:
-      POSTGRES_DB: kua.chzgsszohvju.ap-northeast-2.rds.amazonaws.com
+      POSTGRES_DB: kua.c9a6yqqo01jz.ap-northeast-2.rds.amazonaws.com
       POSTGRES_USER: kua
       POSTGRES_PASSWORD: kua
     volumes:
@@ -24,7 +24,7 @@ services:
       - DB_NAME=kua
       - DB_USER=kua
       - DB_PASSWORD=kua
-      - DB_HOST=kua.chzgsszohvju.ap-northeast-2.rds.amazonaws.com
+      - DB_HOST=kua.c9a6yqqo01jz.ap-northeast-2.rds.amazonaws.com
       - DB_PORT=5432
       - EMAIL_PORT = 587
       - EMAIL_HOST_USER = testeuichan@gmail.com
