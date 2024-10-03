@@ -542,14 +542,20 @@ class ImageView(APIView):
     def get(self, request, *args, **kwargs):
         name = request.data.get('name')
         tag = request.data.get('tag')
+        
+        if name and tag :
+            try:
+                image = models.Image.objects.get(name = name, tag = tag)
+                serializer = self.serializer_class(image)
+                return Response(serializer.data, status=200)
+            except models.Image.DoesNotExist:
+                return Response({"error": "Image not found."}, status=404)
+        
+        else: 
+            images = models.Image.objects.all()
+            serializer = self.serializer_class(images, many=True)
+            return Response(serializer.data, status=200)
 
-        try:
-            image = models.Image.objects.get(name = name, tag = tag)
-        except models.Image.DoesNotExist:
-            return Response({"error": "Image not found."}, status=404)
-
-        serializer = self.serializer_class(image)
-        return Response(serializer.data, status=200)
 
     @swagger_auto_schema(
         operation_summary="이미지 수정하기",
