@@ -535,23 +535,22 @@ class ImageView(APIView):
             openapi.Parameter('tag', openapi.IN_QUERY, type=openapi.TYPE_STRING, description='이미지 태그'),
         ],
         responses={
-            201: openapi.Response(description="Success"),
+            200: openapi.Response(description="Success"),
             400: openapi.Response(description="Rejected")
         }
     )
     def get(self, request, *args, **kwargs):
-        name = request.data.get('name')
-        tag = request.data.get('tag')
+        name = request.query_params.get('name')
+        tag = request.query_params.get('tag')
         
-        if name and tag :
+        if name and tag:
             try:
-                image = models.Image.objects.get(name = name, tag = tag)
+                image = models.Image.objects.get(name=name, tag=tag)
                 serializer = self.serializer_class(image)
                 return Response(serializer.data, status=200)
             except models.Image.DoesNotExist:
                 return Response({"error": "Image not found."}, status=404)
-        
-        else: 
+        else:
             images = models.Image.objects.all()
             serializer = self.serializer_class(images, many=True)
             return Response(serializer.data, status=200)
