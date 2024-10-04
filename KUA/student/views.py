@@ -8,6 +8,7 @@ from django.contrib.auth.models import User, Group
 from . import serializers
 import string
 import random
+import re
 from django.core.mail import EmailMessage
 from django.utils import timezone
 from rest_framework.authentication import TokenAuthentication
@@ -17,6 +18,7 @@ from datetime import timedelta
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.parsers import MultiPartParser, FormParser
+
 
 # 이메일 코드 전송 기능
 
@@ -542,6 +544,9 @@ class ImageView(APIView):
     def get(self, request, *args, **kwargs):
         name = request.query_params.get('name')
         tag = request.query_params.get('tag')
+        
+        if name:
+            name = re.sub(r'\d+$', '', name)  # Remove trailing digits
         
         if name and tag:
             try:
