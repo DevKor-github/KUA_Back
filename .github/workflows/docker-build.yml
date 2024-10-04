@@ -7,7 +7,7 @@ on:
     branches: [develop]
 
 env:
-  DOCKER_IMAGE: ghcr.io/euizzang8001/kua-backend
+  DOCKER_IMAGE: ghcr.io/joy-river/kua-back
   DOCKER_CONTAINER: kua-backend
   working-directory: ./KUA
   DEBUG: "0"
