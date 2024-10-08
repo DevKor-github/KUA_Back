@@ -84,6 +84,7 @@ jobs:
       - name: Stop and remove old containers
         run: |
           sudo docker stop ${{ env.DOCKER_CONTAINER }} || true && sudo docker rm ${{ env.DOCKER_CONTAINER }} || true
+          sudo docker stop nginx || true && sudo docker rm nginx || true
           sudo docker rmi ${{ env.DOCKER_IMAGE }}:latest || true
 
       - name: Create custom network
