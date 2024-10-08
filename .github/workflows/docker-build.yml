@@ -97,4 +97,4 @@ jobs:
   
       - name: Run Nginx container
         run: |
-          sudo docker run -d --name nginx --network kua_network -p 80:80 --restart always -v ./nginx.conf:/etc/nginx/nginx.conf nginx:latest
+          sudo docker run -d --name nginx --network kua_network -p 80:80 --restart always -v $GITHUB_WORKSPACE/nginx.conf:/etc/nginx/nginx.conf nginx:latest
