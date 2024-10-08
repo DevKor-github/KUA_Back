@@ -80,7 +80,17 @@ jobs:
           echo "EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}" >> .env
           echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
           cat .env
-      - name: Run Docker
+
+      - name: Stop and remove old containers
         run: |
-          sudo docker stop ${{ env.DOCKER_CONTAINER }} && sudo docker rm ${{ env.DOCKER_CONTAINER }} && sudo docker rmi ${{ env.DOCKER_IMAGE }}:latest
+          sudo docker stop ${{ env.DOCKER_CONTAINER }} || true && sudo docker rm ${{ env.DOCKER_CONTAINER }} || true
+          sudo docker rmi ${{ env.DOCKER_IMAGE }}:latest || true
+
+      - name: Run Django container
+        run: |
           sudo docker run --env-file ./.env -d --name ${{ env.DOCKER_CONTAINER }} --network bridge -p 8000:8000 --restart always ${{ env.DOCKER_IMAGE }}:latest
+
+      - name: Run Nginx container
+        run: |
+          sudo docker run -d --name nginx --network bridge -p 80:80 --link ${{ env.DOCKER_CONTAINER }}:backend --restart always nginx:latest
+          echo "Nginx container started"
