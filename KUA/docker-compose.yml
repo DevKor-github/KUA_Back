@@ -31,5 +31,21 @@ services:
       - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
 
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80" # 외부 포트 80을 Nginx 컨테이너의 포트 80과 연결
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf # Nginx 설정 파일을 컨테이너에 연결
+    depends_on:
+      - app
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
 volumes:
   postgres_data:
