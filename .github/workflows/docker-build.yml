@@ -65,32 +65,36 @@ jobs:
           tags: ${{ env.DOCKER_IMAGE }}:latest
 
   deploy:
-    needs: build
-    runs-on: self-hosted
-    steps: 
-      - name: setup .env
-        run: |
-          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
-          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
-          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
-          echo "EMAIL_PORT=${{ secrets.EMAIL_PORT}}" >> .env
-          echo "EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}" >> .env
-          echo "EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}" >> .env
-          echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
-          cat .env
+  needs: build
+  runs-on: self-hosted
+  steps: 
+    - name: setup .env
+      run: |
+        echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+        echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+        echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+        echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+        echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+        echo "EMAIL_PORT=${{ secrets.EMAIL_PORT}}" >> .env
+        echo "EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}" >> .env
+        echo "EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}" >> .env
+        echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
+        cat .env
 
-      - name: Stop and remove old containers
-        run: |
-          sudo docker stop ${{ env.DOCKER_CONTAINER }} || true && sudo docker rm ${{ env.DOCKER_CONTAINER }} || true
-          sudo docker rmi ${{ env.DOCKER_IMAGE }}:latest || true
+    - name: Stop and remove old containers
+      run: |
+        sudo docker stop ${{ env.DOCKER_CONTAINER }} || true && sudo docker rm ${{ env.DOCKER_CONTAINER }} || true
+        sudo docker stop nginx || true && sudo docker rm nginx || true
+        sudo docker rmi ${{ env.DOCKER_IMAGE }}:latest || true
 
-      - name: Run Django container
-        run: |
-          sudo docker run --env-file ./.env -d --name ${{ env.DOCKER_CONTAINER }} --network bridge -p 8000:8000 --restart always ${{ env.DOCKER_IMAGE }}:latest
+    - name: Create Custom network
+      run: |
+        sudo docker network create kua_network || true
 
-      - name: Run Nginx container
-        run: |
-          sudo docker run -d --name nginx --network bridge -p 80:80 --link ${{ env.DOCKER_CONTAINER }}:backend --restart always nginx:latest
-          echo "Nginx container started"
+    - name: Run Django container
+      run: |
+        sudo docker run --env-file ./.env -d --name ${{ env.DOCKER_CONTAINER }} --network kua_network -p 8000:8000 --restart always ${{ env.DOCKER_IMAGE }}:latest
+
+    - name: Run Nginx container
+      run: |
+        sudo docker run -d --name nginx --network kua_network -p 80:80 --restart always -v ./nginx.conf:/etc/nginx/nginx.conf nginx:latest
