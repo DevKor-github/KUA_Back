@@ -80,21 +80,20 @@ jobs:
           echo "EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}" >> .env
           echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
           cat .env
-  
+
       - name: Stop and remove old containers
         run: |
           sudo docker stop ${{ env.DOCKER_CONTAINER }} || true && sudo docker rm ${{ env.DOCKER_CONTAINER }} || true
-          sudo docker stop nginx || true && sudo docker rm nginx || true
           sudo docker rmi ${{ env.DOCKER_IMAGE }}:latest || true
-  
-      - name: Create Custom network
+
+      - name: Create custom network
         run: |
           sudo docker network create kua_network || true
   
       - name: Run Django container
         run: |
           sudo docker run --env-file ./.env -d --name ${{ env.DOCKER_CONTAINER }} --network kua_network -p 8000:8000 --restart always ${{ env.DOCKER_IMAGE }}:latest
-
-    - name: Run Nginx container
-      run: |
-        sudo docker run -d --name nginx --network kua_network -p 80:80 --restart always -v ./nginx.conf:/etc/nginx/nginx.conf nginx:latest
+  
+      - name: Run Nginx container
+        run: |
+          sudo docker run -d --name nginx --network kua_network -p 80:80 --restart always -v ./nginx.conf:/etc/nginx/nginx.conf nginx:latest
