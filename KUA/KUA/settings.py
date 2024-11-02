@@ -62,8 +62,10 @@ LOGGING = {
     'handlers': {
         'file': {
             'level': 'DEBUG',
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.RotatingFileHandler',  # RotatingFileHandler로 변경
             'filename': 'scheduler.log',
+            'maxBytes': 10 * 1024 * 1024,  # 10MB로 제한
+            'backupCount': 5,  # 최대 5개의 백업 파일 유지
         },
     },
     'loggers': {
