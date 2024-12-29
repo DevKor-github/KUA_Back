@@ -12,6 +12,8 @@ from drf_yasg import openapi
 from rest_framework.parsers import MultiPartParser, FormParser
 import mimetypes
 from django.db.models import F
+import requests
+
 # 강의 전체 뷰(CRUD 포함)
 
 
@@ -340,6 +342,21 @@ class PostViewSet(viewsets.ModelViewSet):
 
         attachments = []
         post_images = PostImage.objects.filter(post=post)
+        
+        profile_image_url = f"http://3.37.163.236:8000/media/attachments/6789563.png"
+        try:
+            api_url = f"http://3.37.163.236:8000/student/image/?name={post.student.nickname}"
+            header = {
+                "Authorization": f"Token {request.META.get('HTTP_AUTHORIZATION')}"
+            }
+            response = requests.get(api_url, headers=header)
+            if response.status_code == 200:
+                image_data = response.json()
+                if (image_data.get("image")):
+                    profile_image_url = f"http://3.37.163.236:8000/{image_data['image']}"
+        except requests.exceptions.RequestException:
+            pass
+        
 
         for post_image in post_images:
             file_path = post_image.image.path
@@ -367,6 +384,7 @@ class PostViewSet(viewsets.ModelViewSet):
             "author": {
                 "id": post.student.id,
                 "nickname": post.student.nickname,
+                "profileImage": profile_image_url,
             },
             "likes": post.likes,
             "views": post.views,
