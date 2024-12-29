@@ -350,12 +350,15 @@ class PostViewSet(viewsets.ModelViewSet):
                 "Authorization": f"Token {request.META.get('HTTP_AUTHORIZATION')}"
             }
             response = requests.get(api_url, headers=header)
+
             if response.status_code == 200:
                 image_data = response.json()
-                if (image_data.get("image")):
-                    profile_image_url = f"http://3.37.163.236:8000/{image_data['image']}"
-        except requests.exceptions.RequestException:
-            pass
+                if isinstance(image_data, list) and len(image_data) > 0:
+                    first_item = image_data[0]
+                    if "image" in first_item:
+                        profile_image_url = f"http://3.37.163.236:8000{first_item['image']}"
+        except requests.exceptions.RequestException as e:
+            print(f"Request exception: {e}")
         
 
         for post_image in post_images:
