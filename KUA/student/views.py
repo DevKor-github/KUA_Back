@@ -548,11 +548,18 @@ class ImageView(APIView):
         if name:
             name = re.sub(r'\d+$', '', name)  # Remove trailing digits
         
-        if name and tag:
+        if name:
             try:
-                image = models.Image.objects.get(name=name, tag=tag)
-                serializer = self.serializer_class(image)
-                return Response(serializer.data, status=200)
+                if tag:
+                    images = models.Image.objects.filter(name=name, tag=tag)
+                else:
+                    images = models.Image.objects.filter(name=name)
+                
+                if images.exists():
+                    serializer = self.serializer_class(images, many=True)
+                    return Response(serializer.data, status=200)
+                else:
+                    return Response({"error": "Image not found."}, status=404)
             except models.Image.DoesNotExist:
                 return Response({"error": "Image not found."}, status=404)
         else:
