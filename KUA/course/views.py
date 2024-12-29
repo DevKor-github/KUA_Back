@@ -345,7 +345,7 @@ class PostViewSet(viewsets.ModelViewSet):
         
         profile_image_url = f"http://3.37.163.236:8000/media/attachments/6789563.png"
         try:
-            api_url = f"http://3.37.163.236:8000/student/image/?name={post.student.nickname}&tag='N'"
+            api_url = f"http://3.37.163.236:8000/student/image/?name={post.student.nickname}&tag=N"
             
             auth_token = request.auth
             header = {
@@ -359,8 +359,6 @@ class PostViewSet(viewsets.ModelViewSet):
                     first_item = image_data[0]
                     if "image" in first_item:
                         profile_image_url = f"http://3.37.163.236:8000/{first_item['image']}"
-            else :
-                return Response({f"error": "Failed to get profile image."}, status=response.status_code)
             
         except requests.exceptions.RequestException as e:
             print(f"Request exception: {e}")
