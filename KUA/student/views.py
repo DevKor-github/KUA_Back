@@ -480,7 +480,7 @@ class GetPointHistoryView(generics.RetrieveAPIView):
         user = request.user
 
         try:
-            history = models.PointHistory.objects.all(user = user.id)
+            history = models.PointHistory.objects.filter(user=user.id)
             return Response(history, status = 200)
         
         except:
