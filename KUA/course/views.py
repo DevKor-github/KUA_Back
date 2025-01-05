@@ -409,23 +409,30 @@ class PostViewSet(viewsets.ModelViewSet):
         return super().update(request, *args, **kwargs)
 
     @swagger_auto_schema(
-        operation_summary="게시글 수정 기능 - 선택적 필드",
-        operation_description="게시글의 ID를 기반으로 선택적으로 필드를 수정합니다. 제공하지 않은 필드는 기존 값을 유지합니다.",
-        manual_parameters=[
-            openapi.Parameter('title', openapi.IN_FORM, type=openapi.TYPE_STRING, description='게시글 제목'),
-            openapi.Parameter('content', openapi.IN_FORM, type=openapi.TYPE_STRING, description='게시글 내용'),
-            openapi.Parameter('tags', openapi.IN_FORM, type=openapi.TYPE_STRING, description='태그 목록 (쉼표로 구분)'),
-            openapi.Parameter('likes', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='좋아요 수'),
-            openapi.Parameter('views', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='조회 수'),
-            openapi.Parameter('reported', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='신고 수'),
-        ],
-        consumes=['multipart/form-data'],
-        responses={200: PostSerializer}
+    operation_summary="게시글 수정 기능 - 부분 수정 가능",
+    operation_description="게시글의 ID를 기반으로 선택적으로 필드를 수정합니다. 제공하지 않은 필드는 기존 값을 유지합니다.",
+    manual_parameters=[
+        openapi.Parameter('title', openapi.IN_FORM, type=openapi.TYPE_STRING, description='게시글 제목'),
+        openapi.Parameter('content', openapi.IN_FORM, type=openapi.TYPE_STRING, description='게시글 내용'),
+        openapi.Parameter('tags', openapi.IN_FORM, type=openapi.TYPE_STRING, description='태그 목록 (쉼표로 구분)'),
+        openapi.Parameter('likes', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='좋아요 수'),
+        openapi.Parameter('views', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='조회 수'),
+        openapi.Parameter('reported', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='신고 수'),
+    ],
+    consumes=['multipart/form-data'],
+    responses={200: PostSerializer}
     )
+    
     def partial_update(self, request, *args, **kwargs):
         post_id = kwargs.get('pk')
-        post = Post.objects.get(id=post_id)
         
+        # 해당 게시글 가져오기
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            return Response({"error": "해당 게시글을 찾을 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
+        
+        # 요청 데이터 가져오기
         title = request.data.get('title', None)
         content = request.data.get('content', None)
         tags = request.data.get('tags', None)
@@ -451,13 +458,22 @@ class PostViewSet(viewsets.ModelViewSet):
                 return Response({"tags": "태그는 정수형 값이어야 합니다."}, status=status.HTTP_400_BAD_REQUEST)
 
         if likes is not None:
-            post.likes = int(likes)
+            try:
+                post.likes = int(likes)
+            except ValueError:
+                return Response({"likes": "좋아요 수는 정수형 값이어야 합니다."}, status=status.HTTP_400_BAD_REQUEST)
 
         if views is not None:
-            post.views = int(views)
+            try:
+                post.views = int(views)
+            except ValueError:
+                return Response({"views": "조회 수는 정수형 값이어야 합니다."}, status=status.HTTP_400_BAD_REQUEST)
 
         if reported is not None:
-            post.reported = int(reported)
+            try:
+                post.reported = int(reported)
+            except ValueError:
+                return Response({"reported": "신고 수는 정수형 값이어야 합니다."}, status=status.HTTP_400_BAD_REQUEST)
 
         # 변경 사항 저장
         post.save()
