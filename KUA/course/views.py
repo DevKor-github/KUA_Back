@@ -419,6 +419,7 @@ class PostViewSet(viewsets.ModelViewSet):
         openapi.Parameter('views', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='조회 수'),
         openapi.Parameter('reported', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='신고 수'),
     ],
+    exclude_parameters=['course_fk', 'student'],
     consumes=['multipart/form-data'],
     responses={200: PostSerializer}
     )
