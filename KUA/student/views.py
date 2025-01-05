@@ -484,7 +484,8 @@ class GetPointHistoryView(generics.RetrieveAPIView):
             return Response(history, status = 200)
         
         except:
-            return Response("Student not found", status=400)
+            history = []
+            return Response(history, status=400)
 
 
 class ImageView(APIView):
