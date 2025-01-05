@@ -11,6 +11,9 @@ class UserSerializer(serializers.ModelSerializer):
         if len(validated_data['password']) > 20 or len(validated_data['password']) < 0 or ' ' in validated_data['password']:
             return False
 
+        if models.User.objects.filter(email = validated_data['email']).exists():
+            return False
+        
         user = User.objects.create_user(
             username = validated_data['username'],
             first_name = validated_data['first_name'],
