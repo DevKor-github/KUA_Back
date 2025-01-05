@@ -418,7 +418,8 @@ class PostViewSet(viewsets.ModelViewSet):
             openapi.Parameter('likes', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='좋아요 수'),
             openapi.Parameter('views', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='조회 수'),
             openapi.Parameter('reported', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='신고 수'),
-            openapi.Parameter('images', openapi.IN_FORM, type=openapi.TYPE_FILE, description='첨부 이미지 파일', multiple=True),
+            openapi.Parameter('images', openapi.IN_FORM, type=openapi.TYPE_FILE, description='추가할 이미지 파일', multiple=True),
+            openapi.Parameter('delete_image_ids', openapi.IN_FORM, type=openapi.TYPE_STRING, description='삭제할 이미지 ID (쉼표로 구분)'),
         ],
         consumes=['multipart/form-data'],
         responses={200: PostSerializer}
@@ -426,7 +427,7 @@ class PostViewSet(viewsets.ModelViewSet):
     def partial_update(self, request, *args, **kwargs):
         post_id = kwargs.get('pk')
 
-        # 해당 게시글 가져오기
+        # 게시글 가져오기
         try:
             post = Post.objects.get(id=post_id)
         except Post.DoesNotExist:
@@ -439,6 +440,8 @@ class PostViewSet(viewsets.ModelViewSet):
         likes = request.data.get('likes', None)
         views = request.data.get('views', None)
         reported = request.data.get('reported', None)
+        delete_image_ids = request.data.get('delete_image_ids', None)
+        images = request.FILES.getlist('images', None)  # 추가할 이미지
 
         # 필드 업데이트
         if title is not None:
@@ -475,13 +478,16 @@ class PostViewSet(viewsets.ModelViewSet):
             except ValueError:
                 return Response({"reported": "신고 수는 정수형 값이어야 합니다."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # 이미지 처리
-        images = request.FILES.getlist('images', None)  # 여러 개의 파일 처리
+        # 삭제할 이미지 처리
+        if delete_image_ids:
+            try:
+                delete_ids = [int(id) for id in delete_image_ids.split(',')]
+                PostImage.objects.filter(id__in=delete_ids, post=post).delete()
+            except ValueError:
+                return Response({"delete_image_ids": "삭제할 이미지 ID는 정수형 값이어야 합니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 추가할 이미지 처리
         if images:
-            # 기존 이미지를 삭제
-            post.images.all().delete()
-            
-            # 새로운 이미지를 추가
             for image in images:
                 PostImage.objects.create(post=post, image=image)
 
@@ -491,6 +497,7 @@ class PostViewSet(viewsets.ModelViewSet):
         # 응답 데이터
         serializer = PostSerializer(post)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 
     @swagger_auto_schema(
