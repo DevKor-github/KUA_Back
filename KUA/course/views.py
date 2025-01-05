@@ -401,7 +401,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
     @swagger_auto_schema(
         operation_summary="게시글 수정 기능 - 완료",
-        operation_description="기존 게시글 정보를 수정합니다.",
+        operation_description="기존 게시글 정보를 수정합니다.\n이건 진짜 통째로 수정하는 거니 사용하지 마세요",
         request_body=PostSerializer,
         responses={200: PostSerializer}
     )
@@ -409,13 +409,62 @@ class PostViewSet(viewsets.ModelViewSet):
         return super().update(request, *args, **kwargs)
 
     @swagger_auto_schema(
-        operation_summary="게시글 부분 수정 - 완료",
-        operation_description="게시글 정보의 일부를 수정합니다.",
-        request_body=PostSerializer,
+        operation_summary="게시글 수정 기능 - 선택적 필드",
+        operation_description="게시글의 ID를 기반으로 선택적으로 필드를 수정합니다. 제공하지 않은 필드는 기존 값을 유지합니다.",
+        manual_parameters=[
+            openapi.Parameter('title', openapi.IN_FORM, type=openapi.TYPE_STRING, description='게시글 제목'),
+            openapi.Parameter('content', openapi.IN_FORM, type=openapi.TYPE_STRING, description='게시글 내용'),
+            openapi.Parameter('tags', openapi.IN_FORM, type=openapi.TYPE_STRING, description='태그 목록 (쉼표로 구분)'),
+            openapi.Parameter('likes', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='좋아요 수'),
+            openapi.Parameter('views', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='조회 수'),
+            openapi.Parameter('reported', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='신고 수'),
+        ],
+        consumes=['multipart/form-data'],
         responses={200: PostSerializer}
     )
     def partial_update(self, request, *args, **kwargs):
-        return super().partial_update(request, *args, **kwargs)
+        post_id = kwargs.get('pk')
+        post = Post.objects.get(id=post_id)
+        
+        title = request.data.get('title', None)
+        content = request.data.get('content', None)
+        tags = request.data.get('tags', None)
+        likes = request.data.get('likes', None)
+        views = request.data.get('views', None)
+        reported = request.data.get('reported', None)
+
+        # 필드 업데이트
+        if title is not None:
+            post.title = title
+
+        if content is not None:
+            post.content = content
+
+        if tags is not None:
+            try:
+                if isinstance(tags, str):
+                    tags = [int(tag) for tag in tags.split(',')]
+                else:
+                    tags = [int(tag) for tag in tags]
+                post.tags.set(tags)  # 태그 설정
+            except ValueError:
+                return Response({"tags": "태그는 정수형 값이어야 합니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if likes is not None:
+            post.likes = int(likes)
+
+        if views is not None:
+            post.views = int(views)
+
+        if reported is not None:
+            post.reported = int(reported)
+
+        # 변경 사항 저장
+        post.save()
+
+        # 응답 데이터
+        serializer = PostSerializer(post)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(
         operation_summary="게시글 삭제 - 완료",
