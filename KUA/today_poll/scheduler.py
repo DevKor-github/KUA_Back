@@ -34,24 +34,52 @@ def delete_old_today_poll():
     logger.info(f"{count}개의 TodayPoll 인스턴스가 삭제되었습니다.")
 
 def create_briefing_to_post():
-    threshold = timezone.now() - timezone.timedelta(days=1)
-    
-    old_brifs = Briefing.objects.filter(created_at__lt=threshold)
-    student_instance = Student.objects.first()
-    tags = Tag.objects.filter(name='브리핑')
-    
-    for briefing in old_brifs:
-        post = Post.objects.create(
-            title=f"{briefing.created_at.strftime('%Y년-%m월-%d일')} 브리핑",
-            content=json.loads(briefing.content),
-            student= student_instance, 
-            course_fk=briefing.course_fk,
-        )
-        post.tags.set(tags)
-        logger.info(f"{post} 게시글이 생성되었습니다.")
-        logger.info(f"{briefing} 브리핑이 삭제되었습니다.")
-        briefing.delete()
+    try:
+        logger.info("create_briefing_to_post 작업 시작")
         
+        # 1일 이전의 브리핑 데이터를 가져옴
+        threshold = timezone.now() - timezone.timedelta(days=1)
+        old_brifs = Briefing.objects.filter(created_at__lt=threshold)
+        
+        # `Student`와 `Tag` 확인
+        student_instance = Student.objects.first()
+        if not student_instance:
+            logger.warning("학생 데이터가 없습니다.")
+            return
+        
+        tags = Tag.objects.filter(name='브리핑')
+        if not tags.exists():
+            logger.warning("브리핑 태그가 없습니다.")
+            return
+        
+        # 브리핑 데이터를 Post로 변환
+        for briefing in old_brifs:
+            # 이미 처리된 브리핑인지 확인
+            if Post.objects.filter(title=f"{briefing.created_at.strftime('%Y년-%m월-%d일')} 브리핑").exists():
+                logger.info(f"이미 처리된 브리핑: {briefing.id}")
+                continue  # 처리된 경우 다음 브리핑으로 넘어감
+            
+            try:
+                # 게시글 생성
+                post = Post.objects.create(
+                    title=f"{briefing.created_at.strftime('%Y년-%m월-%d일')} 브리핑",
+                    content=json.loads(briefing.content),
+                    student=student_instance,
+                    course_fk=briefing.course_fk,
+                )
+                post.tags.set(tags)
+                logger.info(f"게시글 생성됨: {post.title}")
+                
+                # 브리핑 삭제
+                briefing.delete()
+                logger.info(f"브리핑 삭제됨: {briefing.id}")
+            except Exception as e:
+                logger.error(f"브리핑 처리 중 오류 발생: {str(e)}")
+        
+        logger.info("create_briefing_to_post 작업 완료")
+    except Exception as e:
+        logger.error(f"create_briefing_to_post 작업 중 예외 발생: {str(e)}")
+
 
 
 def start():
