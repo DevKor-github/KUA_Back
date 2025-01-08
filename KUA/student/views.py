@@ -26,18 +26,21 @@ class UserPasswordChangeView(APIView):
     @swagger_auto_schema(
         operation_summary="비밀번호 찾기 / 변경하기",
         operation_description="id(username), 새로운 비밀번호를 입력하여 비밀번호를 변경합니다.\n 찾기일때는 새 비밀번호만 입력하며, 변경시에는 기존 비밀번호도 입력해야 합니다.",
-        manual_parameters=[
-            openapi.Parameter('username', openapi.IN_FORM, type=openapi.TYPE_STRING, description='id(username)'),
-            openapi.Parameter('isfind', openapi.IN_FORM, type=openapi.TYPE_BOOLEAN, description='찾기 / 바꾸기 구분 여부'),
-            openapi.Parameter('old_password', openapi.IN_FORM, type=openapi.TYPE_STRING, description='이전 비밀번호'),
-            openapi.Parameter('new_password', openapi.IN_FORM, type=openapi.TYPE_STRING, description='새로운 비밀번호'),
-        ],
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'username': openapi.Schema(type=openapi.TYPE_STRING),
+                'old_password': openapi.Schema(type=openapi.TYPE_STRING),
+                'new_password': openapi.Schema(type=openapi.TYPE_STRING),
+                'isfind': openapi.Schema(type=openapi.TYPE_BOOLEAN),
+            }
+        ),
         responses={
             201: openapi.Response(description="비밀번호 변경 성공"),
             400: openapi.Response(description="실패")
         }
     )
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         username = request.data.get('username')
         old_password = request.data.get('old_password', None)
         new_password = request.data.get('new_password')
