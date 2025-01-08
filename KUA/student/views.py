@@ -19,7 +19,59 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.parsers import MultiPartParser, FormParser
 
-
+# 비밀번호 변경
+class UserPasswordChangeView(APIView):
+    permission_classes = [AllowAny]
+    
+    @swagger_auto_schema(
+        operation_summary="비밀번호 찾기 / 변경하기",
+        operation_description="id(username), 새로운 비밀번호를 입력하여 비밀번호를 변경합니다.\n 찾기일때는 새 비밀번호만 입력하며, 변경시에는 기존 비밀번호도 입력해야 합니다.",
+        manual_parameters=[
+            openapi.Parameter('username', openapi.IN_FORM, type=openapi.TYPE_STRING, description='id(username)'),
+            openapi.Parameter('isfind', openapi.IN_FORM, type=openapi.TYPE_BOOLEAN, description='찾기 / 바꾸기 구분 여부'),
+            openapi.Parameter('old_password', openapi.IN_FORM, type=openapi.TYPE_STRING, description='이전 비밀번호'),
+            openapi.Parameter('new_password', openapi.IN_FORM, type=openapi.TYPE_STRING, description='새로운 비밀번호'),
+        ],
+        responses={
+            201: openapi.Response(description="비밀번호 변경 성공"),
+            400: openapi.Response(description="실패")
+        }
+    )
+    def post(self, request, *args, **kwargs):
+        username = request.data.get('username')
+        old_password = request.data.get('old_password', None)
+        new_password = request.data.get('new_password')
+        isfind = request.data.get('isfind')
+        
+        if not username or not models.User.objects.filter(username=username).exists():
+            return Response({'error': '올바르지 않은 아이디입니다.'}, status=400)
+        
+        if not new_password:
+            return Response({'error': '변경할 비밀번호를 입력해주세요.'}, status=400)
+        
+        if isfind:
+            user = models.User.objects.get(username=username)
+            try:
+                user.validate_password(new_password)
+            except:
+                return Response({'error': '올바르지 않은 형식의 비밀번호입니다.'}, status=400)
+            user.set_password(new_password)
+            user.save()
+            return Response({'message': '비밀번호가 변경되었습니다.\n 다시 로그인 해 주세요.'}, status=201)
+        else:
+            user = models.User.objects.get(username=username)
+            if not old_password or not user.check_password(old_password):
+                return Response({'error': '비밀번호가 올바르지 않습니다.'}, status=400)
+            else:
+                try:
+                    user.validate_password(new_password)
+                except:
+                    return Response({'error': '올바르지 않은 형식의 비밀번호입니다.'}, status=400)
+                user.set_password(new_password)
+                user.save()
+                return Response({'message': '비밀번호가 변경되었습니다.\n 다시 로그인 해 주세요.'}, status=201)
+            
+            
 # 이메일 코드 전송 기능
 
 

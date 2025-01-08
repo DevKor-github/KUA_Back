@@ -6,6 +6,9 @@ from rest_framework.authtoken.views import obtain_auth_token
 urlpatterns = [
     path('signup/', views.SignupView().as_view()),
     path('login/', views.LoginView().as_view()),
+    #path('logout/', views.LogoutView().as_view()),
+    
+    path('password-change/', views.UserPasswordChangeView().as_view()),
     path('send-code/', views.EmailCodeSendView().as_view()),
     path('check-code/', views.EmailCodeCheckView().as_view()),
     path('get-points/', views.PointGetView().as_view()),
