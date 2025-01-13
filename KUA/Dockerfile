@@ -6,6 +6,8 @@ COPY . /devkor-teamb-back/KUA/
 
 RUN pip install -r requirements.txt
 
+RUN mkdir -p /devkor-teamb-back/KUA/media
+
 EXPOSE 8000
 
 CMD ["python","manage.py", "runserver", "0.0.0.0:8000"]
