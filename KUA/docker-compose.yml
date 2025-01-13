@@ -1,5 +1,9 @@
 version: "3.9"
 
+volumes:
+  postgres_data:
+  media:
+
 services:
   db:
     image: postgres:13
@@ -49,6 +53,3 @@ networks:
   app-network:
     driver: bridge
 
-volumes:
-  postgres_data:
-  media:
