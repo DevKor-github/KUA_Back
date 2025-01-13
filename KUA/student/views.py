@@ -526,21 +526,22 @@ class GetPointHistoryView(generics.RetrieveAPIView):
         operation_summary="유저의 포인트 사용 기록 반환 뷰",
         operation_description="파라미터 입력 x -> 로그인 되어 있는 사용자의 포인트 사용 기록 return",
         responses={
-            201: openapi.Response(description="Success"),
+            200: openapi.Response(description="Success", schema=serializers.PointHistorySerializer(many=True)),
             400: openapi.Response(description="Not Success")
         }
     )
-
     def get(self, request):
         user = request.user
 
         try:
             history = models.PointHistory.objects.filter(user=user)
-            return Response(history, status = 200)
+            
+            serializer = self.serializer_class(history, many=True)
+            return Response(serializer.data, status=200)
         
-        except:
-            return Response([], status=400)
-
+        except Exception as e:
+            print(f"Error: {e}")
+            return Response({"error": "포인트 기록을 가져오는 중 문제가 발생했습니다."}, status=400)
 
 class ImageView(APIView):
     authentication_classes = [TokenAuthentication]
