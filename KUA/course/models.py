@@ -126,7 +126,18 @@ class Comment(models.Model):
     def __str__(self):
         return self.content[:20]  # 최초 20글자만 표시
 
+# # 좋아요 리스트?
 
+# class Likes(models.Model):
+#     student = models.ForeignKey('student.Student', on_delete=models.CASCADE, related_name='likes')
+#     post_liked = models.ManyToManyField(Post, related_name='likes', blank=True)
+#     post_scraped = models.ManyToManyField(Post, related_name='scraped', blank=True)
+#     comment_liked = models.ManyToManyField(Comment, related_name='likes', blank=True)
+    
+#     def __str__(self):
+#         return f"{self.student}의 리스트"
+
+# 시간표
 class TimeTable(models.Model):
     student = models.ForeignKey(
         'student.Student', on_delete=models.CASCADE, related_name='timetables')

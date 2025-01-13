@@ -124,3 +124,15 @@ class TimeTableSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+# class LikesSerializer(serializers.ModelSerializer):
+#     student = serializers.PrimaryKeyRelatedField(
+#         queryset=Student.objects.all())
+#     post = serializers.PrimaryKeyRelatedField(
+#         queryset=Post.objects.all(), allow_null=True, required=False)
+#     comment = serializers.PrimaryKeyRelatedField(
+#         queryset=Comment.objects.all(), allow_null=True, required=False)
+
+#     class Meta:
+#         model = Likes
+#         fields = ['student', 'post', 'comment']

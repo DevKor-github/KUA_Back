@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, generics, status
-from .models import Course, Tag, Post, Comment, TimeTable
+from .models import Course, Tag, Post, Comment, TimeTable, Likes
 from .serializers import *
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
@@ -478,11 +478,18 @@ class PostViewSet(viewsets.ModelViewSet):
             except ValueError:
                 return Response({"reported": "신고 수는 정수형 값이어야 합니다."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # 삭제할 이미지 처리
-        if delete_image_ids:
+        delete_image_order = request.data.get('delete_image_ids', None)
+        if delete_image_order:
             try:
                 delete_ids = [int(id) for id in delete_image_ids.split(',')]
-                PostImage.objects.filter(id__in=delete_ids, post=post).delete()
+                images = list(post.images.order_by('id'))
+                for delete_id in delete_ids:
+                    try:
+                        image_del = images[delete_id - 1]
+                        PostImage.objects.filter(id=image_del.id, post=post).delete()
+                    except:
+                        return Response({"delete_image_ids": "올바르지 않은 입력 값입니다."}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(status=status.HTTP_200_OK)
             except ValueError:
                 return Response({"delete_image_ids": "삭제할 이미지 ID는 정수형 값이어야 합니다."}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -719,3 +726,25 @@ class TimeTableViewSet(viewsets.ModelViewSet):
     )
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
+
+# class LikesViewSet(viewsets.ModelViewSet):
+#     serializer_class = LikesSerializer
+
+#     def get_queryset(self):
+#         queryset = Likes.objects.all().order_by('id')
+
+#         # 필터링 조건 추가
+#         student_id = self.request.query_params.get('student_id', None)
+#         post_id = self.request.query_params.get('post_id', None)
+#         comment_id = self.request.query_params.get('comment_id', None)
+
+#         if student_id is not None:
+#             queryset = queryset.filter(student_id=student_id)
+
+#         if post_id is not None:
+#             queryset = queryset.filter(post_id=post_id)
+
+#         if comment_id is not None:
+#             queryset = queryset.filter(comment_id=comment_id)
+
+#         return queryset
