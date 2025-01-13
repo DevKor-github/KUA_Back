@@ -16,7 +16,7 @@ services:
     build: .
     volumes:
       - .:/devkor-teamb-back
-      - ./media:/devkor-teamb-back/media
+      - ./media:/devkor-teamb-back/KUA/media
     ports:
       - "8000:8000"
     depends_on:
@@ -39,7 +39,7 @@ services:
       - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./media:/devkor-teamb-back/media
+      - ./media:/devkor-teamb-back/KUA/media
     depends_on:
       - web
     networks:
