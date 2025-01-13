@@ -93,7 +93,7 @@ jobs:
           
       - name: Run Django container
         run: |
-          sudo docker run --env-file ./.env -d --name ${{ env.DOCKER_CONTAINER }} --network kua_network -p 8000:8000 --restart always ${{ env.DOCKER_IMAGE }}:latest
+          sudo docker run --env-file ./.env -d --name ${{ env.DOCKER_CONTAINER }} --network kua_network -p 8000:8000 -v media:/devkor-teamb-back/KUA/media --restart always ${{ env.DOCKER_IMAGE }}:latest
   
       - name: Run Nginx container
         run: |
