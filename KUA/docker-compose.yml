@@ -20,7 +20,7 @@ services:
     build: .
     volumes:
       - .:/devkor-teamb-back
-      - media:/devkor-teamb-back/KUA/media
+      - /home/ubuntu/media:/devkor-teamb-back/KUA/media
     ports:
       - "8000:8000"
     depends_on:
@@ -52,4 +52,3 @@ services:
 networks:
   app-network:
     driver: bridge
-
