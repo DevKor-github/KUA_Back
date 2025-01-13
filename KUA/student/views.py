@@ -420,12 +420,12 @@ class IsPermissionView(generics.RetrieveAPIView):
         try:
             student = user.student
         except models.Student.DoesNotExist:
-            return Response("Student not found", status=400)
+            return Response("Student not found", status=404)
 
         if timezone.now() - student.permission_date > timedelta(days=int(student.permission_type)):
-            return Response("You Need to Buy")
+            return Response("You Need to Buy", status=400)
         else:
-            return Response("Success")
+            return Response("Success", status=201)
 
 #id로 닉네임 조회하는 기능
 
