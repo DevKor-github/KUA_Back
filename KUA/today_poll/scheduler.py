@@ -84,6 +84,7 @@ def create_briefing_to_post():
 
 def start():
     scheduler = BackgroundScheduler()
+    scheduler.remove_all_jobs()
     scheduler.add_jobstore(DjangoJobStore(), 'default')
 
     scheduler.add_job(create_today_poll, 'cron', hour=0, minute=0, id='create_today_poll', replace_existing=True)
