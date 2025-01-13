@@ -19,8 +19,8 @@ services:
   web:
     build: .
     volumes:
-      - .:/devkor-teamb-back
       - /home/ubuntu/media:/devkor-teamb-back/KUA/media
+      - .:/devkor-teamb-back
     ports:
       - "8000:8000"
     depends_on:
