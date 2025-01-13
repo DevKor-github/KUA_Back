@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, generics, status
-from .models import Course, Tag, Post, Comment, TimeTable, Likes
+from .models import *
 from .serializers import *
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
@@ -481,7 +481,7 @@ class PostViewSet(viewsets.ModelViewSet):
         delete_image_order = request.data.get('delete_image_ids', None)
         if delete_image_order:
             try:
-                delete_ids = [int(id) for id in delete_image_ids.split(',')]
+                delete_ids = [int(id) for id in delete_image_order.split(',')]
                 images = list(post.images.order_by('id'))
                 for delete_id in delete_ids:
                     try:
