@@ -382,6 +382,7 @@ class PostViewSet(viewsets.ModelViewSet):
             "id": post.id,
             "title": post.title,
             "content": post.content,
+            "course_fk": post.course_fk.id,
             "course_id": post.course_fk.course_id,
             "created_at": post.created_at,
             "updated_at": post.updated_at,
