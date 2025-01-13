@@ -535,12 +535,11 @@ class GetPointHistoryView(generics.RetrieveAPIView):
         user = request.user
 
         try:
-            history = models.PointHistory.objects.filter(user=user.id)
+            history = models.PointHistory.objects.filter(user=user)
             return Response(history, status = 200)
         
         except:
-            history = []
-            return Response(history, status=400)
+            return Response([], status=400)
 
 
 class ImageView(APIView):
