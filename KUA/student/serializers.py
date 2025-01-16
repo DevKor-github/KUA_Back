@@ -2,17 +2,28 @@ from . import models
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 from rest_framework.response import Response
+from rest_framework.validator import UniqueValidator
         
 class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
-        if len(validated_data['username']) > 20 or len(validated_data['username']) < 0 or ' ' in validated_data['username'] or models.User.objects.filter(username = validated_data['username']).exists():
-            return False
+        username = serializers.CharField(
+            max_length=20,
+            validators=[
+                UniqueValidator(queryset=User.objects.all(), message="이미 사용 중인 사용자 이름입니다."),
+            ]
+        )
         
-        if len(validated_data['password']) > 20 or len(validated_data['password']) < 0 or ' ' in validated_data['password']:
-            return False
-
-        if models.User.objects.filter(email = validated_data['email']).exists():
-            return False
+        email = serializers.EmailField(
+            validators=[
+                UniqueValidator(queryset=User.objects.all(), message="이미 사용 중인 이메일입니다."),
+            ]
+        )
+        
+        password = serializers.CharField(
+            max_length=20,
+            min_length=1,
+            write_only=True,
+        )
         
         user = User.objects.create_user(
             username = validated_data['username'],
