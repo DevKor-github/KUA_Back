@@ -5,26 +5,27 @@ from rest_framework.response import Response
 from rest_framework.validator import UniqueValidator
         
 class UserSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(
+        max_length=20,
+        validators=[
+            UniqueValidator(queryset=User.objects.all(), message="이미 사용 중인 사용자 이름입니다."),
+        ]
+    )
+    
+    email = serializers.EmailField(
+        validators=[
+            UniqueValidator(queryset=User.objects.all(), message="이미 사용 중인 이메일입니다."),
+        ]
+    )
+    
+    password = serializers.CharField(
+        max_length=20,
+        min_length=1,
+        write_only=True,
+    )
+        
     def create(self, validated_data):
-        username = serializers.CharField(
-            max_length=20,
-            validators=[
-                UniqueValidator(queryset=User.objects.all(), message="이미 사용 중인 사용자 이름입니다."),
-            ]
-        )
-        
-        email = serializers.EmailField(
-            validators=[
-                UniqueValidator(queryset=User.objects.all(), message="이미 사용 중인 이메일입니다."),
-            ]
-        )
-        
-        password = serializers.CharField(
-            max_length=20,
-            min_length=1,
-            write_only=True,
-        )
-        
+        group_name = validated_data.get('group')
         user = User.objects.create_user(
             username = validated_data['username'],
             first_name = validated_data['first_name'],
@@ -36,7 +37,7 @@ class UserSerializer(serializers.ModelSerializer):
             is_superuser = validated_data['is_superuser'],
             date_joined = validated_data['date_joined'],
         )
-        group_name = validated_data.get('group')
+        
         if group_name:
             group = Group.objects.filter(name=group_name).first()
             if group:
