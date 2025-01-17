@@ -7,11 +7,14 @@ from course.models import TimeTable, Post, Tag
 from django.utils import timezone
 import json
 
+year = timezone.now().year - 1
+semester = timezone.now().month // 6 + 1
+
 logger = logging.getLogger(__name__)
 def create_today_poll():
     try:
         logger.info("create_today_poll 작업 시작")
-        timetables = TimeTable.objects.all()
+        timetables = TimeTable.objects.filter(year=year, semester=semester)
         
         for timetable in timetables:
             student = timetable.student
