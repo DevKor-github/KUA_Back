@@ -8,7 +8,8 @@ from django.utils import timezone
 import json
 
 year = timezone.now().year - 1
-semester = timezone.now().month // 6 + 1
+#semester = timezone.now().month // 6 + 1
+semester = 2
 
 logger = logging.getLogger(__name__)
 def create_today_poll():
