@@ -2,6 +2,7 @@
 
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
+from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, generics, status
 from .models import *
@@ -401,6 +402,18 @@ class PostViewSet(viewsets.ModelViewSet):
         return Response(post_data)
 
     @swagger_auto_schema(
+        operation_summary="사용자가 작성한 게시글 목록",
+        operation_description="현재 로그인한 사용자가 작성한 게시글 목록을 반환합니다.",
+        responses={200: PostMinimalSerializer(many=True)}
+    )
+    @action(detail=False, methods=["get"], url_path="my")
+    def my_posts(self, request, *args, **kwargs):
+        user = request.user
+        posts = Post.objects.filter(student=user).order_by('-created_at')
+        serializer = PostMinimalSerializer(posts, many=True)
+        return Response(serializer.data)
+    
+    @swagger_auto_schema(
         operation_summary="게시글 수정 기능 - 완료",
         operation_description="기존 게시글 정보를 수정합니다.\n이건 진짜 통째로 수정하는 거니 사용하지 마세요",
         request_body=PostSerializer,
@@ -597,6 +610,19 @@ class CommentViewSet(viewsets.ModelViewSet):
         }
 
         return Response(comment_data)
+    
+    
+    @swagger_auto_schema(
+        operation_summary="사용자가 작성한 댓글 목록",
+        operation_description="현재 로그인한 사용자가 작성한 댓글 목록을 반환합니다.",
+        responses={200: CommentMinimalSerializer(many=True)}
+    )
+    @action(detail=False, methods=["get"], url_path="my")
+    def my_comments(self, request, *args, **kwargs):
+        user = request.user
+        comments = Comment.objects.filter(student=user).order_by('-created_at')
+        serializer = CommentMinimalSerializer(comments, many=True)
+        return Response(serializer.data)
 
     @swagger_auto_schema(
         operation_summary="댓글 수정 기능 - 완료",
@@ -749,3 +775,4 @@ class TimeTableViewSet(viewsets.ModelViewSet):
 #             queryset = queryset.filter(comment_id=comment_id)
 
 #         return queryset
+
