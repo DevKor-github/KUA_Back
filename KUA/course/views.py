@@ -409,7 +409,7 @@ class PostViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["get"], url_path="my")
     def my_posts(self, request, *args, **kwargs):
         user = request.user
-        posts = Post.objects.filter(student=user).order_by('-created_at')
+        posts = Post.objects.filter(student=user.student).order_by('-created_at')
         serializer = PostMinimalSerializer(posts, many=True)
         return Response(serializer.data)
     
@@ -620,7 +620,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["get"], url_path="my")
     def my_comments(self, request, *args, **kwargs):
         user = request.user
-        comments = Comment.objects.filter(student=user).order_by('-created_at')
+        comments = Comment.objects.filter(student=user.student).order_by('-created_at')
         serializer = CommentMinimalSerializer(comments, many=True)
         return Response(serializer.data)
 
