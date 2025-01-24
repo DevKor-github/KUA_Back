@@ -299,6 +299,7 @@ class PointGetView(APIView):
             type=openapi.TYPE_OBJECT,
             properties={
                 'point_type': openapi.Schema(type=openapi.TYPE_STRING),
+                'student_id' : openapi.Schema(type=openapi.TYPE_INTEGER),
             }
         ),
         responses={
@@ -307,8 +308,12 @@ class PointGetView(APIView):
         }
     )
     def post(self, request):  # If using UpdateAPIView, consider using put or patch
-        user = request.user
         point_type = request.data.get('point_type')
+        if point_type == 'chosen':
+            student_id = request.data.get('student_id')
+            user = models.User.objects.get(id=student_id)
+        else:
+            user = request.user
         
         if not point_type or point_type not in self.point_reward:
             return Response({'error': 'Invalid point type'}, status=400)
