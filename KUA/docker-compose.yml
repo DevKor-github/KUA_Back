@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3.10"
 
 volumes:
   postgres_data:
@@ -35,6 +35,10 @@ services:
       - EMAIL_HOST_USER=${EMAIL_HOST_USER}
       - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+    networks:
+      app-network:
+        aliases:
+          - kua-backend
 
   nginx:
     image: nginx:latest
