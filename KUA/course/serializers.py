@@ -39,7 +39,7 @@ class CourseSerializer(serializers.ModelSerializer):
 class CourseMinimalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
-        fields = ['id', 'course_id']
+        fields = ['id', 'course_id', 'course_name']
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -72,22 +72,10 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 class PostMinimalSerializer(serializers.ModelSerializer):
-    course = serializers.SerializerMethodField()
+    course = CourseMinimalSerializer(source='course_fk', read_only=True)
     class Meta:
         model = Post
         fields = ['id', 'course', 'title', 'likes']
-        
-    def get_course(self, obj):
-        if obj.course_fk:
-            try: 
-                course = Course.objects.get(id=obj.course_fk)
-                return {
-                    "course_id": course.course_id,
-                    "course_name": course.course_name,
-                }
-            except:
-                return None
-        return None
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -110,7 +98,7 @@ class CommentMinimalSerializer(serializers.ModelSerializer):
         if obj.post_id:
             try:
                 post = Post.objects.get(id=obj.post_id)
-                course = Course.objects.get(id=post.course_fk)
+                course = post.course_fk
                 return {
                     "course_id": course.course_id,
                     "course_name": course.course_name,
