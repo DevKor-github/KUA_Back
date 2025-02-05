@@ -695,3 +695,23 @@ class ImageView(APIView):
         image.delete()
         return Response(status=204)
 
+
+# 유저 활동 기록 조회
+class UserHistoryView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = serializers.UserHistorySerializer
+
+    @swagger_auto_schema(
+        operation_summary="유저 활동 기록 조회하기",
+        operation_description="유저 활동 기록 조회하기",
+        responses={
+            200: openapi.Response(description="Success"),
+            400: openapi.Response(description="Rejected")
+        }
+    )
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        history = models.StudentHistory.objects.filter(user=user)
+        serializer = serializers.UserHistorySerializer(history, many=True)
+        return Response(serializer.data, status=200)
