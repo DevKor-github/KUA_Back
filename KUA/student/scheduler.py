@@ -79,6 +79,7 @@ def update_data():
 def start_scheduler():
     start_time = datetime(2024, 8, 20, 0, 0, 0)
     if not scheduler.running:
+        scheduler.remove_all_jobs()
         scheduler.add_job(update_data, 'interval',
                           hours=24, start_date=start_time)
         scheduler.start()
