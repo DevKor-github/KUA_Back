@@ -754,25 +754,4 @@ class TimeTableViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
 
-# class LikesViewSet(viewsets.ModelViewSet):
-#     serializer_class = LikesSerializer
-
-#     def get_queryset(self):
-#         queryset = Likes.objects.all().order_by('id')
-
-#         # 필터링 조건 추가
-#         student_id = self.request.query_params.get('student_id', None)
-#         post_id = self.request.query_params.get('post_id', None)
-#         comment_id = self.request.query_params.get('comment_id', None)
-
-#         if student_id is not None:
-#             queryset = queryset.filter(student_id=student_id)
-
-#         if post_id is not None:
-#             queryset = queryset.filter(post_id=post_id)
-
-#         if comment_id is not None:
-#             queryset = queryset.filter(comment_id=comment_id)
-
-#         return queryset
 
