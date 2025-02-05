@@ -90,7 +90,7 @@ class ImageSerializer(serializers.ModelSerializer):
         fields = ['name', 'tag', 'image']
         
 
-class UserHistorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.StudentHistory
-        fields = '__all__'
+# class UserHistorySerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = models.StudentHistory
+#         fields = '__all__'
