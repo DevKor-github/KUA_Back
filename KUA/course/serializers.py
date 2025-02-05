@@ -72,9 +72,22 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 class PostMinimalSerializer(serializers.ModelSerializer):
+    course = serializers.SerializerMethodField()
     class Meta:
         model = Post
-        fields = ['id', 'title', 'likes']
+        fields = ['id', 'course', 'title', 'likes']
+        
+    def get_course(self, obj):
+        if obj.course_fk:
+            try: 
+                course = Course.objects.get(id=obj.course_fk)
+                return {
+                    "course_id": course.course_id,
+                    "course_name": course.course_name,
+                }
+            except:
+                return None
+        return None
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -88,9 +101,23 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class CommentMinimalSerializer(serializers.ModelSerializer):
+    course = serializers.SerializerMethodField()
     class Meta:
         model = Comment
-        fields = ['id', 'post_id', 'student_id']
+        fields = ['id', 'course','post_id', 'student_id']
+    
+    def get_course(self, obj):
+        if obj.post_id:
+            try:
+                post = Post.objects.get(id=obj.post_id)
+                course = Course.objects.get(id=post.course_fk)
+                return {
+                    "course_id": course.course_id,
+                    "course_name": course.course_name,
+                }
+            except:
+                return None
+        return None
 
 
 class TimeTableSerializer(serializers.ModelSerializer):
@@ -124,15 +151,3 @@ class TimeTableSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
-
-# class LikesSerializer(serializers.ModelSerializer):
-#     student = serializers.PrimaryKeyRelatedField(
-#         queryset=Student.objects.all())
-#     post = serializers.PrimaryKeyRelatedField(
-#         queryset=Post.objects.all(), allow_null=True, required=False)
-#     comment = serializers.PrimaryKeyRelatedField(
-#         queryset=Comment.objects.all(), allow_null=True, required=False)
-
-#     class Meta:
-#         model = Likes
-#         fields = ['student', 'post', 'comment']
