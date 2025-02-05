@@ -62,3 +62,25 @@ class Image(models.Model):
 
     def __str__(self):
         return f"{self.name}의 {self.tag} - 이미지"
+    
+    
+# 유저 활동 기록
+
+class StudentHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post_liked = models.ManyToManyField('course.Post', related_name='likes', blank=True)
+    
+    post_scraped = models.ManyToManyField('course.Post', related_name='scraped', blank=True)
+    
+    comment_liked = models.ManyToManyField('course.Comment', related_name='likes', blank=True)
+    
+    user_blocked = models.ManyToManyField('course.User', related_name='blocked', blank=True)
+    
+    user_followed = models.ManyToManyField('course.User', related_name='followed', blank=True)
+    
+    post_posted = models.ManyToManyField('course.Post', related_name='posted', blank=True)
+    
+    comment_commented = models.ManyToManyField('course.Comment', related_name='commented', blank=True)
+    
+    def __str__(self):
+        return f"{self.student}의 활동 기록"
