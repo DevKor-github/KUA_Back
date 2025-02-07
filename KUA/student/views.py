@@ -245,6 +245,7 @@ class SignupView(APIView):
             return Response({"Token": token.key})      
         else:
             return Response({'error': 'Failed to save nickname history'}, status=400)
+        
 
 # 로그인 기능
 
@@ -696,22 +697,48 @@ class ImageView(APIView):
         return Response(status=204)
 
 
-# # 유저 활동 기록 조회
-# class UserHistoryView(APIView):
-#     authentication_classes = [TokenAuthentication]
-#     permission_classes = [IsAuthenticated]
-#     serializer_class = serializers.UserHistorySerializer
+# 유저 활동 기록 조회
+class UserHistoryView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = serializers.UserHistorySerializer
 
-#     @swagger_auto_schema(
-#         operation_summary="유저 활동 기록 조회하기",
-#         operation_description="유저 활동 기록 조회하기",
-#         responses={
-#             200: openapi.Response(description="Success"),
-#             400: openapi.Response(description="Rejected")
-#         }
-#     )
-#     def get(self, request, *args, **kwargs):
-#         user = request.user
-#         history = models.StudentHistory.objects.filter(user=user)
-#         serializer = serializers.UserHistorySerializer(history, many=True)
-#         return Response(serializer.data, status=200)
+    @swagger_auto_schema(
+        operation_summary="유저 활동 기록 조회하기",
+        operation_description="작성 글/댓글, 좋아요한 글/댓글, 스크랩한 글, 차단/팔로우 한 유저 기록을 조회할 수 있습니다.",
+        manual_parameters=[
+            openapi.Parameter('posted', openapi.IN_FORM, type=openapi.TYPE_BOOLEAN, description='작성 글'),
+            openapi.Parameter('commented', openapi.IN_FORM, type=openapi.TYPE_BOOLEAN, description='작성 댓글'),
+            openapi.Parameter('post_liked', openapi.IN_FORM, type=openapi.TYPE_BOOLEAN, description='좋아요한 글'),
+            openapi.Parameter('comment_liked', openapi.IN_FORM, type=openapi.TYPE_BOOLEAN, description='좋아요한 댓글'),
+            openapi.Parameter('post_scraped', openapi.IN_FORM, type=openapi.TYPE_BOOLEAN, description='스크랩한 댓글'),
+            openapi.Parameter('user_blocked', openapi.IN_FORM, type=openapi.TYPE_BOOLEAN, description='차단한 유저'),
+            openapi.Parameter('user_followed', openapi.IN_FORM, type=openapi.TYPE_BOOLEAN, description='팔로우한 유저'),
+            
+        ],
+        responses={
+            200: openapi.Response(description="Success"),
+            400: openapi.Response(description="Rejected")
+        }
+    )
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        try:
+            history = models.StudentHistory.objects.filter(user=user)
+        except:
+            history_data = {
+                'user': user,
+                'post_liked': [],
+                'post_scraped': [],
+                'post_posted': [],
+                'comment_liked': [],
+                'comment_commented': [],
+                'user_blocked': [],
+                'user_followed': [],
+            }
+            serializer = serializers.UserHistorySerializer(history_data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+            return Response({"error": "학생의 활동 기록 데이터가 없습니다."}, status=404)
+        serializer = serializers.UserHistorySerializer(history, many=True)
+        return Response(serializer.data, status=200)
