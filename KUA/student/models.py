@@ -74,7 +74,7 @@ class StudentHistory(models.Model):
     
     comment_liked = models.ManyToManyField('course.Comment', related_name='history_likes', blank=True)
     
-    user_blocked = models.ManyToManyField(User, related_name= 'history_blocked', on_delete=models.CASCADE)
+    user_blocked = models.ManyToManyField(User, related_name= 'history_blocked', blank=True)
     
     user_followed = models.ManyToManyField(User, related_name='history_followed', blank=True)
     
