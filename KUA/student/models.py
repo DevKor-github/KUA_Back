@@ -83,4 +83,4 @@ class StudentHistory(models.Model):
     comment_commented = models.ManyToManyField('course.Comment', related_name='history_commented', blank=True)
     
     def __str__(self):
-        return f"{self.student}의 활동 기록"
+        return f"{self.user}의 활동 기록"
