@@ -701,6 +701,7 @@ class ImageView(APIView):
 class UserHistoryView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
     serializer_class = serializers.UserHistorySerializer
 
     @swagger_auto_schema(
