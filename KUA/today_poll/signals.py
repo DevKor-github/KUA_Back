@@ -45,13 +45,22 @@ def update_briefing(sender, instance, created, **kwargs):
             check_test=True
         ).count()
 
-        response_percentage = (answered_polls / total_polls) * 100 if total_polls > 0 else 0
-        attendance_percentage = (attendance_true / answered_polls) * 100 if total_polls > 0 else 0
-        assignment_percentage = (assignment_true / answered_polls) * 100 if total_polls > 0 else 0
-        notification_percentage = (notification_true / answered_polls) * 100 if total_polls > 0 else 0
-        
+        if total_polls > 0:
+            response_percentage = (answered_polls / total_polls) * 100
+        else:
+            response_percentage = 0
+            
+        if answered_polls > 0:
+            attendance_percentage = (attendance_true / answered_polls) * 100
+            assignment_percentage = (assignment_true / answered_polls) * 100
+            notification_percentage = (notification_true / answered_polls) * 100
+        else:
+            attendance_percentage = 0
+            assignment_percentage = 0
+            notification_percentage = 0
+            
         briefing, created = Briefing.objects.get_or_create(
-            course_fk=instance.course_fk,
+             course_fk=instance.course_fk,
             created_at__date=target_date,
             defaults={'content': ''}
         )
