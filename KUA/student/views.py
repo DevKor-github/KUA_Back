@@ -233,18 +233,21 @@ class SignupView(APIView):
             return Response(student_serializer.errors)
 
         student_serializer.save()
-        history_data = {
-            'user': user.id,
-            'nickname' : nickname,
-            'nickname_time': timezone.now()
-        }
-        serializer = serializers.NicknameHistorySerializer(data=history_data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            token = Token.objects.create(user=user)
-            return Response({"Token": token.key})      
-        else:
-            return Response({'error': 'Failed to save nickname history'}, status=400)
+        token = Token.objects.create(user=user)
+        return Response({"Token": token.key}, status=201)
+        
+        # history_data = {
+        #     'user': user.id,
+        #     'nickname' : nickname,
+        #     'nickname_time': timezone.now()
+        # }
+        # serializer = serializers.NicknameHistorySerializer(data=history_data)
+        # if serializer.is_valid(raise_exception=True):
+        #     serializer.save()
+        #     token = Token.objects.create(user=user)
+        #     return Response({"Token": token.key})      
+        # else:
+        #     return Response({'error': 'Failed to save nickname history'}, status=400)
         
 
 # 로그인 기능
