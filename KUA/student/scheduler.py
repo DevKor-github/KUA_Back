@@ -34,6 +34,7 @@ def update_data():
     # 랜덤 숫자 만들기
     cur.execute('SELECT id FROM student_student;')
     student_ids = cur.fetchall()
+    student_ids = student_ids[2:]
     student_number = len(student_ids)
 
     cur.execute('SELECT id FROM student_nicknamehistory;')
