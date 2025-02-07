@@ -708,13 +708,13 @@ class UserHistoryView(APIView):
         operation_summary="유저 활동 기록 조회하기",
         operation_description="작성 글/댓글, 좋아요한 글/댓글, 스크랩한 글, 차단/팔로우 한 유저 기록을 조회할 수 있습니다.",
         manual_parameters=[
-            openapi.Parameter('posted', openapi.IN_FORM, type=openapi.TYPE_BOOLEAN, description='작성 글'),
-            openapi.Parameter('commented', openapi.IN_FORM, type=openapi.TYPE_BOOLEAN, description='작성 댓글'),
-            openapi.Parameter('post_liked', openapi.IN_FORM, type=openapi.TYPE_BOOLEAN, description='좋아요한 글'),
-            openapi.Parameter('comment_liked', openapi.IN_FORM, type=openapi.TYPE_BOOLEAN, description='좋아요한 댓글'),
-            openapi.Parameter('post_scraped', openapi.IN_FORM, type=openapi.TYPE_BOOLEAN, description='스크랩한 댓글'),
-            openapi.Parameter('user_blocked', openapi.IN_FORM, type=openapi.TYPE_BOOLEAN, description='차단한 유저'),
-            openapi.Parameter('user_followed', openapi.IN_FORM, type=openapi.TYPE_BOOLEAN, description='팔로우한 유저'),
+            openapi.Parameter('posted', openapi.IN_QUERY, type=openapi.TYPE_BOOLEAN, description='작성 댓글'),
+            openapi.Parameter('commented', openapi.IN_QUERY, type=openapi.TYPE_BOOLEAN, description='작성 댓글'),
+            openapi.Parameter('post_liked', openapi.IN_QUERY, type=openapi.TYPE_BOOLEAN, description='좋아요한 글'),
+            openapi.Parameter('comment_liked', openapi.IN_QUERY, type=openapi.TYPE_BOOLEAN, description='좋아요한 댓글'),
+            openapi.Parameter('post_scraped', openapi.IN_QUERY, type=openapi.TYPE_BOOLEAN, description='스크랩한 댓글'),
+            openapi.Parameter('user_blocked', openapi.IN_QUERY, type=openapi.TYPE_BOOLEAN, description='차단한 유저'),
+            openapi.Parameter('user_followed', openapi.IN_QUERY, type=openapi.TYPE_BOOLEAN, description='팔로우한 유저'),
             
         ],
         responses={
