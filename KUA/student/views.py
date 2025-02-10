@@ -711,14 +711,13 @@ class UserHistoryView(APIView):
         operation_summary="유저 활동 기록 조회하기",
         operation_description="작성 글/댓글, 좋아요한 글/댓글, 스크랩한 글, 차단/팔로우 한 유저 기록을 조회할 수 있습니다.",
         manual_parameters=[
-            openapi.Parameter('posted', openapi.IN_QUERY, type=openapi.TYPE_BOOLEAN, description='작성 댓글'),
-            openapi.Parameter('commented', openapi.IN_QUERY, type=openapi.TYPE_BOOLEAN, description='작성 댓글'),
+            openapi.Parameter('posted', openapi.IN_QUERY, type=openapi.TYPE_BOOLEAN, description='작성한 글'),
+            openapi.Parameter('commented', openapi.IN_QUERY, type=openapi.TYPE_BOOLEAN, description='작성한 댓글'),
             openapi.Parameter('post_liked', openapi.IN_QUERY, type=openapi.TYPE_BOOLEAN, description='좋아요한 글'),
             openapi.Parameter('comment_liked', openapi.IN_QUERY, type=openapi.TYPE_BOOLEAN, description='좋아요한 댓글'),
-            openapi.Parameter('post_scraped', openapi.IN_QUERY, type=openapi.TYPE_BOOLEAN, description='스크랩한 댓글'),
+            openapi.Parameter('post_scraped', openapi.IN_QUERY, type=openapi.TYPE_BOOLEAN, description='스크랩한 글'),
             openapi.Parameter('user_blocked', openapi.IN_QUERY, type=openapi.TYPE_BOOLEAN, description='차단한 유저'),
             openapi.Parameter('user_followed', openapi.IN_QUERY, type=openapi.TYPE_BOOLEAN, description='팔로우한 유저'),
-            
         ],
         responses={
             200: openapi.Response(description="Success"),
@@ -727,22 +726,17 @@ class UserHistoryView(APIView):
     )
     def get(self, request, *args, **kwargs):
         user = request.user
-        try:
-            history = models.StudentHistory.objects.filter(user=user)
-        except:
-            history_data = {
-                'user': user,
-                'post_liked': [],
-                'post_scraped': [],
-                'post_posted': [],
-                'comment_liked': [],
-                'comment_commented': [],
-                'user_blocked': [],
-                'user_followed': [],
-            }
-            serializer = serializers.UserHistorySerializer(history_data)
-            if serializer.is_valid(raise_exception=True):
-                serializer.save()
-            return Response({"error": "학생의 활동 기록 데이터가 없습니다."}, status=404)
-        serializer = serializers.UserHistorySerializer(history, many=True)
-        return Response(serializer.data, status=200)
+        history, created = models.StudentHistory.objects.get_or_create(user=user)
+
+        # 요청에서 true로 설정된 필터 항목만 응답에 포함
+        filter_fields = [
+            'posted', 'commented', 'post_liked', 'comment_liked', 
+            'post_scraped', 'user_blocked', 'user_followed'
+        ]
+        filtered_data = {}
+
+        for field in filter_fields:
+            if str(request.query_params.get(field, "false")).lower() == "true":
+                filtered_data[field] = getattr(history, field).all()
+
+        return Response(filtered_data, status=200)
