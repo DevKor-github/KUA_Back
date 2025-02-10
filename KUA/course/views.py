@@ -427,7 +427,7 @@ class PostViewSet(viewsets.ModelViewSet):
         operation_summary="게시글 좋아요",
         operation_description="게시글 좋아요 여부를 변경합니다.",
         request_body=PostIdSerializer,
-        responses={200: 'Success'}
+        responses={200: '좋아요 성공 또는 취소'}
     )
     @action(detail=True, methods=['POST'], permission_classes=[IsAuthenticated])
     def like(self, request, pk=None):
