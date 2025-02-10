@@ -139,7 +139,3 @@ class TimeTableSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
-
-
-class EmptySerializer(serializers.Serializer):
-    pass
