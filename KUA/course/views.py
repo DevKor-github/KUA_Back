@@ -426,7 +426,7 @@ class PostViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_summary="게시글 좋아요",
         operation_description="게시글 좋아요 여부를 변경합니다.",
-        responses={200: PostSerializer}
+        responses={200: 'Success'}
     )
     @action(detail=True, methods=['POST'], permission_classes=[IsAuthenticated])
     def like(self, request, pk=None):
