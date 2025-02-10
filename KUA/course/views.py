@@ -429,7 +429,7 @@ class PostViewSet(viewsets.ModelViewSet):
         request_body=None,
         responses={200: 'Success'}
     )
-    @action(detail=True, methods=['POST'], permission_classes=[IsAuthenticated])
+    @action(detail=True, methods=['POST'], permission_classes=[IsAuthenticated], serializer_classes=EmptySerializer)
     def like(self, request, pk=None):
         post = self.get_object()
         user = request.user
