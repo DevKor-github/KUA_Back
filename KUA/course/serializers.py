@@ -77,6 +77,10 @@ class PostMinimalSerializer(serializers.ModelSerializer):
         model = Post
         fields = ['id', 'course', 'title', 'likes']
 
+class PostIdSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ['id', 'likes']
 
 class CommentSerializer(serializers.ModelSerializer):
     parent_comment = serializers.PrimaryKeyRelatedField(
