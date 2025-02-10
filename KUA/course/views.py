@@ -14,6 +14,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 import mimetypes
 from django.db.models import F
 import requests
+from student.models import StudentHistory
 
 # 강의 전체 뷰(CRUD 포함)
 
@@ -337,6 +338,7 @@ class PostViewSet(viewsets.ModelViewSet):
         responses={200: PostSerializer}
     )
     def retrieve(self, request, *args, **kwargs):
+        user = request.user
         post_id = kwargs.get('pk')
         post = Post.objects.get(id=post_id)
         tags_data = post.tags.values('id', 'name')
@@ -378,6 +380,13 @@ class PostViewSet(viewsets.ModelViewSet):
         post.views = F('views') + 1
         post.save(update_fields=['views'])
         post.refresh_from_db()
+        
+        history, created = StudentHistory.objects.get_or_create(user=user)
+        
+        if post in history.post_liked.all():
+            liked = True
+        else:
+            liked = False
 
         post_data = {
             "id": post.id,
@@ -395,6 +404,7 @@ class PostViewSet(viewsets.ModelViewSet):
                 "profileImage": profile_image_url,
             },
             "likes": post.likes,
+            "liked": liked,
             "views": post.views,
             "reports": post.reported,
         }
@@ -413,6 +423,28 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer = PostMinimalSerializer(posts, many=True)
         return Response(serializer.data)
     
+    @swagger_auto_schema(
+        operation_summary="게시글 좋아요",
+        operation_description="게시글 좋아요 여부를 변경합니다.",
+        responses={200: PostSerializer}
+    )
+    @action(detail=True, methods=['POST'], permission_classes=[IsAuthenticated])
+    def like(self, request, pk=None):
+        post = self.get_object()
+        user = request.user
+        history, created = StudentHistory.objects.get_or_create(user=user)
+        
+        if post in history.post_liked.all():
+            post.likes = F('likes') - 1
+            history.post_liked.remove(post)
+            post.save(update_fields=['likes'])
+            return Response({"Detail": "좋아요가 취소됐어요.", })
+        else:
+            post.likes = F('likes') + 1
+            history.post_liked.add(post)
+            post.save(update_fields=['likes'])
+            return Response({"Detail": "이 게시글에 좋아요를 눌렀어요.", })
+        
     @swagger_auto_schema(
         operation_summary="게시글 수정 기능 - 완료",
         operation_description="기존 게시글 정보를 수정합니다.\n이건 진짜 통째로 수정하는 거니 사용하지 마세요",
