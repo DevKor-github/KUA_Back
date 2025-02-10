@@ -270,6 +270,10 @@ class PostViewSet(viewsets.ModelViewSet):
                 result['content'] = post_instance.content
             if 'course_id' in query_params:
                 result['course_id'] = post_instance.course_fk.course_id
+            if 'created_at' in query_params:
+                result['created_at'] = post_instance.created_at.isoformat()
+            if 'likes' in query_params:
+                result['likes'] = post_instance.likes
 
         return Response(results)
 

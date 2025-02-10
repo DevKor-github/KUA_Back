@@ -75,7 +75,7 @@ class PostMinimalSerializer(serializers.ModelSerializer):
     course = CourseMinimalSerializer(source='course_fk', read_only=True)
     class Meta:
         model = Post
-        fields = ['id', 'course', 'title', 'likes']
+        fields = ['id', 'course', 'title', 'created_at', 'likes']
 
 class PostIdSerializer(serializers.ModelSerializer):
     class Meta:
