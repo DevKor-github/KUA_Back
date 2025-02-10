@@ -447,6 +447,25 @@ class PostViewSet(viewsets.ModelViewSet):
             return Response({"Detail": "이 게시글에 좋아요를 눌렀어요.", })
         
     @swagger_auto_schema(
+        operation_summary="게시글 스크랩",
+        operation_description="게시글 스크랩 여부를 변경합니다.",
+        request_body=PostIdSerializer,
+        responses={200: '스크랩 성공 또는 취소'}
+    )
+    @action(detail=True, methods=['POST'], permission_classes=[IsAuthenticated])
+    def scrap(self, request, pk=None):
+        post = self.get_object()
+        user = request.user
+        history, created = StudentHistory.objects.get_or_create(user=user)
+        
+        if post in history.post_scraped.all():
+            history.post_scraped.remove(post)
+            return Response({"Detail": "스크랩이 취소됐어요.", })
+        else:
+            history.post_scraped.add(post)
+            return Response({"Detail": "이 게시글을 스크랩하셨어요.", })
+        
+    @swagger_auto_schema(
         operation_summary="게시글 수정 기능 - 완료",
         operation_description="기존 게시글 정보를 수정합니다.\n이건 진짜 통째로 수정하는 거니 사용하지 마세요",
         request_body=PostSerializer,
@@ -656,7 +675,32 @@ class CommentViewSet(viewsets.ModelViewSet):
         comments = Comment.objects.filter(student=user.student).order_by('-created_at')
         serializer = CommentMinimalSerializer(comments, many=True)
         return Response(serializer.data)
-
+    
+    
+    @swagger_auto_schema(
+        operation_summary="댓글 좋아요",
+        operation_description="댓글 좋아요 여부를 변경합니다.",
+        request_body=CommentIdSerializer,
+        responses={200: '좋아요 성공 또는 취소'}
+    )
+    @action(detail=True, methods=['POST'], permission_classes=[IsAuthenticated])
+    def like(self, request, pk=None):
+        comment = self.get_object()
+        user = request.user
+        history, created = StudentHistory.objects.get_or_create(user=user)
+        
+        if comment in history.post_liked.all():
+            comment.likes = F('likes') - 1
+            history.post_liked.remove(comment)
+            comment.save(update_fields=['likes'])
+            return Response({"Detail": "좋아요가 취소됐어요.", })
+        else:
+            comment.likes = F('likes') + 1
+            history.post_liked.add(comment)
+            comment.save(update_fields=['likes'])
+            return Response({"Detail": "이 댓글에 좋아요를 눌렀어요.", })
+        
+    
     @swagger_auto_schema(
         operation_summary="댓글 수정 기능 - 완료",
         operation_description="기존 댓글 정보를 수정합니다.",

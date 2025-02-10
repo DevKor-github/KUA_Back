@@ -110,7 +110,10 @@ class CommentMinimalSerializer(serializers.ModelSerializer):
             except:
                 return None
         return None
-
+class CommentIdSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ['id', 'likes']
 
 class TimeTableSerializer(serializers.ModelSerializer):
     student = serializers.PrimaryKeyRelatedField(
