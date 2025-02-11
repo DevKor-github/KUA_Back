@@ -416,16 +416,25 @@ class PostViewSet(viewsets.ModelViewSet):
         return Response(post_data)
 
     @swagger_auto_schema(
-        operation_summary="사용자가 작성한 게시글 목록",
-        operation_description="현재 로그인한 사용자가 작성한 게시글 목록을 반환합니다.",
+        operation_summary="사용자가 작성한/좋아요한/스크랩한 게시글 목록",
+        operation_description="현재 로그인한 사용자가 작성한/좋아요한/스크랩한 게시글 목록을 반환합니다.",
         responses={200: PostMinimalSerializer(many=True)}
     )
     @action(detail=False, methods=["get"], url_path="my")
     def my_posts(self, request, *args, **kwargs):
         user = request.user
-        posts = Post.objects.filter(student=user.student).order_by('-created_at')
-        serializer = PostMinimalSerializer(posts, many=True)
-        return Response(serializer.data)
+        history, created = StudentHistory.objects.get_or_create(user=user)
+        
+        posted_posts = Post.objects.filter(student=user.student).order_by('-created_at')
+        liked_posts = history.post_liked.all().order_by('-created_at')
+        scraped_posts = history.post_scraped.all().order_by('-created_at')
+        
+        result = {
+            "posted": PostMinimalSerializer(posted_posts, many=True).data,
+            "liked": PostMinimalSerializer(liked_posts, many=True).data,
+            "scraped": PostMinimalSerializer(scraped_posts, many=True).data,
+        }
+        return Response(result, status=200)
     
     @swagger_auto_schema(
         operation_summary="게시글 좋아요",
