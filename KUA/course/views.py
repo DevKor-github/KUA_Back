@@ -298,6 +298,7 @@ class PostViewSet(viewsets.ModelViewSet):
         responses={201: PostSerializer}
     )
     def create(self, request, *args, **kwargs):
+        history, created = StudentHistory.objects.get_or_create(user=request.user)
         tags = request.data.get('tags', None)
 
         if tags:
@@ -323,6 +324,7 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=post_data)
         serializer.is_valid(raise_exception=True)
         post = serializer.save()
+        history.post_posted.add(post)
 
         # 이미지가 있을 경우 처리
         if image_uploads:
@@ -592,6 +594,11 @@ class PostViewSet(viewsets.ModelViewSet):
         responses={204: 'Deleted'}
     )
     def destroy(self, request, *args, **kwargs):
+        post_id = kwargs.get('pk')
+        history, created = StudentHistory.objects.get_or_create(user=request.user)
+        post = Post.objects.get(id=post_id)
+        history.post_posted.remove(post)
+        post.delete()
         return super().destroy(request, *args, **kwargs)
 
 # 댓글 전체 뷰
@@ -638,7 +645,12 @@ class CommentViewSet(viewsets.ModelViewSet):
         responses={201: CommentSerializer}
     )
     def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+        history, created = StudentHistory.objects.get_or_create(user=request.user)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        comment = serializer.save()
+        history.comment_commented.add(comment)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @swagger_auto_schema(
         operation_summary="댓글 조회 기능 - 완료",
@@ -678,16 +690,24 @@ class CommentViewSet(viewsets.ModelViewSet):
     
     
     @swagger_auto_schema(
-        operation_summary="사용자가 작성한 댓글 목록",
-        operation_description="현재 로그인한 사용자가 작성한 댓글 목록을 반환합니다.",
+        operation_summary="사용자가 작성한/좋아요한 댓글 목록",
+        operation_description="현재 로그인한 사용자가 작성한/좋아요한 댓글 목록을 반환합니다.",
         responses={200: CommentMinimalSerializer(many=True)}
     )
     @action(detail=False, methods=["get"], url_path="my")
     def my_comments(self, request, *args, **kwargs):
         user = request.user
-        comments = Comment.objects.filter(student=user.student).order_by('-created_at')
-        serializer = CommentMinimalSerializer(comments, many=True)
-        return Response(serializer.data)
+        history, created = StudentHistory.objects.get_or_create(user=user)
+        
+        commented = history.comment_commented.all().order_by('-created_at')
+        
+        liked = history.comment_liked.all().order_by('-created_at')
+        
+        result = {
+            "commented": CommentMinimalSerializer(commented, many=True).data,
+            "liked": CommentMinimalSerializer(liked, many=True).data,
+        }
+        return Response(result, status=200)
     
     
     @swagger_auto_schema(
@@ -704,12 +724,12 @@ class CommentViewSet(viewsets.ModelViewSet):
         
         if comment in history.post_liked.all():
             comment.likes = F('likes') - 1
-            history.post_liked.remove(comment)
+            history.comment_liked.remove(comment)
             comment.save(update_fields=['likes'])
             return Response({"Detail": "좋아요가 취소됐어요.", })
         else:
             comment.likes = F('likes') + 1
-            history.post_liked.add(comment)
+            history.comment_liked.add(comment)
             comment.save(update_fields=['likes'])
             return Response({"Detail": "이 댓글에 좋아요를 눌렀어요.", })
         
@@ -738,6 +758,11 @@ class CommentViewSet(viewsets.ModelViewSet):
         responses={204: 'Deleted'}
     )
     def destroy(self, request, *args, **kwargs):
+        history = StudentHistory.objects.get(user=request.user)
+        comment_id = kwargs.get('pk')
+        comment = Comment.objects.get(id=comment_id)
+        history.comment_commented.remove(comment)
+        comment.delete()
         return super().destroy(request, *args, **kwargs)
 
 
