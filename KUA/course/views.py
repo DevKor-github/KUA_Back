@@ -699,8 +699,8 @@ class CommentViewSet(viewsets.ModelViewSet):
         user = request.user
         history, created = StudentHistory.objects.get_or_create(user=user)
         
-        commented = history.comment_commented.all().order_by('-created_at')
-        
+        # commented = history.comment_commented.all().order_by('-created_at')
+        commented = Comment.objects.filter(student=user.student).order_by('-created_at')
         liked = history.comment_liked.all().order_by('-created_at')
         
         result = {
