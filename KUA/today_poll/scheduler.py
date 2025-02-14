@@ -7,9 +7,9 @@ from course.models import TimeTable, Post, Tag
 from django.utils import timezone
 import json
 
-year = timezone.now().year - 1
+year = timezone.now().year
 #semester = timezone.now().month // 6 + 1
-semester = 2
+semester = 1
 
 logger = logging.getLogger(__name__)
 def create_today_poll():
