@@ -393,6 +393,11 @@ class PostViewSet(viewsets.ModelViewSet):
             liked = True
         else:
             liked = False
+        if post in history.post_scraped.all():
+            scraped = True
+        else:
+            scraped = False 
+        
 
         post_data = {
             "id": post.id,
@@ -411,6 +416,7 @@ class PostViewSet(viewsets.ModelViewSet):
             },
             "likes": post.likes,
             "liked": liked,
+            "scraped": scraped,
             "views": post.views,
             "reports": post.reported,
         }
