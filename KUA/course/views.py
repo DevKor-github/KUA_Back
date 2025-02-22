@@ -1,5 +1,4 @@
-
-
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.decorators import action
@@ -602,10 +601,15 @@ class PostViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         post_id = kwargs.get('pk')
         history, created = StudentHistory.objects.get_or_create(user=request.user)
-        post = Post.objects.get(id=post_id)
+        post = get_object_or_404(Post, id=post_id)
+
         history.post_posted.remove(post)
+        history.post_scraped.remove(post)
+        history.post_liked.remove(post)
+
         post.delete()
-        return super().destroy(request, *args, **kwargs)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 # 댓글 전체 뷰
 
